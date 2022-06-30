@@ -436,6 +436,7 @@ public class BandDefinitionEditor extends ScreenFragment implements Suggester {
                 fetchPlans.put(FetchPlan.LOCAL, FetchPlan.LOCAL);
                 fetchPlans.put(FetchPlan.INSTANCE_NAME, FetchPlan.INSTANCE_NAME);
                 fetchPlanNameField.setOptionsMap(fetchPlans);
+                fetchPlanNameField.setValue(FetchPlan.LOCAL);
                 return;
             }
         }
