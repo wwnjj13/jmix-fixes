@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.cxf.attachment.Rfc5987Util;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component("core_FileTransferService")
 public class FileTransferServiceImpl implements FileTransferService {
@@ -71,7 +74,10 @@ public class FileTransferServiceImpl implements FileTransferService {
             String filename = fileReference.getFileName();
             String contentDisposition = BooleanUtils.isTrue(attachment) ? "attachment" : "inline";
             if (StringUtils.isNotEmpty(filename)) {
-                contentDisposition += "; filename=\"" + URLEncodeUtils.encodeUtf8(filename) + "\"";
+                String encodedFilename = Rfc5987Util.encode(filename);
+
+                contentDisposition += String.format("; filename=\"%s\"; filename*=utf-8''%s",
+                        encodedFilename, encodedFilename);
             }
             response.setHeader("Content-Disposition", contentDisposition);
 
@@ -98,6 +104,36 @@ public class FileTransferServiceImpl implements FileTransferService {
                         HttpStatus.BAD_REQUEST,
                         e);
             }
+        }
+    }
+
+    public static String rfc5987Encode(String value) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < value.length();) {
+            int cp = value.codePointAt(i);
+            if (cp < 127 && (Character.isLetterOrDigit(cp) || cp == '.')) {
+                builder.append((char) cp);
+            } else {
+                // Create string from a single code point
+                String cpAsString = new String(new int[] { cp }, 0, 1);
+
+                appendHexBytes(builder, cpAsString.getBytes(UTF_8));
+            }
+
+            // Advance to the next code point
+            i += Character.charCount(cp);
+        }
+
+        return builder.toString();
+    }
+
+    private static void appendHexBytes(StringBuilder builder, byte[] bytes) {
+        for (byte byteValue : bytes) {
+            // mask with 0xFF to compensate for "negative" values
+            int intValue = byteValue & 0xFF;
+            String hexCode = Integer.toString(intValue, 16);
+            builder.append('%').append(hexCode);
         }
     }
 

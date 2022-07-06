@@ -45,6 +45,7 @@ dependencies {
     api 'org.apache.commons:commons-collections4'
     api 'commons-io:commons-io'
     api 'org.apache.commons:commons-text'
+    api 'org.apache.cxf:cxf-core'
     api 'com.google.guava:guava'
     api ('org.dom4j:dom4j') {
         exclude group: 'xpp3', module: 'xpp3'
