@@ -23,9 +23,6 @@ import io.jmix.authorizationserver.client.impl.DefaultRegisteredClientProvider;
 import io.jmix.authorizationserver.introspection.AuthorizationServiceOpaqueTokenIntrospector;
 import io.jmix.core.JmixOrder;
 import io.jmix.security.SecurityConfigurers;
-import io.jmix.security.configurer.AuthorizedApiUrlsConfigurer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,8 +42,6 @@ import org.springframework.security.oauth2.server.authorization.config.ProviderS
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,19 +53,9 @@ import java.util.stream.Collectors;
 public class AuthorizationServerAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
-    public static class StaticResourcesConfig implements WebMvcConfigurer {
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            registry
-                    .addResourceHandler("/images/**")
-                    .addResourceLocations("/images/");
-        }
-    }
-
-    @Configuration(proxyBeanMethods = false)
     public static class AuthorizationServerSecurityConfiguration {
 
-        @Bean("athsrv_AuthorizationServerSecurityFilterChain")
+        @Bean("authsrv_AuthorizationServerSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 100)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
                 throws Exception {
@@ -86,7 +71,7 @@ public class AuthorizationServerAutoConfiguration {
             return http.build();
         }
 
-        @Bean("autsrv_LoginFormSecurityFilterChain")
+        @Bean("authsrv_LoginFormSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 110)
         public SecurityFilterChain loginFormSecurityFilterChain(HttpSecurity http)
                 throws Exception {
@@ -135,9 +120,6 @@ public class AuthorizationServerAutoConfiguration {
                                                                      OpaqueTokenIntrospector opaqueTokenIntrospector) throws Exception {
             http.apply(SecurityConfigurers.apiSecurity());
             http
-//                    .requestMatchers(requestMatchers -> {
-//                        requestMatchers.antMatchers("/myapi/**", "/rest/**");
-//                    })
                     .authorizeHttpRequests(authorize -> {
                         authorize.anyRequest().authenticated();
                     })
@@ -148,7 +130,7 @@ public class AuthorizationServerAutoConfiguration {
         }
 
         @ConditionalOnMissingBean
-        @Bean("autsrv_OpaqueTokenIntrospector")
+        @Bean("authsrv_OpaqueTokenIntrospector")
         public OpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2AuthorizationService authorizationService,
                                                                UserDetailsService userDetailsService) {
             return new AuthorizationServiceOpaqueTokenIntrospector(authorizationService, userDetailsService);
