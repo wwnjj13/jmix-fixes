@@ -11,6 +11,19 @@ The Jmix Authorization Server add-on features:
 * Contains predefined Spring configurations for working as participant with "authorization server" and "resource server" roles described in OAuth 2.1 protocol flows. This means that your Jmix application may issue access and refresh tokens and protect API resources with these tokens.
 * Supports authorization code grant type for web clients and mobile devices.
 * Supports client credentials grant type for server-to-server interaction.
+* Out of the box only **opaque** tokens are supported.
+
+## Adding Add-on to the Application
+
+1. If there is a `jmix-security-oauth2-starter` dependency in the `build.gradle` (it is added automatically when you add the REST API add-on) then you need to **remove** it:
+```groovy
+implementation 'io.jmix.security:jmix-security-oauth2-starter'
+```
+
+2. Add the `jmix-authorization-server-starter` dependency
+```groovy
+implementation 'io.jmix.authorizationserver:jmix-authorization-server-starter'
+```
 
 ## Auto-Configuration
 
@@ -38,6 +51,46 @@ jmix.authorization-server.default-client.client-secret={noop}somesecret
 jmix.authorization-server.default-client.access-token-time-to-live=60m
 jmix.authorization-server.default-client.refresh-token-time-to-live=10d
 ```
+
+## Obtain Access Token
+
+### Authorization Code Grant
+
+When obtaining the token from web application or mobile application the client must first request the authorization code
+
+```
+GET /oauth2/authorize?response_type=code&client_id=<client_id>&redirect_uri=<redirect_uri>
+```
+
+A special login page will be displayed where user must enter their credentials. If credentials are valid, a request to
+the redirect_uri will be performed with authorization code in the request parameter.
+
+To exchange the authorization code to the access token the client application must make a request to the following URL:
+
+```
+POST /oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code=<authorization_code>
+&redirect_uri=<redirect_uri>
+```
+
+Access and refresh tokens will be returned in the response.
+
+### Client Credentials Grant
+
+When it is not possible to enter user credentials in the browser login window, e.g. in case of some integration between 
+two applications, the client credentials flow may be used. There must be Basic authentication on behalf of one of registered clients. 
+
+```
+   POST /oauth2/token
+   Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+   Content-Type: application/x-www-form-urlencoded
+
+   grant_type=client_credentials
+```
+
+When access token will be used for accessing protected API the user with the username equal to the client id will be searched. If the user is found the user will be put as authentication principal to the security context and all operations will be executed with permissions of that user. If no such user exist an exception will be thrown. 
 
 ## Protecting API Endpoints 
 

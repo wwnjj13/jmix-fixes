@@ -63,14 +63,16 @@ public class AuthorizationServiceOpaqueTokenIntrospector implements OpaqueTokenI
         if (authorization == null) {
             throw new BadOpaqueTokenException("Authorization for provided access token not found");
         }
+        String principalName = null;
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         if  (authorization.getAuthorizationGrantType() == AuthorizationGrantType.AUTHORIZATION_CODE) {
             Object principal = authorization.getAttribute(Principal.class.getCanonicalName());
             if  (principal instanceof Authentication) {
+                principalName = ((Authentication) principal).getName();
                 authorities.addAll(((Authentication) principal).getAuthorities());
             }
         } else if  (authorization.getAuthorizationGrantType() == AuthorizationGrantType.CLIENT_CREDENTIALS) {
-            String principalName = authorization.getPrincipalName();
+            principalName = authorization.getPrincipalName();
             try {
                 UserDetails user = userDetailsService.loadUserByUsername(principalName);
                 authorities.addAll(user.getAuthorities());
@@ -78,7 +80,7 @@ public class AuthorizationServiceOpaqueTokenIntrospector implements OpaqueTokenI
                 throw new BadOpaqueTokenException("User " + principalName + " not found");
             }
         }
-        return new OAuth2IntrospectionAuthenticatedPrincipal(authorization.getAttributes(), authorities);
+        return new UserDetailsOAuth2AuthenticatedPrincipal(principalName, authorization.getAttributes(), authorities);
     }
 
 }
