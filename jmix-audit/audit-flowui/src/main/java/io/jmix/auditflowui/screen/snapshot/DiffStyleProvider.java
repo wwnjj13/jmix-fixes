@@ -19,40 +19,40 @@ package io.jmix.auditflowui.screen.snapshot;
 import io.jmix.audit.snapshot.model.EntityClassPropertyDifferenceModel;
 import io.jmix.audit.snapshot.model.EntityCollectionPropertyDifferenceModel;
 import io.jmix.audit.snapshot.model.EntityPropertyDifferenceModel;
-import io.jmix.ui.component.Table;
+
 
 import javax.annotation.Nullable;
 
-public class DiffStyleProvider implements Table.StyleProvider<EntityPropertyDifferenceModel> {
+public class DiffStyleProvider  { // implements Table.StyleProvider<EntityPropertyDifferenceModel>
 
-    @Override
-    @Nullable
-    public String getStyleName(EntityPropertyDifferenceModel entity, String property) {
-        if (property != null) {
-            if ("name".equals(property)) {
-                if (entity instanceof EntityClassPropertyDifferenceModel) {
-                    switch (entity.getItemState()) {
-                        case Added:
-                            return "addedItem";
-
-                        case Modified:
-                            return "modifiedItem";
-
-                        case Normal:
-                            if (((EntityClassPropertyDifferenceModel) entity).isLinkChange())
-                                return "chainItem";
-                            else
-                                return "modifiedItem";
-
-                        case Removed:
-                            return "removedItem";
-                    }
-                } else if (entity instanceof EntityCollectionPropertyDifferenceModel) {
-                    return "categoryItem";
-                }
-
-            }
-        }
-        return null;
-    }
+//    @Override
+//    @Nullable
+//    public String getStyleName(EntityPropertyDifferenceModel entity, String property) {
+//        if (property != null) {
+//            if ("name".equals(property)) {
+//                if (entity instanceof EntityClassPropertyDifferenceModel) {
+//                    switch (entity.getItemState()) {
+//                        case Added:
+//                            return "addedItem";
+//
+//                        case Modified:
+//                            return "modifiedItem";
+//
+//                        case Normal:
+//                            if (((EntityClassPropertyDifferenceModel) entity).isLinkChange())
+//                                return "chainItem";
+//                            else
+//                                return "modifiedItem";
+//
+//                        case Removed:
+//                            return "removedItem";
+//                    }
+//                } else if (entity instanceof EntityCollectionPropertyDifferenceModel) {
+//                    return "categoryItem";
+//                }
+//
+//            }
+//        }
+//        return null;
+//    }
 }

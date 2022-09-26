@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://jmix.io/schema/ui/window"
-        caption="msg://UserSessions.browse"
+<view xmlns="http://jmix.io/schema/flowui/view"
+        title="msg://UserSessions.browse"
         focusComponent="sessionsTable">
     <data readOnly="true">
         <collection id="userSessionsDc"
@@ -23,10 +23,10 @@
             <loader id="userSessionsDl"/>
         </collection>
     </data>
-    <dialogMode height="600"
-                width="800"/>
+<!--    <dialogMode height="600"-->
+<!--                width="800"/>-->
     <facets>
-        <presentations id="presentations" auto="true"/>
+<!--        <presentations id="presentations" auto="true"/>-->
     </facets>
     <layout spacing="true" expand="sessionsTable">
         <hbox id="filterHBox" spacing="true" width="100%">
@@ -77,4 +77,4 @@
             <button action="lookupCancelAction"/>
         </hbox>
     </layout>
-</window>
+</view>

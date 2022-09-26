@@ -15,9 +15,9 @@
   ~ limitations under the License.
   -->
 
-<menu-config xmlns="http://jmix.io/schema/ui/menu">
+<menu-config xmlns="http://jmix.io/schema/flowui/menu">
     <menu id="administration">
-        <item screen="entityLog.browse"/>
-        <item screen="userSessions.browse"/>
+        <item view="entityLog.browse"/>
+<!--        <item view="userSessions.browse"/>-->
     </menu>
 </menu-config>

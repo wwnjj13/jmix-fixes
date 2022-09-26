@@ -19,38 +19,42 @@ package io.jmix.auditflowui.screen.snapshot;
 import io.jmix.audit.snapshot.model.EntityClassPropertyDifferenceModel;
 import io.jmix.audit.snapshot.model.EntityCollectionPropertyDifferenceModel;
 import io.jmix.audit.snapshot.model.EntityPropertyDifferenceModel;
-import io.jmix.ui.icon.JmixIcon;
+//import io.jmix.ui.icon.JmixIcon;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class DiffIconProvider implements Function<EntityPropertyDifferenceModel, String> {
-
-    @Nullable
     @Override
-    public String apply(EntityPropertyDifferenceModel entity) {
-        if (entity instanceof EntityClassPropertyDifferenceModel) {
-            switch (entity.getItemState()) {
-                case Added:
-                    return JmixIcon.PLUS.source();
-
-                case Modified:
-                    return JmixIcon.EDIT.source();
-
-                case Normal:
-                    if (((EntityClassPropertyDifferenceModel) entity).isLinkChange()) {
-                        return JmixIcon.CHAIN.source();
-                    } else {
-                        return JmixIcon.EDIT.source();
-                    }
-
-                case Removed:
-                    return JmixIcon.MINUS.source();
-            }
-        } else if (entity instanceof EntityCollectionPropertyDifferenceModel) {
-            return JmixIcon.TH_LIST.source();
-        }
-
+    public String apply(EntityPropertyDifferenceModel entityPropertyDifferenceModel) {
         return null;
     }
+
+//    @Nullable
+//    @Override
+//    public String apply(EntityPropertyDifferenceModel entity) {
+//        if (entity instanceof EntityClassPropertyDifferenceModel) {
+//            switch (entity.getItemState()) {
+//                case Added:
+//                    return JmixIcon.PLUS.source();
+//
+//                case Modified:
+//                    return JmixIcon.EDIT.source();
+//
+//                case Normal:
+//                    if (((EntityClassPropertyDifferenceModel) entity).isLinkChange()) {
+//                        return JmixIcon.CHAIN.source();
+//                    } else {
+//                        return JmixIcon.EDIT.source();
+//                    }
+//
+//                case Removed:
+//                    return JmixIcon.MINUS.source();
+//            }
+//        } else if (entity instanceof EntityCollectionPropertyDifferenceModel) {
+//            return JmixIcon.TH_LIST.source();
+//        }
+//
+//        return null;
+//    }
 }
