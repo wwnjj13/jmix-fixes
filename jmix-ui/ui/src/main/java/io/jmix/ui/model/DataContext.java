@@ -17,6 +17,7 @@
 package io.jmix.ui.model;
 
 import io.jmix.core.EntitySet;
+import io.jmix.core.FetchPlan;
 import io.jmix.core.SaveContext;
 import io.jmix.core.common.event.Subscription;
 import io.jmix.ui.screen.InstallSubject;
@@ -81,6 +82,9 @@ public interface DataContext {
      */
     @CheckReturnValue
     <T> T merge(T entity, MergeOptions options);
+
+    @CheckReturnValue
+    <T> T merge(T entity, MergeOptions options, FetchPlan fetchPlan);
 
     /**
      * Same as {@link #merge(Object, MergeOptions)} with default options.

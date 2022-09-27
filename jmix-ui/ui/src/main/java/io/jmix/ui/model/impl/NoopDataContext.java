@@ -17,6 +17,7 @@
 package io.jmix.ui.model.impl;
 
 import io.jmix.core.EntitySet;
+import io.jmix.core.FetchPlan;
 import io.jmix.core.Metadata;
 import io.jmix.core.SaveContext;
 import io.jmix.core.common.event.Subscription;
@@ -61,6 +62,11 @@ public class NoopDataContext implements DataContext {
 
     @Override
     public <T> T merge(T entity, MergeOptions options) {
+        return entity;
+    }
+
+    @Override
+    public <T> T merge(T entity, MergeOptions options, FetchPlan fetchPlan) {
         return entity;
     }
 

@@ -92,6 +92,8 @@ public class DataContextImpl implements DataContextInternal {
 
     protected Map<Object, Object> nullIdEntitiesMap = new /*Identity*/HashMap<>();
 
+    protected Map<Object, FetchPlan> fetchPlans = new HashMap<>();
+
     @Nullable
     @Override
     public DataContext getParent() {
@@ -159,6 +161,14 @@ public class DataContextImpl implements DataContextInternal {
             disableListeners = false;
         }
         return result;
+    }
+
+    @Override
+    public <T> T merge(T entity, MergeOptions options, FetchPlan fetchPlan) {
+        checkNotNullArgument(entity, "fetchPlan is null");
+        T merged = merge(entity, options);
+        fetchPlans.put(makeKey(entity), fetchPlan);
+        return merged;
     }
 
     @Override
@@ -514,9 +524,11 @@ public class DataContextImpl implements DataContextInternal {
 
         Map<Object, Object> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
-            Object mergedEntity = entityMap.get(makeKey(entity));
+            Object key = makeKey(entity);
+            Object mergedEntity = entityMap.get(key);
             if (mergedEntity != null) {
-                entityMap.remove(makeKey(entity));
+                entityMap.remove(key);
+                fetchPlans.remove(key);
                 removeFromCollections(mergedEntity);
             }
         }
@@ -554,9 +566,11 @@ public class DataContextImpl implements DataContextInternal {
 
         Map<Object, Object> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
-            Object mergedEntity = entityMap.get(makeKey(entity));
+            Object key = makeKey(entity);
+            Object mergedEntity = entityMap.get(key);
             if (mergedEntity != null) {
-                entityMap.remove(makeKey(entity));
+                entityMap.remove(key);
+                fetchPlans.remove(key);
                 removeListeners(entity);
             }
             modifiedInstances.remove(entity);

@@ -101,7 +101,7 @@ public class InstanceLoaderImpl<E> implements InstanceLoader<E> {
         }
 
         if (dataContext != null) {
-            entity = dataContext.merge(entity, new MergeOptions().setFresh(true));
+            entity = dataContext.merge(entity, new MergeOptions().setFresh(true), fetchPlan);
         }
         container.setItem(entity);
 
