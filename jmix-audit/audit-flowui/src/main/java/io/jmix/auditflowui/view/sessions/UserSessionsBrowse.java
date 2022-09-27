@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.auditflowui.screen.sessions;
+package io.jmix.auditflowui.view.sessions;
 
 import io.jmix.audit.UserSessions;
 import io.jmix.audit.entity.UserSession;

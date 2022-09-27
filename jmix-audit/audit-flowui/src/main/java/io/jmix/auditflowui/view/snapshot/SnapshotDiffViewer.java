@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.auditflowui.screen.snapshot;
+package io.jmix.auditflowui.view.snapshot;
 
 import io.jmix.audit.snapshot.EntityDifferenceManager;
 import io.jmix.audit.snapshot.EntitySnapshotManager;

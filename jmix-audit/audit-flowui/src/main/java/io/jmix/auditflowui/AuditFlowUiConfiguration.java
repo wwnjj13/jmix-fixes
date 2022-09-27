@@ -20,6 +20,8 @@ import io.jmix.audit.AuditConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
 
+import io.jmix.flowui.FlowuiConfiguration;
+import io.jmix.flowui.sys.ViewControllersConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,9 +34,18 @@ import java.util.Collections;
 @Configuration
 @ComponentScan
 @EnableTransactionManagement
-//@JmixModule(dependsOn = {AuditConfiguration.class, UiConfiguration.class})
+@JmixModule(dependsOn = {AuditConfiguration.class, FlowuiConfiguration.class})
 @PropertySource(name = "io.jmix.auditui", value = "classpath:/io/jmix/auditflowui/module.properties")
 public class AuditFlowUiConfiguration {
+
+    @Bean("flowui_AuditViewControllers")
+    public ViewControllersConfiguration views(ApplicationContext applicationContext,
+                                              AnnotationScanMetadataReaderFactory metadataReaderFactory) {
+        ViewControllersConfiguration viewControllers
+                = new ViewControllersConfiguration(applicationContext, metadataReaderFactory);
+        viewControllers.setBasePackages(Collections.singletonList("io.jmix.auditflowui.view"));
+        return viewControllers;
+    }
 
 //    @Bean("audit_AuditUiControllers")
 //    public UiControllersConfiguration screens(ApplicationContext applicationContext,

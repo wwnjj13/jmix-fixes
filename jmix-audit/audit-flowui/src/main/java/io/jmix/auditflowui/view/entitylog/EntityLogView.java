@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package io.jmix.auditflowui.screen.entitylog;
+package io.jmix.auditflowui.view.entitylog;
 
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.router.Route;
 import io.jmix.audit.EntityLog;
 import io.jmix.audit.entity.EntityLogAttr;
 import io.jmix.audit.entity.EntityLogItem;
@@ -29,12 +32,14 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.core.security.AccessDeniedException;
 import io.jmix.core.security.UserRepository;
+import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.Install;
 import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.StandardListView;
 import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.View;
+import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.security.constraint.PolicyStore;
@@ -48,6 +53,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Route(value = "entitylogview", layout = DefaultMainViewParent.class)
 @ViewController("entityLog.browse")
 @ViewDescriptor("entity-log-browser.xml")
 @LookupComponent("entityLogTable")
@@ -78,8 +84,8 @@ import java.util.stream.Collectors;
 //    protected Notifications notifications;
 //    @Autowired
 //    protected ScreenBuilders screenBuilders;
-    @Autowired
-    protected PolicyStore policyStore;
+//    @Autowired
+//    protected PolicyStore policyStore;
 
 //    @Autowired
 //    protected CollectionContainer<LoggedEntity> loggedEntityDc;
@@ -125,21 +131,50 @@ import java.util.stream.Collectors;
 //    protected Button cancelBtn;
 //    @Autowired
 //    protected CheckBox selectAllCheckBox;
-    @Autowired
-    protected UserRepository userRepository;
+//    @Autowired
+//    protected UserRepository userRepository;
     @Autowired
     protected MessageTools messageTools;
+
+    @ViewComponent
+    private Tabs tabsheet;
+    @ViewComponent
+    private VerticalLayout viewWrapper;
+    @ViewComponent
+    private VerticalLayout setupWrapper;
+
 
     protected TreeMap<String, String> entityMetaClassesMap;
 
 
     // allow or not selectAllCheckBox to change values of other checkboxes
     protected boolean canSelectAllCheckboxGenerateEvents = true;
-    @Autowired
-    private SecureOperations secureOperations;
+//    @Autowired
+//    private SecureOperations secureOperations;
+
+    private void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
+        String tabId = event.getSelectedTab().getId()
+                .orElse("<no_id>");
+
+        switch (tabId) {
+            case "view":
+                viewWrapper.setVisible(true);
+                setupWrapper.setVisible(false);
+                break;
+            case "setup":
+                viewWrapper.setVisible(false);
+                setupWrapper.setVisible(true);
+                break;
+            default:
+                viewWrapper.setVisible(false);
+                setupWrapper.setVisible(false);
+        }
+    }
 
     @Subscribe
     protected void onInit(View.InitEvent event) {
+        tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
+
 //        entityLogTable.setTextSelectionEnabled(true);
 //        entityLogAttrTable.setTextSelectionEnabled(true);
 //
@@ -229,26 +264,26 @@ import java.util.stream.Collectors;
         }
     }
 
-    @Install(to = "entityLogAttrTable.name", subject = "valueProvider")
-    protected String entityLogAttrTableDisplayNameValueProvider(EntityLogAttr entityLogAttr) {
-        String entityName = entityLogAttr.getLogItem().getEntity();
-        MetaClass metaClass = getClassFromEntityName(entityName);
-        if (metaClass != null) {
-            return messageTools.getPropertyCaption(metaClass, entityLogAttr.getName());
-        } else {
-            return entityLogAttr.getName();
-        }
-    }
-
-    @Install(to = "entityLogAttrTable.value", subject = "valueProvider")
-    protected String entityLogAttrTableDisplayValueValueProvider(EntityLogAttr entityLogAttr) {
-        return evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue());
-    }
-
-    @Install(to = "entityLogAttrTable.oldValue", subject = "valueProvider")
-    protected String entityLogAttrTableDisplayOldValueValueProvider(EntityLogAttr entityLogAttr) {
-        return evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue());
-    }
+//    @Install(to = "entityLogAttrTable.name", subject = "valueProvider")
+//    protected String entityLogAttrTableDisplayNameValueProvider(EntityLogAttr entityLogAttr) {
+//        String entityName = entityLogAttr.getLogItem().getEntity();
+//        MetaClass metaClass = getClassFromEntityName(entityName);
+//        if (metaClass != null) {
+//            return messageTools.getPropertyCaption(metaClass, entityLogAttr.getName());
+//        } else {
+//            return entityLogAttr.getName();
+//        }
+//    }
+//
+//    @Install(to = "entityLogAttrTable.value", subject = "valueProvider")
+//    protected String entityLogAttrTableDisplayValueValueProvider(EntityLogAttr entityLogAttr) {
+//        return evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue());
+//    }
+//
+//    @Install(to = "entityLogAttrTable.oldValue", subject = "valueProvider")
+//    protected String entityLogAttrTableDisplayOldValueValueProvider(EntityLogAttr entityLogAttr) {
+//        return evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue());
+//    }
 
     protected String evaluateEntityLogItemAttrDisplayValue(EntityLogAttr entityLogAttr, String value) {
         if (StringUtils.isEmpty(value)) {

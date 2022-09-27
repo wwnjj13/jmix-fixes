@@ -15,6 +15,6 @@
  */
 
 @Internal
-package io.jmix.auditflowui.screen.sessions;
+package io.jmix.auditflowui.view;
 
 import io.jmix.core.annotation.Internal;
