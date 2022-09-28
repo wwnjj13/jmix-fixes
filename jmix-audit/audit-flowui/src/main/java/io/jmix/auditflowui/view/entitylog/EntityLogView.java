@@ -174,7 +174,8 @@ import java.util.stream.Collectors;
     @Subscribe
     protected void onInit(View.InitEvent event) {
         tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
-
+        viewWrapper.setVisible(true);
+        setupWrapper.setVisible(false);
 //        entityLogTable.setTextSelectionEnabled(true);
 //        entityLogAttrTable.setTextSelectionEnabled(true);
 //

@@ -15,8 +15,8 @@
   -->
 
 <view xmlns="http://jmix.io/schema/flowui/view"
-        xmlns:c="http://jmix.io/schema/ui/jpql-condition"
-        title="msg://EntityLogView.browse">
+      xmlns:c="http://jmix.io/schema/ui/jpql-condition"
+      title="msg://EntityLogView.browse">
     <data>
         <collection id="loggedEntityDc"
                     class="io.jmix.audit.entity.LoggedEntity"
@@ -75,52 +75,20 @@
         </collection>
     </data>
 
-<!--    <assign name="fieldWidth" value="theme://jmix.ui.entity-log-browse.field.width"/>-->
-<!--    <assign name="buttonWidth" value="theme://jmix.ui.entity-log-browse.button.width"/>-->
+    <!--    <assign name="fieldWidth" value="theme://jmix.ui.entity-log-browse.field.width"/>-->
+    <!--    <assign name="buttonWidth" value="theme://jmix.ui.entity-log-browse.button.width"/>-->
 
-<!--    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"-->
-<!--                width="theme://cuba.gui.dialogSize.width.xlarge"-->
-<!--                resizable="true"/>-->
+    <!--    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"-->
+    <!--                width="theme://cuba.gui.dialogSize.width.xlarge"-->
+    <!--                resizable="true"/>-->
 
     <layout spacing="true">
         <tabs id="tabsheet" width="100%" height="100%">
             <tab id="view" label="msg://view"/>
 
-<!--                <split id="split1" orientation="horizontal" pos="70" width="100%">-->
-<!--                    <vbox id="entityLogTableBox"-->
-<!--                          expand="entityLogTable"-->
-<!--                          spacing="true"-->
-<!--                          height="100%"-->
-<!--                          width="100%">-->
-<!--                        <table id="entityLogTable" width="100%" dataContainer="entityLogDc">-->
-<!--                            <columns>-->
-<!--                                <column id="eventTs" caption="msg://when">-->
-<!--                                    <formatter>-->
-<!--                                        <date format="msg://dateTimeWithSeconds"/>-->
-<!--                                    </formatter>-->
-<!--                                </column>-->
-<!--                                <column id="username" caption="msg://user"/>-->
-<!--                                <column id="type" caption="msg://changeType"/>-->
-<!--                                <column id="displayedEntityName" caption="msg://entity"/>-->
-<!--                                <column id="entityId" caption="Id"/>-->
-<!--                                <column id="entityInstanceName"/>-->
-<!--                            </columns>-->
-<!--                            <simplePagination/>-->
-<!--                        </table>-->
-<!--                    </vbox>-->
-<!--                    <vbox id="entityLogAttrTableBox" width="100%" height="100%"-->
-<!--                          spacing="true">-->
-<!--                        <table id="entityLogAttrTable" width="100%" height="100%" dataContainer="entityLogAttrDc">-->
-<!--                            <columns>-->
-<!--                                <column id="name" caption="msg://attribute"/>-->
-<!--                                <column id="value" caption="msg://newValue"/>-->
-<!--                                <column id="valueId" caption="msg://newValueId"/>-->
-<!--                                <column id="oldValue" caption="msg://oldValue"/>-->
-<!--                                <column id="oldValueId" caption="msg://oldValueId"/>-->
-<!--                            </columns>-->
-<!--                        </table>-->
-<!--                    </vbox>-->
-<!--                </split>-->
+            <!--                <split id="split1" orientation="horizontal" pos="70" width="100%">-->
+
+            <!--                </split>-->
             <tab id="setup" label="msg://setup"/>
         </tabs>
 
@@ -133,72 +101,115 @@
                 <span text="msg://changeType"/>
                 <comboBox id="changeTypeField" width="${fieldWidth}"/>
                 <span text="msg://from"/>
-                <datePicker id="fromDateField" datatype="dateTime"/>
+                <dateTimePicker id="fromDateField" datatype="dateTime"/>
                 <button id="searchBtn" width="${buttonWidth}" text="msg://search"/>
             </hbox>
             <hbox id="gridRowDown">
                 <span text="msg://entity"/>
                 <comboBox id="filterEntityNameField" width="${fieldWidth}"/>
                 <span title="msg://instance"/>
-                <entityPicker id="instancePicker" dataContainer="" width="${fieldWidth}">
-                    <actions>
-                        <action id="lookup" type="entity_lookup"/>
-                        <action id="clear" type="entity_clear"/>
-                    </actions>
-                </entityPicker>
+                <valuePicker>
+<!--                    <actions>-->
+<!--                        <action id="lookup" type="entity_lookup"/>-->
+<!--                        <action id="clear" type="entity_clear"/>-->
+<!--                    </actions>-->
+                </valuePicker>
+                <!--                <entityPicker id="instancePicker" dataContainer="" width="${fieldWidth}">-->
+                <!--                    <actions>-->
+                <!--                        <action id="lookup" type="entity_lookup"/>-->
+                <!--                        <action id="clear" type="entity_clear"/>-->
+                <!--                    </actions>-->
+                <!--                </entityPicker>-->
                 <span text="msg://till"/>
-                <datePicker id="tillDateField" datatype="dateTime"/>
+                <dateTimePicker id="tillDateField" datatype="dateTime"/>
                 <button id="clearEntityLogTableBtn" width="${buttonWidth}" text="msg://clear"/>
             </hbox>
+            <split id="split1" orientation="HORIZONTAL" width="100%">
+                <vbox id="entityLogTableBox"
+                      expand="entityLogTable"
+                      spacing="true"
+                      height="100%"
+                      width="100%">
+                    <dataGrid id="entityLogTable" height="100%" dataContainer="entityLogDc">
+                        <columns>
+                            <column property="eventTs">
 
+<!--                                <formatter>-->
+<!--                                    <date format="msg://dateTimeWithSeconds"/>-->
+<!--                                </formatter>-->
+                            </column>
+                            <column property="username"/>
+                            <column property="type" />
+                            <column property="entity" />
+                            <column property="entityRef.entityId" />
+                            <column property="entityInstanceName"/>
+                        </columns>
+<!--                        <simplePagination/>-->
+                    </dataGrid>
+                </vbox>
+                <vbox id="entityLogAttrTableBox" width="100%" height="100%"
+                      spacing="true">
+                    <dataGrid id="entityLogAttrTable" width="100%" height="100%" dataContainer="entityLogAttrDc">
+                        <columns>
+                            <column property="name"/>
+                            <column property="value"/>
+                            <column property="valueId"/>
+                            <column property="oldValue"/>
+                            <column property="oldValueId"/>
+                        </columns>
+                    </dataGrid>
+                </vbox>
+            </split>
         </vbox>
 
         <vbox id="setupWrapper">
             <vbox id="loggedEntityTableBox" width="100%" height="100%"
                   spacing="true">
-                <!--                        <groupTable id="loggedEntityTable" width="100%" height="100%" dataContainer="loggedEntityDc">-->
-                <!--                            <actions>-->
-                <!--                                <action id="create"/>-->
-                <!--                                <action id="edit" trackSelection="true"/>-->
-                <!--                                <action id="remove" caption="msg://remove"/>-->
-                <!--                            </actions>-->
-                <!--                            <buttonsPanel alwaysVisible="true">-->
-                <!--                                <button action="loggedEntityTable.create" icon="FILE_O"-->
-                <!--                                        caption="msg://create"/>-->
-                <!--                                <button action="loggedEntityTable.edit" icon="PENCIL" caption="msg://edit"/>-->
-                <!--                                <button id="removeBtn" action="loggedEntityTable.remove"/>-->
-                <!--                                <button id="reloadBtn" icon="CHECK" caption="msg://reloadConfiguration"/>-->
-                <!--                            </buttonsPanel>-->
-                <!--                            <columns>-->
-                <!--                                <column id="name"/>-->
-                <!--                                <column id="auto"/>-->
-                <!--                                <column id="manual"/>-->
-                <!--                            </columns>-->
-                <!--                        </groupTable>-->
-            </vbox>
-            <vbox id="loggedEntityMiscBox"  height="100%" width="100%"
-                  spacing="true"> <!--attributesBox -->
-                <!--                        <label id="miscNameLabel" value="msg://name"/>-->
-                <!--                        <comboBox width="100%" dataContainer="loggedEntityDc" id="entityNameField" property="name"/>-->
-                <!--                        <hbox id="checkersBox" width="100%">-->
-                <!--                            <checkBox id="autoCheckBox" caption="msg://auto" dataContainer="loggedEntityDc"-->
-                <!--                                      property="auto"/>-->
-                <!--                            <checkBox id="manualCheckBox" caption="msg://manual" dataContainer="loggedEntityDc"-->
-                <!--                                      property="manual"/>-->
-                <!--                        </hbox>-->
-                <!--                        <groupBox id="attributesBox" width="100%" orientation="vertical" caption="msg://attributes"-->
-                <!--                                  expand="attributesBoxScroll">-->
-                <!--                            <scrollBox id="attributesBoxScroll" width="100%" spacing="true">-->
-                <!--                                <checkBox id="selectAllCheckBox" caption="msg://[all]"/>-->
-                <!--                            </scrollBox>-->
-                <!--                        </groupBox>-->
+                    <dataGrid id="loggedEntityTable" width="100%" height="100%" dataContainer="loggedEntityDc">
+<!--                        <actions>-->
+<!--                            <action id="create"/>-->
+<!--                            <action id="edit" />-->
+<!--                            <action id="remove" text="msg://remove"/>-->
+<!--                        </actions>-->
 
-                <!--                        <vbox id="actionsPaneLayout" visible="false">-->
-                <!--                            <hbox id="buttonsBox" align="MIDDLE_LEFT" spacing="true">-->
-                <!--                                <button id="saveBtn" caption="msg://save" icon="CHECK"/>-->
-                <!--                                <button id="cancelBtn" caption="msg://cancel" icon="BAN"/>-->
-                <!--                            </hbox>-->
-                <!--                        </vbox>-->
+<!--                        <buttonsPanel alwaysVisible="true">-->
+<!--                            <button action="loggedEntityTable.create" icon="FILE_O"-->
+<!--                                    caption="msg://create"/>-->
+<!--                            <button action="loggedEntityTable.edit" icon="PENCIL" caption="msg://edit"/>-->
+<!--                            <button id="removeBtn" action="loggedEntityTable.remove"/>-->
+<!--                            <button id="reloadBtn" icon="CHECK" caption="msg://reloadConfiguration"/>-->
+<!--                        </buttonsPanel>-->
+                        <columns>
+                            <column property="name"/>
+                            <column property="auto"/>
+                            <column property="manual"/>
+                        </columns>
+                    </dataGrid>
+            </vbox>
+            <vbox id="loggedEntityMiscBox" height="100%" width="100%"
+                  spacing="true"> <!--attributesBox -->
+                <span id="miscNameLabel" text="msg://name"/>
+                <comboBox width="100%" dataContainer="loggedEntityDc" id="entityNameField" property="name"/>
+                <hbox id="checkersBox" width="100%">
+                    <checkbox id="autoCheckBox" label="msg://auto" dataContainer="loggedEntityDc"
+                              property="auto"/>
+                    <checkbox id="manualCheckBox" label="msg://manual" dataContainer="loggedEntityDc"
+                              property="manual"/>
+                </hbox>
+                <vbox id="attributesBox" width="100%"
+                          expand="attributesBoxScroll">
+                    <span text="msg://attributes"/>
+                    <scroller id="attributesBoxScroll" width="100%">
+                        <checkbox id="selectAllCheckBox" label="msg://[all]"/>
+                    </scroller>
+                </vbox>
+
+                <vbox id="actionsPaneLayout" visible="false">
+                    <hbox id="buttonsBox" alignItems="END" spacing="true">
+                        <button id="saveBtn" text="msg://save" icon="CHECK"/>
+                        <button id="cancelBtn" text="msg://cancel" icon="BAN"/>
+                    </hbox>
+                </vbox>
             </vbox>
         </vbox>
 
