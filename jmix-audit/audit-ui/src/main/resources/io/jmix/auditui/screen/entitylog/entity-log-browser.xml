@@ -102,12 +102,12 @@
                             <label value="msg://entity" align="MIDDLE_LEFT"/>
                             <comboBox id="filterEntityNameField" width="${fieldWidth}"/>
                             <label value="msg://instance" align="MIDDLE_LEFT"/>
-<!--                            <entityPicker id="instancePicker" width="${fieldWidth}">-->
-<!--                                <actions>-->
-<!--                                    <action id="lookup" type="entity_lookup"/>-->
-<!--                                    <action id="clear" type="entity_clear"/>-->
-<!--                                </actions>-->
-<!--                            </entityPicker>-->
+                            <entityPicker id="instancePicker" width="${fieldWidth}">
+                                <actions>
+                                    <action id="lookup" type="entity_lookup"/>
+                                    <action id="clear" type="entity_clear"/>
+                                </actions>
+                            </entityPicker>
                             <label value="msg://till" align="MIDDLE_LEFT"/>
                             <dateField id="tillDateField"/>
                             <button id="clearEntityLogTableBtn" width="${buttonWidth}" caption="msg://clear"/>

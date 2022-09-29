@@ -16,6 +16,12 @@
 
 package io.jmix.auditflowui.view.entitylog;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
@@ -32,8 +38,17 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.core.security.AccessDeniedException;
 import io.jmix.core.security.UserRepository;
+import io.jmix.flowui.Dialogs;
+import io.jmix.flowui.Notifications;
+import io.jmix.flowui.UiComponents;
+import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.model.CollectionContainer;
+import io.jmix.flowui.model.CollectionLoader;
+import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.DialogMode;
+import io.jmix.flowui.view.DialogWindow;
 import io.jmix.flowui.view.Install;
 import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.StandardListView;
@@ -44,12 +59,15 @@ import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.security.constraint.PolicyStore;
 import io.jmix.security.constraint.SecureOperations;
+import io.jmix.securityflowui.model.ResourcePolicyModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,66 +92,64 @@ import java.util.stream.Collectors;
     protected ExtendedEntities extendedEntities;
     @Autowired
     protected EntityLog entityLog;
-//    @Autowired
-//    protected UiComponents uiComponents;
+    @Autowired
+    protected UiComponents uiComponents;
     @Autowired
     protected MetadataTools metadataTools;
-//    @Autowired
-//    protected Dialogs dialogs;
-//    @Autowired
-//    protected Notifications notifications;
+    @Autowired
+    protected Dialogs dialogs;
+    @Autowired
+    protected Notifications notifications;
 //    @Autowired
 //    protected ScreenBuilders screenBuilders;
-//    @Autowired
-//    protected PolicyStore policyStore;
+    @Autowired
+    protected PolicyStore policyStore;
 
-//    @Autowired
-//    protected CollectionContainer<LoggedEntity> loggedEntityDc;
-//    @Autowired
-//    protected CollectionLoader<LoggedEntity> loggedEntityDl;
-//    @Autowired
-//    protected CollectionLoader<EntityLogItem> entityLogDl;
-//    @Autowired
-//    protected CollectionContainer<LoggedAttribute> loggedAttrDc;
-//    @Autowired
-//    protected CollectionLoader<LoggedAttribute> loggedAttrDl;
-//    @Autowired
-//    protected ComboBox changeTypeField;
-//    @Autowired
-//    protected ComboBox<String> entityNameField;
-//    @Autowired
-//    protected SuggestionField<String> userField;
-//    @Autowired
-//    protected ComboBox<String> filterEntityNameField;
-//    @Autowired
-//    protected DataContext dataContext;
+    @ViewComponent
+    protected CollectionContainer<LoggedEntity> loggedEntityDc;
+    @ViewComponent
+    protected CollectionLoader<LoggedEntity> loggedEntityDl;
+    @ViewComponent
+    protected CollectionLoader<EntityLogItem> entityLogDl;
+    @ViewComponent
+    protected CollectionContainer<LoggedAttribute> loggedAttrDc;
+    @ViewComponent
+    protected CollectionLoader<LoggedAttribute> loggedAttrDl;
+    @ViewComponent
+    protected ComboBox changeTypeField;
+    @ViewComponent
+    protected ComboBox<String> entityNameField;
+    @ViewComponent
+    protected ComboBox<String> userField;
+    @ViewComponent
+    protected ComboBox<String> filterEntityNameField;
 //    @Autowired
 //    protected EntityPicker<Object> instancePicker;
-//    @Autowired
-//    protected Table<EntityLogItem> entityLogTable;
-//    @Autowired
-//    protected GroupTable<LoggedEntity> loggedEntityTable;
-//    @Autowired
-//    protected Table<EntityLogAttr> entityLogAttrTable;
-//    @Autowired
-//    protected CheckBox manualCheckBox;
-//    @Autowired
-//    protected CheckBox autoCheckBox;
-//    @Autowired
-//    protected VBoxLayout actionsPaneLayout;
-//    @Autowired
-//    protected ScrollBoxLayout attributesBoxScroll;
-//    @Autowired
-//    protected DateField tillDateField;
-//    @Autowired
-//    protected DateField fromDateField;
-//    @Autowired
-//    protected Button cancelBtn;
-//    @Autowired
-//    protected CheckBox selectAllCheckBox;
-//    @Autowired
-//    protected UserRepository userRepository;
-    @Autowired
+    @ViewComponent
+    protected DataGrid<EntityLogItem> entityLogTable;
+    @ViewComponent
+    protected DataGrid<LoggedEntity> loggedEntityTable;
+    @ViewComponent
+    protected DataGrid<EntityLogAttr> entityLogAttrTable;
+    @ViewComponent
+    protected Checkbox manualCheckBox;
+    @ViewComponent
+    protected Checkbox autoCheckBox;
+    @ViewComponent
+    protected VerticalLayout actionsPaneLayout;
+    @ViewComponent
+    protected Scroller attributesBoxScroll;
+    @ViewComponent
+    protected DateTimePicker tillDateField;
+    @ViewComponent
+    protected DateTimePicker fromDateField;
+    @ViewComponent
+    protected Button cancelBtn;
+    @ViewComponent
+    protected Checkbox selectAllCheckBox;
+    @ViewComponent
+    protected UserRepository userRepository;
+    @ViewComponent
     protected MessageTools messageTools;
 
     @ViewComponent
@@ -149,8 +165,8 @@ import java.util.stream.Collectors;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
     protected boolean canSelectAllCheckboxGenerateEvents = true;
-//    @Autowired
-//    private SecureOperations secureOperations;
+    @Autowired
+    private SecureOperations secureOperations;
 
     private void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
         String tabId = event.getSelectedTab().getId()
@@ -176,50 +192,48 @@ import java.util.stream.Collectors;
         tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
         viewWrapper.setVisible(true);
         setupWrapper.setVisible(false);
-//        entityLogTable.setTextSelectionEnabled(true);
-//        entityLogAttrTable.setTextSelectionEnabled(true);
-//
-//        loggedEntityDl.load();
-//
-//        Map<String, Object> changeTypeMap = new LinkedHashMap<>();
-//        changeTypeMap.put(messages.getMessage(EntityLogView.class, "createField"), "C");
-//        changeTypeMap.put(messages.getMessage(EntityLogView.class, "modifyField"), "M");
-//        changeTypeMap.put(messages.getMessage(EntityLogView.class, "deleteField"), "D");
-//        changeTypeMap.put(messages.getMessage(EntityLogView.class, "restoreField"), "R");
-//
-//        entityMetaClassesMap = getEntityMetaClasses();
-//        entityNameField.setOptionsMap(entityMetaClassesMap);
-//        changeTypeField.setOptionsMap(changeTypeMap);
-//
-//        userField.setSearchExecutor((searchString, searchParams) -> {
+
+        loggedEntityDl.load();
+
+        Map<String, Object> changeTypeMap = new LinkedHashMap<>();
+        changeTypeMap.put(messages.getMessage(EntityLogView.class, "createField"), "C");
+        changeTypeMap.put(messages.getMessage(EntityLogView.class, "modifyField"), "M");
+        changeTypeMap.put(messages.getMessage(EntityLogView.class, "deleteField"), "D");
+        changeTypeMap.put(messages.getMessage(EntityLogView.class, "restoreField"), "R");
+
+        entityMetaClassesMap = getEntityMetaClasses();
+        entityNameField.setItems(entityMetaClassesMap.keySet());
+        changeTypeField.setItems(changeTypeMap.keySet());
+
+//        userField.setItems((searchString, searchParams) -> {
 //            List<? extends UserDetails> users = userRepository.getByUsernameLike(searchString);
 //            return users.stream()
 //                    .map(UserDetails::getUsername)
 //                    .collect(Collectors.toList());
 //        });
 //        filterEntityNameField.setOptionsMap(entityMetaClassesMap);
-//
-//        disableControls();
-//        setDateFieldTime();
-//
+
+        disableControls();
+        setDateFieldTime();
+
 //        instancePicker.setEnabled(false);
-//
-//        entityNameField.addValueChangeListener(e -> {
-//            if (entityNameField.isEditable())
-//                fillAttributes(e.getValue(), null, true);
-//        });
-//
-//        loggedEntityDc.addItemChangeListener(e -> {
-//            if (e.getItem() != null) {
-//                loggedAttrDl.setParameter("entityId", e.getItem().getId());
-//                loggedAttrDl.load();
-//                fillAttributes(e.getItem().getName(), e.getItem(), false);
-//                checkAllCheckboxes();
-//            } else {
-//                setSelectAllCheckBox(false);
-//                clearAttributes();
-//            }
-//        });
+
+        entityNameField.addValueChangeListener(e -> {
+            if (entityNameField.isEnabled())
+                fillAttributes(e.getValue(), null, true);
+        });
+
+        loggedEntityDc.addItemChangeListener(e -> {
+            if (e.getItem() != null) {
+                loggedAttrDl.setParameter("entityId", e.getItem().getId());
+                loggedAttrDl.load();
+                fillAttributes(e.getItem().getName(), e.getItem(), false);
+                checkAllCheckboxes();
+            } else {
+                setSelectAllCheckBox(false);
+                clearAttributes();
+            }
+        });
 //
 //        filterEntityNameField.addValueChangeListener(e -> {
 //            if (e.getValue() != null) {
@@ -368,6 +382,25 @@ import java.util.stream.Collectors;
 //            }
 //        }
 //    }
+//    @Subscribe("loggedEntityTable.create")
+//    private void onLoggedEntityTableCreate(ActionPerformedEvent event) {
+//
+//    }
+//
+//    @Subscribe("loggedEntityTable.edit")
+//    private void onLoggedEntityTableEdit(ActionPerformedEvent event) {
+//
+//    }
+//
+//    @Subscribe("loggedEntityTable.remove")
+//    private void onLoggedEntityTableRemove(ActionPerformedEvent event) {
+//
+//    }
+//
+//    @Subscribe("loggedEntityTable.reload")
+//    private void onLoggedEntityTableReload(ActionPerformedEvent event) {
+//
+//    }
 
     public TreeMap<String, String> getEntityMetaClasses() {
         TreeMap<String, String> options = new TreeMap<>();
@@ -397,67 +430,67 @@ import java.util.stream.Collectors;
 //        actionsPaneLayout.setVisible(true);
 //    }
 
-//    protected void disableControls() {
-//        entityNameField.setEditable(false);
-//        loggedEntityTable.setEnabled(true);
-//        autoCheckBox.setEditable(false);
-//        manualCheckBox.setEditable(false);
-//        for (Component c : attributesBoxScroll.getComponents())
-//            ((CheckBox) c).setEditable(false);
-//        actionsPaneLayout.setVisible(false);
-//    }
+    protected void disableControls() {
+        entityNameField.setEnabled(false);
+        loggedEntityTable.setEnabled(true);
+        autoCheckBox.setEnabled(false);
+        manualCheckBox.setEnabled(false);
+        for (Component c : attributesBoxScroll.getContent().getChildren().collect(Collectors.toList()))
+            ((Checkbox) c).setEnabled(false);
+        actionsPaneLayout.setVisible(false);
+    }
 
-//    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
-//        clearAttributes();
-//        setSelectAllCheckBox(false);
-//
-//        if (metaClassName != null) {
-//            MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
-//                    metadata.getClass(metaClassName));
-//            List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
-//            selectAllCheckBox.setEditable(editable);
-//            Set<LoggedAttribute> enabledAttr = null;
-//            if (item != null)
-//                enabledAttr = item.getAttributes();
-//            for (MetaProperty property : metaProperties) {
-//                if (allowLogProperty(property)) {
-//                    if (metadataTools.isEmbedded(property)) {
-//                        MetaClass embeddedMetaClass = property.getRange().asClass();
-//                        for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
-//                            if (allowLogProperty(embeddedProperty)) {
-//                                addAttribute(enabledAttr,
-//                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
-//                            }
-//                        }
-//                    } else {
-//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
-//                    }
-//                }
-//            }
-//
-//            Collection<MetaProperty> additionalProperties = metadataTools.getAdditionalProperties(metaClass);
-//            if (additionalProperties != null) {
-//                for (MetaProperty property : additionalProperties) {
-//                    if (allowLogProperty(property)) {
-//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
+        clearAttributes();
+        setSelectAllCheckBox(false);
 
-//    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass, boolean editable) {
-//        CheckBox checkBox = uiComponents.create(CheckBox.class);
-//        if (enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes)) {
-//            checkBox.setValue(true);
-//        }
-//        checkBox.setId(name);
-//        checkBox.setCaption(name);
-//        checkBox.setEditable(editable);
-//        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-//
+        if (metaClassName != null) {
+            MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
+                    metadata.getClass(metaClassName));
+            List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
+            selectAllCheckBox.setEnabled(editable);
+            Set<LoggedAttribute> enabledAttr = null;
+            if (item != null)
+                enabledAttr = item.getAttributes();
+            for (MetaProperty property : metaProperties) {
+                if (allowLogProperty(property)) {
+                    if (metadataTools.isEmbedded(property)) {
+                        MetaClass embeddedMetaClass = property.getRange().asClass();
+                        for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
+                            if (allowLogProperty(embeddedProperty)) {
+                                addAttribute(enabledAttr,
+                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
+                            }
+                        }
+                    } else {
+                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+                    }
+                }
+            }
+
+            Collection<MetaProperty> additionalProperties = metadataTools.getAdditionalProperties(metaClass);
+            if (additionalProperties != null) {
+                for (MetaProperty property : additionalProperties) {
+                    if (allowLogProperty(property)) {
+                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass, boolean editable) {
+        Checkbox checkBox = uiComponents.create(Checkbox.class);
+        if (enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes)) {
+            checkBox.setValue(true);
+        }
+        checkBox.setId(name);
+        checkBox.setLabel(name);
+        checkBox.setEnabled(editable);
+        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
+
 //        attributesBoxScroll.add(checkBox);
-//    }
+    }
 
 //    protected void enableAllCheckBoxes(boolean b) {
 //        if (canSelectAllCheckboxGenerateEvents) {
@@ -466,55 +499,57 @@ import java.util.stream.Collectors;
 //        }
 //    }
 
-//    protected void checkAllCheckboxes() {
-//        CheckBox selectAllCheckBox = (CheckBox) attributesBoxScroll.getOwnComponent(SELECT_ALL_CHECK_BOX);
-//        if (selectAllCheckBox != null) {
-//            for (Component c : attributesBoxScroll.getComponents()) {
-//                if (!c.equals(selectAllCheckBox)) {
-//                    CheckBox checkBox = (CheckBox) c;
-//                    if (!checkBox.getValue()) {
-//                        setSelectAllCheckBox(false);
-//                        return;
-//                    }
-//                }
-//            }
-//            if (attributesBoxScroll.getComponents().size() != 1)
-//                setSelectAllCheckBox(true);
-//        }
-//    }
+    protected void checkAllCheckboxes() {
+//        Checkbox selectAllCheckBox = (Checkbox) attributesBoxScroll.getOwnComponent(SELECT_ALL_CHECK_BOX);
+        if (selectAllCheckBox != null) {
+            for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+                if (!c.equals(selectAllCheckBox)) {
+                    Checkbox checkBox = (Checkbox) c;
+                    if (!checkBox.getValue()) {
+                        setSelectAllCheckBox(false);
+                        return;
+                    }
+                }
+            }
+            if (attributesBoxScroll.getChildren().toArray().length != 1)
+                setSelectAllCheckBox(true);
+        }
+    }
 
-//    public void setSelectAllCheckBox(boolean value) {
-//        canSelectAllCheckboxGenerateEvents = false;
-//        boolean isEditable = selectAllCheckBox.isEditable();
-//        try {
-//            selectAllCheckBox.setEditable(true);
-//            selectAllCheckBox.setValue(value);
-//        } finally {
-//            canSelectAllCheckboxGenerateEvents = true;
-//            selectAllCheckBox.setEditable(isEditable);
-//        }
-//    }
+    public void setSelectAllCheckBox(boolean value) {
+        canSelectAllCheckboxGenerateEvents = false;
+        boolean isEditable = selectAllCheckBox.isEnabled();
+        try {
+            selectAllCheckBox.setEnabled(true);
+            selectAllCheckBox.setValue(value);
+        } finally {
+            canSelectAllCheckboxGenerateEvents = true;
+            selectAllCheckBox.setEnabled(isEditable);
+        }
+    }
+
+    public void setDateFieldTime() {
+        Date date = timeSource.currentTimestamp();
+        fromDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, -1).toInstant(),
+                ZoneId.systemDefault()));
+        tillDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, 1).toInstant(),
+                ZoneId.systemDefault()));
+    }
 //
-//    public void setDateFieldTime() {
-//        Date date = timeSource.currentTimestamp();
-//        fromDateField.setValue(DateUtils.addDays(date, -1));
-//        tillDateField.setValue(DateUtils.addDays(date, 1));
-//    }
-//
-//    public void clearAttributes() {
-//        for (Component c : attributesBoxScroll.getComponents())
-//            if (!SELECT_ALL_CHECK_BOX.equals(c.getId()))
+    public void clearAttributes() {
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+            if (!SELECT_ALL_CHECK_BOX.equals(c.getId())) {}
 //                attributesBoxScroll.remove(c);
-//    }
+    }
 //
-//    public boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
-//        if (enabledAttr != null && (metaClass.findProperty(propertyName) == null || !metadataTools.isSystem(metaClass.getProperty(propertyName)))) {
-//            for (LoggedAttribute logAttr : enabledAttr)
-//                if (logAttr.getName().equals(propertyName))
-//                    return true;
-//        }
-//        return false;
-//    }
+    public boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
+        if (enabledAttr != null && (metaClass.findProperty(propertyName) == null || !metadataTools.isSystem(metaClass.getProperty(propertyName)))) {
+            for (LoggedAttribute logAttr : enabledAttr)
+                if (logAttr.getName().equals(propertyName))
+                    return true;
+        }
+        return false;
+    }
 //
 //    public LoggedAttribute getLoggedAttribute(String name, Set<LoggedAttribute> enabledAttr) {
 //        for (LoggedAttribute atr : enabledAttr)
@@ -614,27 +649,27 @@ import java.util.stream.Collectors;
 //                .show();
 //    }
 //
-//    protected boolean allowLogProperty(MetaProperty metaProperty /*, CategoryAttribute categoryAttribute*/) {
-//        if (metadataTools.isSystem(metaProperty)
-//                //log system property tenantId
-//                && !metadataTools.isAnnotationPresent(metaProperty.getDomain().getJavaClass(), metaProperty.getName(), TenantId.class)) {
+    protected boolean allowLogProperty(MetaProperty metaProperty /*, CategoryAttribute categoryAttribute*/) {
+        if (metadataTools.isSystem(metaProperty)
+                //log system property tenantId
+                && !metadataTools.isAnnotationPresent(metaProperty.getDomain().getJavaClass(), metaProperty.getName(), TenantId.class)) {
+            return false;
+        }
+        Range range = metaProperty.getRange();
+        if (range.isClass() && metadataTools.hasCompositePrimaryKey(range.asClass()) &&
+                !metadataTools.hasUuid(range.asClass())) {
+            return false;
+        }
+        if (range.isClass() && range.getCardinality().isMany()) {
+            return false;
+        }
+        //todo DynamicAttributes (until Haulmont/jmix-ui#272 & others will be finished and it can be tested)
+//        if (categoryAttribute != null &&
+//                BooleanUtils.isTrue(categoryAttribute.getIsCollection())) {
 //            return false;
 //        }
-//        Range range = metaProperty.getRange();
-//        if (range.isClass() && metadataTools.hasCompositePrimaryKey(range.asClass()) &&
-//                !metadataTools.hasUuid(range.asClass())) {
-//            return false;
-//        }
-//        if (range.isClass() && range.getCardinality().isMany()) {
-//            return false;
-//        }
-//        //todo DynamicAttributes (until Haulmont/jmix-ui#272 & others will be finished and it can be tested)
-////        if (categoryAttribute != null &&
-////                BooleanUtils.isTrue(categoryAttribute.getIsCollection())) {
-////            return false;
-////        }
-//        return true;
-//    }
+        return true;
+    }
 //
 //    @Subscribe("saveBtn")
 //    protected void onSaveBtnClick(Button.ClickEvent event) {
