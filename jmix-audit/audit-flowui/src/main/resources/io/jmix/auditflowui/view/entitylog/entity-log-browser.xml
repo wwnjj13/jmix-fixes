@@ -99,7 +99,7 @@
                 <dateTimePicker label="msg://from" minWidth="3em" id="fromDateField" datatype="dateTime"/>
                 <button id="searchBtn" width="${buttonWidth}" text="msg://search"/>
                 <comboBox label="msg://entity" id="filterEntityNameField" width="${fieldWidth}"/>
-                <valuePicker label="msg://instance">
+                <valuePicker id="instancePicker" label="msg://instance">
                 </valuePicker>
                 <!--                <entityPicker id="instancePicker" dataContainer="" width="${fieldWidth}">-->
                 <!--                    <actions>-->
@@ -182,9 +182,9 @@
                         <vbox id="attributesBox" width="100%"
                                   expand="attributesBoxScroll">
                             <span text="msg://attributes"/>
-                            <scroller id="attributesBoxScroll" width="100%">
+                            <vbox id="attributesBoxScroll"  width="100%">
                                 <checkbox id="selectAllCheckBox" label="msg://[all]"/>
-                            </scroller>
+                            </vbox>
                         </vbox>
 
                         <vbox id="actionsPaneLayout" visible="false">

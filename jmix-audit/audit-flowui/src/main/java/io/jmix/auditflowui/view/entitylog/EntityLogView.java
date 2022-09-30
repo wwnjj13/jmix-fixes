@@ -16,11 +16,18 @@
 
 package io.jmix.auditflowui.view.entitylog;
 
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.GeneratedVaadinComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -41,8 +48,11 @@ import io.jmix.core.security.UserRepository;
 import io.jmix.flowui.Dialogs;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
+import io.jmix.flowui.action.DialogAction;
 import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.model.DataContext;
@@ -123,8 +133,8 @@ import java.util.stream.Collectors;
     protected ComboBox<String> userField;
     @ViewComponent
     protected ComboBox<String> filterEntityNameField;
-//    @Autowired
-//    protected EntityPicker<Object> instancePicker;
+    @ViewComponent
+    protected ValuePicker<String> instancePicker;
     @ViewComponent
     protected DataGrid<EntityLogItem> entityLogTable;
     @ViewComponent
@@ -138,7 +148,7 @@ import java.util.stream.Collectors;
     @ViewComponent
     protected VerticalLayout actionsPaneLayout;
     @ViewComponent
-    protected Scroller attributesBoxScroll;
+    protected VerticalLayout attributesBoxScroll;
     @ViewComponent
     protected DateTimePicker tillDateField;
     @ViewComponent
@@ -147,7 +157,7 @@ import java.util.stream.Collectors;
     protected Button cancelBtn;
     @ViewComponent
     protected Checkbox selectAllCheckBox;
-    @ViewComponent
+    @Autowired
     protected UserRepository userRepository;
     @ViewComponent
     protected MessageTools messageTools;
@@ -204,19 +214,24 @@ import java.util.stream.Collectors;
         entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setItems(entityMetaClassesMap.keySet());
         changeTypeField.setItems(changeTypeMap.keySet());
+        userField.setAutoOpen(true);
+        userField.addCustomValueSetListener(new ComponentEventListener<GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>>() {
+            @Override
+            public void onComponentEvent(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>> comboBoxCustomValueSetEvent) {
+                String value = comboBoxCustomValueSetEvent.getDetail();
+                List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
+                comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
+                        .map(UserDetails::getUsername)
+                        .collect(Collectors.toList()));
+            }
+        });
 
-//        userField.setItems((searchString, searchParams) -> {
-//            List<? extends UserDetails> users = userRepository.getByUsernameLike(searchString);
-//            return users.stream()
-//                    .map(UserDetails::getUsername)
-//                    .collect(Collectors.toList());
-//        });
-//        filterEntityNameField.setOptionsMap(entityMetaClassesMap);
+        filterEntityNameField.setItems(entityMetaClassesMap.keySet());
 
         disableControls();
         setDateFieldTime();
 
-//        instancePicker.setEnabled(false);
+        instancePicker.setEnabled(false);
 
         entityNameField.addValueChangeListener(e -> {
             if (entityNameField.isEnabled())
@@ -234,22 +249,22 @@ import java.util.stream.Collectors;
                 clearAttributes();
             }
         });
-//
-//        filterEntityNameField.addValueChangeListener(e -> {
-//            if (e.getValue() != null) {
-//                instancePicker.setEnabled(true);
-//                MetaClass metaClass = metadata.getSession().getClass(e.getValue());
-//                instancePicker.setMetaClass(metaClass);
-//            } else {
-//                instancePicker.setEnabled(false);
-//            }
-//            instancePicker.setValue(null);
-//        });
-//        selectAllCheckBox.addValueChangeListener(e -> {
-//            if (e.getValue() != null) {
-//                enableAllCheckBoxes(e.getValue());
-//            }
-//        });
+
+        filterEntityNameField.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                instancePicker.setEnabled(true);
+                MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(e.getValue()));
+                instancePicker.setValue(metaClass.getName());
+            } else {
+                instancePicker.setEnabled(false);
+            }
+            instancePicker.setValue(null);
+        });
+        selectAllCheckBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                enableAllCheckBoxes(e.getValue());
+            }
+        });
     }
 
 //    @Install(to = "entityLogTable.entityId", subject = "columnGenerator")
@@ -350,15 +365,15 @@ import java.util.stream.Collectors;
     }
 
 //    @Subscribe("instancePicker.lookup")
-//    public void onInstancePickerLookup(Action.ActionPerformedEvent event) {
-//        final MetaClass metaClass = instancePicker.getMetaClass();
-//        if (instancePicker.isEditable()) {
+//    public void onInstancePickerLookup(ActionPerformedEvent event) {
+//        final MetaClass metaClass = metadata.getSession().getClass(instancePicker.getValue());
+//        if (instancePicker.isEnabled()) {
 //            if (metaClass == null) {
 //                throw new IllegalStateException("Please specify metaclass or property for PickerField");
 //            }
 //            if (!secureOperations.isEntityReadPermitted(metaClass, policyStore)) {
-//                notifications.create(Notifications.NotificationType.ERROR)
-//                        .withCaption(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
+//                notifications.create(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
+//                        .withType(Notifications.Type.ERROR)
 //                        .show();
 //                return;
 //            }
@@ -375,32 +390,14 @@ import java.util.stream.Collectors;
 //                lookup.addAfterCloseListener(afterCloseEvent -> instancePicker.focus());
 //                lookup.show();
 //            } catch (AccessDeniedException ex) {
-//                notifications.create(Notifications.NotificationType.ERROR)
-//                        .withCaption(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
+//                notifications.create(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
+//                        .withType(Notifications.Type.ERROR)
 //                        .show();
 //                return;
 //            }
 //        }
 //    }
-//    @Subscribe("loggedEntityTable.create")
-//    private void onLoggedEntityTableCreate(ActionPerformedEvent event) {
-//
-//    }
-//
-//    @Subscribe("loggedEntityTable.edit")
-//    private void onLoggedEntityTableEdit(ActionPerformedEvent event) {
-//
-//    }
-//
-//    @Subscribe("loggedEntityTable.remove")
-//    private void onLoggedEntityTableRemove(ActionPerformedEvent event) {
-//
-//    }
-//
-//    @Subscribe("loggedEntityTable.reload")
-//    private void onLoggedEntityTableReload(ActionPerformedEvent event) {
-//
-//    }
+
 
     public TreeMap<String, String> getEntityMetaClasses() {
         TreeMap<String, String> options = new TreeMap<>();
@@ -420,22 +417,22 @@ import java.util.stream.Collectors;
         return options;
     }
 
-//    protected void enableControls() {
-//        loggedEntityTable.setEnabled(false);
-//        entityNameField.setEditable(true);
-//        autoCheckBox.setEditable(true);
-//        manualCheckBox.setEditable(true);
-//        for (Component c : attributesBoxScroll.getComponents())
-//            ((CheckBox) c).setEditable(true);
-//        actionsPaneLayout.setVisible(true);
-//    }
+    protected void enableControls() {
+        loggedEntityTable.setEnabled(false);
+        entityNameField.setEnabled(true);
+        autoCheckBox.setEnabled(true);
+        manualCheckBox.setEnabled(true);
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+            ((Checkbox) c).setEnabled(true);
+        actionsPaneLayout.setVisible(true);
+    }
 
     protected void disableControls() {
         entityNameField.setEnabled(false);
         loggedEntityTable.setEnabled(true);
         autoCheckBox.setEnabled(false);
         manualCheckBox.setEnabled(false);
-        for (Component c : attributesBoxScroll.getContent().getChildren().collect(Collectors.toList()))
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
             ((Checkbox) c).setEnabled(false);
         actionsPaneLayout.setVisible(false);
     }
@@ -446,7 +443,7 @@ import java.util.stream.Collectors;
 
         if (metaClassName != null) {
             MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
-                    metadata.getClass(metaClassName));
+                    metadata.getClass(getEntityMetaClasses().get(metaClassName)));
             List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
             selectAllCheckBox.setEnabled(editable);
             Set<LoggedAttribute> enabledAttr = null;
@@ -489,18 +486,19 @@ import java.util.stream.Collectors;
         checkBox.setEnabled(editable);
         checkBox.addValueChangeListener(e -> checkAllCheckboxes());
 
-//        attributesBoxScroll.add(checkBox);
+        attributesBoxScroll.addAndExpand(checkBox);
     }
 
-//    protected void enableAllCheckBoxes(boolean b) {
-//        if (canSelectAllCheckboxGenerateEvents) {
-//            for (Component box : attributesBoxScroll.getComponents())
-//                ((CheckBox) box).setValue(b);
-//        }
-//    }
+    protected void enableAllCheckBoxes(boolean b) {
+        if (canSelectAllCheckboxGenerateEvents) {
+            for (Component box : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+                ((Checkbox) box).setValue(b);
+        }
+    }
 
     protected void checkAllCheckboxes() {
-//        Checkbox selectAllCheckBox = (Checkbox) attributesBoxScroll.getOwnComponent(SELECT_ALL_CHECK_BOX);
+        Checkbox selectAllCheckBox = (Checkbox) attributesBoxScroll.getChildren().
+                filter(e->e.getId().equals(SELECT_ALL_CHECK_BOX)).findFirst().orElse(null);
         if (selectAllCheckBox != null) {
             for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
                 if (!c.equals(selectAllCheckBox)) {
@@ -535,13 +533,15 @@ import java.util.stream.Collectors;
         tillDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, 1).toInstant(),
                 ZoneId.systemDefault()));
     }
-//
+
     public void clearAttributes() {
-        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
-            if (!SELECT_ALL_CHECK_BOX.equals(c.getId())) {}
-//                attributesBoxScroll.remove(c);
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+            if (!SELECT_ALL_CHECK_BOX.equals(c.getId())) {
+                attributesBoxScroll.remove(c);
+            }
+        }
     }
-//
+
     public boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
         if (enabledAttr != null && (metaClass.findProperty(propertyName) == null || !metadataTools.isSystem(metaClass.getProperty(propertyName)))) {
             for (LoggedAttribute logAttr : enabledAttr)
@@ -550,105 +550,105 @@ import java.util.stream.Collectors;
         }
         return false;
     }
-//
-//    public LoggedAttribute getLoggedAttribute(String name, Set<LoggedAttribute> enabledAttr) {
-//        for (LoggedAttribute atr : enabledAttr)
-//            if (atr.getName().equals(name))
-//                return atr;
-//        return null;
-//    }
-//
-//    @Subscribe("loggedEntityTable.create")
-//    public void onLoggedEntityTableCreate(Action.ActionPerformedEvent event) {
-//        LoggedEntity entity = metadata.create(LoggedEntity.class);
-//        entity.setAuto(false);
-//        entity.setManual(false);
-//        setSelectAllCheckBox(false);
-//        loggedEntityDc.getMutableItems().add(entity);
-//        loggedEntityTable.setEditable(true);
-//        loggedEntityTable.setSelected(entity);
-//
-//        enableControls();
-//
-//        entityNameField.setEditable(true);
-//        entityNameField.focus();
-//    }
-//
-//    @Subscribe("loggedEntityTable.edit")
-//    public void onLoggedEntityTableEdit(Action.ActionPerformedEvent event) {
-//        enableControls();
-//
-//        loggedEntityTable.setEnabled(false);
-//        cancelBtn.focus();
-//    }
-//
-//    @Subscribe("searchBtn")
-//    public void onSearchBtnClick(Button.ClickEvent event) {
-//        Object entity = instancePicker.getValue();
-//        if (entity != null) {
-//            Object entityId = referenceToEntitySupport.getReferenceId(entity);
-//            if (entityId instanceof UUID) {
-//                entityLogDl.setParameter("entityId", entityId);
-//            } else if (entityId instanceof String) {
-//                entityLogDl.setParameter("stringEntityId", entityId);
-//            } else if (entityId instanceof Integer) {
-//                entityLogDl.setParameter("intEntityId", entityId);
-//            } else if (entityId instanceof Long) {
-//                entityLogDl.setParameter("longEntityId", entityId);
-//            }
-//        } else {
-//            entityLogDl.removeParameter("entityId");
-//            entityLogDl.removeParameter("stringEntityId");
-//            entityLogDl.removeParameter("intEntityId");
-//            entityLogDl.removeParameter("longEntityId");
-//        }
-//        if (userField.getValue() != null) {
-//            entityLogDl.setParameter("user", userField.getValue());
-//        } else {
-//            entityLogDl.removeParameter("user");
-//        }
-//        if (changeTypeField.getValue() != null) {
-//            entityLogDl.setParameter("changeType", changeTypeField.getValue());
-//        } else {
-//            entityLogDl.removeParameter("changeType");
-//        }
-//        if (filterEntityNameField.getValue() != null) {
-//            entityLogDl.setParameter("entityName", filterEntityNameField.getValue());
-//        } else {
-//            entityLogDl.removeParameter("entityName");
-//        }
-//        if (fromDateField.getValue() != null) {
-//            entityLogDl.setParameter("fromDate", fromDateField.getValue());
-//        } else {
-//            entityLogDl.removeParameter("fromDate");
-//        }
-//        if (tillDateField.getValue() != null) {
-//            entityLogDl.setParameter("tillDate", tillDateField.getValue());
-//        } else {
-//            entityLogDl.removeParameter("tillDate");
-//        }
-//        entityLogDl.load();
-//    }
-//
-//    @Subscribe("clearEntityLogTableBtn")
-//    public void onClearEntityLogTableBtnClick(Button.ClickEvent event) {
-//        userField.setValue(null);
-//        filterEntityNameField.setValue(null);
-//        changeTypeField.setValue(null);
-//        instancePicker.setValue(null);
-//        fromDateField.setValue(null);
-//        tillDateField.setValue(null);
-//    }
-//
-//    @Subscribe("reloadBtn")
-//    public void onReloadBtnClick(Button.ClickEvent event) {
-//        entityLog.invalidateCache();
-//        notifications.create()
-//                .withCaption(messages.getMessage(EntityLogView.class, "changesApplied"))
-//                .withType(Notifications.NotificationType.HUMANIZED)
-//                .show();
-//    }
-//
+
+    public LoggedAttribute getLoggedAttribute(String name, Set<LoggedAttribute> enabledAttr) {
+        for (LoggedAttribute atr : enabledAttr)
+            if (atr.getName().equals(name))
+                return atr;
+        return null;
+    }
+
+    @Subscribe("loggedEntityTable.create")
+    public void onLoggedEntityTableCreate(ActionPerformedEvent event) {
+        LoggedEntity entity = metadata.create(LoggedEntity.class);
+        entity.setAuto(false);
+        entity.setManual(false);
+        setSelectAllCheckBox(false);
+        loggedEntityDc.getMutableItems().add(entity);
+        loggedEntityTable.setEnabled(true);
+        loggedEntityTable.select(entity);
+
+        enableControls();
+
+        entityNameField.setEnabled(true);
+        entityNameField.focus();
+    }
+
+    @Subscribe("loggedEntityTable.edit")
+    public void onLoggedEntityTableEdit(ActionPerformedEvent event) {
+        enableControls();
+
+        loggedEntityTable.setEnabled(false);
+        cancelBtn.focus();
+    }
+
+    @Subscribe("searchBtn")
+    public void onSearchBtnClick(ClickEvent<Button> event) {
+        Object entity = instancePicker.getValue();
+
+        if (entity != null) {
+            Object entityId = referenceToEntitySupport.getReferenceId(entity);
+            if (entityId instanceof UUID) {
+                entityLogDl.setParameter("entityId", entityId);
+            } else if (entityId instanceof String) {
+                entityLogDl.setParameter("stringEntityId", entityId);
+            } else if (entityId instanceof Integer) {
+                entityLogDl.setParameter("intEntityId", entityId);
+            } else if (entityId instanceof Long) {
+                entityLogDl.setParameter("longEntityId", entityId);
+            }
+        } else {
+            entityLogDl.removeParameter("entityId");
+            entityLogDl.removeParameter("stringEntityId");
+            entityLogDl.removeParameter("intEntityId");
+            entityLogDl.removeParameter("longEntityId");
+        }
+        if (userField.getValue() != null) {
+            entityLogDl.setParameter("user", userField.getValue());
+        } else {
+            entityLogDl.removeParameter("user");
+        }
+        if (changeTypeField.getValue() != null) {
+            entityLogDl.setParameter("changeType", changeTypeField.getValue());
+        } else {
+            entityLogDl.removeParameter("changeType");
+        }
+        if (filterEntityNameField.getValue() != null) {
+            entityLogDl.setParameter("entityName", filterEntityNameField.getValue());
+        } else {
+            entityLogDl.removeParameter("entityName");
+        }
+        if (fromDateField.getValue() != null) {
+            entityLogDl.setParameter("fromDate", fromDateField.getValue());
+        } else {
+            entityLogDl.removeParameter("fromDate");
+        }
+        if (tillDateField.getValue() != null) {
+            entityLogDl.setParameter("tillDate", tillDateField.getValue());
+        } else {
+            entityLogDl.removeParameter("tillDate");
+        }
+        entityLogDl.load();
+    }
+
+    @Subscribe("clearEntityLogTableBtn")
+    public void onClearEntityLogTableBtnClick(ClickEvent<Button> event) {
+        userField.setValue(null);
+        filterEntityNameField.setValue(null);
+        changeTypeField.setValue(null);
+        instancePicker.setValue(null);
+        fromDateField.setValue(null);
+        tillDateField.setValue(null);
+    }
+
+    @Subscribe("reloadBtn")
+    public void onReloadBtnClick(ClickEvent<Button> event) {
+        entityLog.invalidateCache();
+        notifications.create(messages.getMessage(EntityLogView.class, "changesApplied"))
+                .withType(Notifications.Type.DEFAULT)
+                .show();
+    }
+
     protected boolean allowLogProperty(MetaProperty metaProperty /*, CategoryAttribute categoryAttribute*/) {
         if (metadataTools.isSystem(metaProperty)
                 //log system property tenantId
@@ -670,75 +670,80 @@ import java.util.stream.Collectors;
 //        }
         return true;
     }
+
+    private DataContext getDataContext() {
+        return getViewData().getDataContext();
+    }
+
+    @Subscribe("saveBtn")
+    protected void onSaveBtnClick(ClickEvent<Button> event) {
+        LoggedEntity selectedEntity = loggedEntityTable.getSingleSelectedItem();
+        DataContext dataContext = getDataContext();
+        selectedEntity = dataContext.merge(selectedEntity);
+        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
+        Map<String, String> entityMetaClasses = getEntityMetaClasses();
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+            Checkbox currentCheckBox = (Checkbox) c;
+            if (SELECT_ALL_CHECK_BOX.equals(currentCheckBox.getId()))
+                continue;
+            Boolean currentCheckBoxValue = currentCheckBox.getValue();
+            MetaClass metaClass = metadata.getSession().getClass(entityMetaClasses.get(entityNameField.getValue()));
+            if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+                //add attribute if checked and not exist in table
+                LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
+                newLoggedAttribute.setName(currentCheckBox.getId().orElse(""));
+                newLoggedAttribute.setEntity(selectedEntity);
+            }
+            if (!currentCheckBoxValue && isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+                //remove attribute if unchecked and exist in table
+                LoggedAttribute removeAtr = getLoggedAttribute(currentCheckBox.getId().orElse(null), enabledAttributes);
+                if (removeAtr != null)
+                    dataContext.remove(removeAtr);
+            }
+        }
+        dataContext.commit();
+
+        loggedEntityDl.load();
+        disableControls();
+        loggedEntityTable.setEnabled(true);
+        loggedEntityTable.focus();
+
+        entityLog.invalidateCache();
+    }
 //
-//    @Subscribe("saveBtn")
-//    protected void onSaveBtnClick(Button.ClickEvent event) {
-//        LoggedEntity selectedEntity = loggedEntityTable.getSelected().iterator().next();
-//        selectedEntity = dataContext.merge(selectedEntity);
-//        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
-//        for (Component c : attributesBoxScroll.getComponents()) {
-//            CheckBox currentCheckBox = (CheckBox) c;
-//            if (SELECT_ALL_CHECK_BOX.equals(currentCheckBox.getId()))
-//                continue;
-//            Boolean currentCheckBoxValue = currentCheckBox.getValue();
-//            MetaClass metaClass = metadata.getClass(selectedEntity.getName());
-//            if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId(), metaClass, enabledAttributes)) {
-//                //add attribute if checked and not exist in table
-//                LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
-//                newLoggedAttribute.setName(currentCheckBox.getId());
-//                newLoggedAttribute.setEntity(selectedEntity);
-//            }
-//            if (!currentCheckBoxValue && isEntityHaveAttribute(currentCheckBox.getId(), metaClass, enabledAttributes)) {
-//                //remove attribute if unchecked and exist in table
-//                LoggedAttribute removeAtr = getLoggedAttribute(currentCheckBox.getId(), enabledAttributes);
-//                if (removeAtr != null)
-//                    dataContext.remove(removeAtr);
-//            }
-//        }
-//        dataContext.commit();
-//
-//        loggedEntityDl.load();
-//        disableControls();
-//        loggedEntityTable.setEnabled(true);
-//        loggedEntityTable.focus();
-//
-//        entityLog.invalidateCache();
-//    }
-//
-//    @Subscribe("removeBtn")
-//    protected void onRemoveBtnClick(Button.ClickEvent event) {
-//        Set<LoggedEntity> selectedItems = loggedEntityTable.getSelected();
-//        if (!selectedItems.isEmpty()) {
-//            dialogs.createOptionDialog()
-//                    .withCaption(messages.getMessage("dialogs.Confirmation"))
-//                    .withMessage(messages.getMessage("dialogs.Confirmation.Remove"))
-//                    .withActions(
-//                            new DialogAction(DialogAction.Type.YES).withHandler(e -> {
-//                                for (LoggedEntity item : selectedItems) {
-//                                    if (item.getAttributes() != null) {
-//                                        Set<LoggedAttribute> attributes = new HashSet<>(item.getAttributes());
-//                                        for (LoggedAttribute attribute : attributes) {
-//                                            dataContext.remove(attribute);
-//                                        }
-//                                        dataContext.commit();
-//                                    }
-//                                    dataContext.remove(item);
-//                                    dataContext.commit();
-//                                }
-//                                loggedEntityDc.getMutableItems().removeAll(selectedItems);
-//                                entityLog.invalidateCache();
-//                            }),
-//                            new DialogAction(DialogAction.Type.NO)
-//                    )
-//                    .show();
-//        }
-//    }
-//
-//    @Subscribe("cancelBtn")
-//    protected void onCancelBtnClick(Button.ClickEvent event) {
-//        loggedEntityDl.load();
-//        disableControls();
-//        loggedEntityTable.setEnabled(true);
-//        loggedEntityTable.focus();
-//    }
+    @Subscribe("removeBtn")
+    protected void onRemoveBtnClick(ClickEvent<Button> event) {
+        Set<LoggedEntity> selectedItems = loggedEntityTable.getSelectedItems();
+        if (!selectedItems.isEmpty()) {
+            dialogs.createOptionDialog().withHeader(messages.getMessage("dialogs.Confirmation"))
+                    .withText(messages.getMessage("dialogs.Confirmation.Remove"))
+                    .withActions(
+                            new DialogAction(DialogAction.Type.YES).withHandler(e -> {
+                                DataContext dataContext = getDataContext();
+                                for (LoggedEntity item : selectedItems) {
+                                    if (item.getAttributes() != null) {
+                                        Set<LoggedAttribute> attributes = new HashSet<>(item.getAttributes());
+                                        for (LoggedAttribute attribute : attributes) {
+                                            dataContext.remove(attribute);
+                                        }
+                                        dataContext.commit();
+                                    }
+                                    dataContext.remove(item);
+                                    dataContext.commit();
+                                }
+                                loggedEntityDc.getMutableItems().removeAll(selectedItems);
+                                entityLog.invalidateCache();
+                            }),
+                            new DialogAction(DialogAction.Type.NO)
+                    );
+        }
+    }
+
+    @Subscribe("cancelBtn")
+    protected void onCancelBtnClick(ClickEvent<Button> event) {
+        loggedEntityDl.load();
+        disableControls();
+        loggedEntityTable.setEnabled(true);
+        loggedEntityTable.focus();
+    }
 }
