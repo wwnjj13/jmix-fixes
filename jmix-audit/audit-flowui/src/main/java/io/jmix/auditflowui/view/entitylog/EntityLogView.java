@@ -26,11 +26,14 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.GeneratedVaadinComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.data.selection.SelectionEvent;
+import com.vaadin.flow.data.selection.SelectionListener;
 import com.vaadin.flow.router.Route;
 import io.jmix.audit.EntityLog;
 import io.jmix.audit.entity.EntityLogAttr;
@@ -86,7 +89,7 @@ import java.util.stream.Collectors;
 @ViewDescriptor("entity-log-browser.xml")
 @LookupComponent("entityLogTable")
 @DialogMode(width = "50em", height = "37.5em")
-    public class EntityLogView extends StandardListView<EntityLogItem> {
+public class EntityLogView extends StandardListView<EntityLogItem> {
 
     protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
 
@@ -123,6 +126,8 @@ import java.util.stream.Collectors;
     protected CollectionLoader<EntityLogItem> entityLogDl;
     @ViewComponent
     protected CollectionContainer<LoggedAttribute> loggedAttrDc;
+    @ViewComponent
+    protected CollectionContainer<EntityLogItem> entityLogDc;
     @ViewComponent
     protected CollectionLoader<LoggedAttribute> loggedAttrDl;
     @ViewComponent
@@ -237,7 +242,23 @@ import java.util.stream.Collectors;
             if (entityNameField.isEnabled())
                 fillAttributes(e.getValue(), null, true);
         });
+        loggedEntityTable.addSelectionListener(new SelectionListener<Grid<LoggedEntity>, LoggedEntity>() {
+            @Override
+            public void selectionChange(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event) {
+                LoggedEntity entity = event.getFirstSelectedItem().orElse(null);
+                if (entity != null) {
+                    loggedAttrDl.setParameter("entityId", entity.getId());
+                    loggedAttrDl.load();
+                    loggedEntityDc.setItem(entity);
+                    fillAttributes(entity.getName(), entity, false);
+                    checkAllCheckboxes();
+                } else {
+                    setSelectAllCheckBox(false);
+                    clearAttributes();
+                }
 
+            }
+        });
         loggedEntityDc.addItemChangeListener(e -> {
             if (e.getItem() != null) {
                 loggedAttrDl.setParameter("entityId", e.getItem().getId());
@@ -265,6 +286,39 @@ import java.util.stream.Collectors;
                 enableAllCheckBoxes(e.getValue());
             }
         });
+
+        entityLogTable.addColumn(entityLogItem -> {
+            if (entityLogItem.getEntityRef().getObjectEntityId() != null) {
+                return entityLogItem.getEntityRef().getObjectEntityId().toString();
+            }
+            return null;
+        }).setHeader(messages.getMessage(this.getClass(), "entityId"));
+
+        entityLogTable.addColumn(entityLogItem -> {
+            String entityName = evaluateEntityLogItemDisplayedEntityName(entityLogItem);
+            if (entityName != null) {
+                return entityName;
+            }
+            return null;
+        }).setHeader(messages.getMessage(this.getClass(), "entityInstanceName"));
+
+        entityLogAttrTable.addColumn(entityLogAttr -> {
+            String entityName = entityLogAttr.getLogItem().getEntity();
+            MetaClass metaClass = getClassFromEntityName(entityName);
+            if (metaClass != null) {
+                return messageTools.getPropertyCaption(metaClass, entityLogAttr.getName());
+            } else {
+                return entityLogAttr.getName();
+            }
+        });
+
+        entityLogAttrTable.addColumn(entityLogAttr ->
+                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue()));
+
+        entityLogAttrTable.addColumn(entityLogAttr ->
+                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()));
+
+
     }
 
 //    @Install(to = "entityLogTable.entityId", subject = "columnGenerator")
@@ -565,6 +619,7 @@ import java.util.stream.Collectors;
         entity.setManual(false);
         setSelectAllCheckBox(false);
         loggedEntityDc.getMutableItems().add(entity);
+        loggedEntityDc.setItem(entity);
         loggedEntityTable.setEnabled(true);
         loggedEntityTable.select(entity);
 
@@ -619,12 +674,14 @@ import java.util.stream.Collectors;
             entityLogDl.removeParameter("entityName");
         }
         if (fromDateField.getValue() != null) {
-            entityLogDl.setParameter("fromDate", fromDateField.getValue());
+            entityLogDl.setParameter("fromDate",
+                    Date.from(fromDateField.getValue().atZone(ZoneId.systemDefault()).toInstant()));
         } else {
             entityLogDl.removeParameter("fromDate");
         }
         if (tillDateField.getValue() != null) {
-            entityLogDl.setParameter("tillDate", tillDateField.getValue());
+            entityLogDl.setParameter("tillDate",
+                    Date.from(tillDateField.getValue().atZone(ZoneId.systemDefault()).toInstant()));
         } else {
             entityLogDl.removeParameter("tillDate");
         }
@@ -677,6 +734,7 @@ import java.util.stream.Collectors;
 
     @Subscribe("saveBtn")
     protected void onSaveBtnClick(ClickEvent<Button> event) {
+//        LoggedEntity selectedEntity = loggedEntityDc.getItem();
         LoggedEntity selectedEntity = loggedEntityTable.getSingleSelectedItem();
         DataContext dataContext = getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);

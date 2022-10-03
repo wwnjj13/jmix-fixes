@@ -111,7 +111,7 @@
                 <button id="clearEntityLogTableBtn" width="${buttonWidth}" text="msg://clear"/>
 
             </formLayout>
-            <split id="split1" orientation="HORIZONTAL" height="100%" width="100%">
+            <hbox id="split1"  height="100%" width="100%"> <!-- orientation="HORIZONTAL" -->
                 <vbox id="entityLogTableBox"
                       expand="entityLogTable"
                       spacing="true"
@@ -123,8 +123,8 @@
                             <column property="username"/>
                             <column property="type" />
                             <column property="entity" />
-                            <column property="entityRef.entityId" />
-                            <column property="entityInstanceName"/>
+<!--                            <column property="entityRef.entityId" />-->
+<!--                            <column property="entityInstanceName"/>-->
                         </columns>
 <!--                        <simplePagination/>-->
                     </dataGrid>
@@ -133,15 +133,15 @@
                       spacing="true">
                     <dataGrid id="entityLogAttrTable" width="100%" height="100%" dataContainer="entityLogAttrDc">
                         <columns>
-                            <column property="name"/>
-                            <column property="value"/>
+<!--                            <column property="name"/>-->
+<!--                            <column property="value"/>-->
                             <column property="valueId"/>
-                            <column property="oldValue"/>
+<!--                            <column property="oldValue"/>-->
                             <column property="oldValueId"/>
                         </columns>
                     </dataGrid>
                 </vbox>
-            </split>
+            </hbox>
         </vbox>
 
             <vbox id="setupWrapper" width="100%" height="100%">
@@ -182,8 +182,11 @@
                         <vbox id="attributesBox" width="100%"
                                   expand="attributesBoxScroll">
                             <span text="msg://attributes"/>
-                            <vbox id="attributesBoxScroll"  width="100%">
+                            <vbox>
                                 <checkbox id="selectAllCheckBox" label="msg://[all]"/>
+                            </vbox>
+                            <vbox id="attributesBoxScroll"  width="100%">
+
                             </vbox>
                         </vbox>
 
