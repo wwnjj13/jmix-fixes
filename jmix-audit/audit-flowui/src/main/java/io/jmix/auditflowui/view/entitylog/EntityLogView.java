@@ -176,7 +176,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
 
     protected TreeMap<String, String> entityMetaClassesMap;
-
+    protected Map<String, Object> changeTypeMap;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
     protected boolean canSelectAllCheckboxGenerateEvents = true;
@@ -210,7 +210,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         loggedEntityDl.load();
 
-        Map<String, Object> changeTypeMap = new LinkedHashMap<>();
+        changeTypeMap = new LinkedHashMap<>();
         changeTypeMap.put(messages.getMessage(EntityLogView.class, "createField"), "C");
         changeTypeMap.put(messages.getMessage(EntityLogView.class, "modifyField"), "M");
         changeTypeMap.put(messages.getMessage(EntityLogView.class, "deleteField"), "D");
@@ -218,17 +218,16 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setItems(entityMetaClassesMap.values());
-        changeTypeField.setItems(changeTypeMap.values());
+        changeTypeField.setItems(changeTypeMap.keySet());
         userField.setAutoOpen(true);
-        userField.addCustomValueSetListener(new ComponentEventListener<GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>>() {
-            @Override
-            public void onComponentEvent(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>> comboBoxCustomValueSetEvent) {
-                String value = comboBoxCustomValueSetEvent.getDetail();
-                List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
-                comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
-                        .map(UserDetails::getUsername)
-                        .collect(Collectors.toList()));
-            }
+        userField.addCustomValueSetListener((
+                ComponentEventListener<GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>>)
+                comboBoxCustomValueSetEvent -> {
+            String value = comboBoxCustomValueSetEvent.getDetail();
+            List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
+            comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
+                    .map(UserDetails::getUsername)
+                    .collect(Collectors.toList()));
         });
 
         filterEntityNameField.setItems(entityMetaClassesMap.keySet());
@@ -496,8 +495,10 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         setSelectAllCheckBox(false);
 
         if (metaClassName != null) {
+//            String metaClassName1 = this.entityMetaClassesMap.entrySet().stream().filter(e->e.getValue().equals(metaClassName)).findFirst()
+//                    .get().getKey();
             MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
-                    metadata.getClass(getEntityMetaClasses().get(metaClassName)));
+                    metadata.getClass(metaClassName));
             List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
             selectAllCheckBox.setEnabled(editable);
             Set<LoggedAttribute> enabledAttr = null;
@@ -664,12 +665,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             entityLogDl.removeParameter("user");
         }
         if (changeTypeField.getValue() != null) {
-            entityLogDl.setParameter("changeType", changeTypeField.getValue());
+            entityLogDl.setParameter("changeType", changeTypeMap.get(changeTypeField.getValue()));
         } else {
             entityLogDl.removeParameter("changeType");
         }
         if (filterEntityNameField.getValue() != null) {
-            entityLogDl.setParameter("entityName", filterEntityNameField.getValue());
+            entityLogDl.setParameter("entityName", entityMetaClassesMap.get(filterEntityNameField.getValue()));
         } else {
             entityLogDl.removeParameter("entityName");
         }
@@ -745,7 +746,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             if (SELECT_ALL_CHECK_BOX.equals(currentCheckBox.getId()))
                 continue;
             Boolean currentCheckBoxValue = currentCheckBox.getValue();
-            MetaClass metaClass = metadata.getSession().getClass(entityMetaClasses.get(entityNameField.getValue()));
+            MetaClass metaClass = metadata.getSession().getClass(entityNameField.getValue());
             if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
                 //add attribute if checked and not exist in table
                 LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
@@ -768,7 +769,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         entityLog.invalidateCache();
     }
-//
+
     @Subscribe("removeBtn")
     protected void onRemoveBtnClick(ClickEvent<Button> event) {
         Set<LoggedEntity> selectedItems = loggedEntityTable.getSelectedItems();

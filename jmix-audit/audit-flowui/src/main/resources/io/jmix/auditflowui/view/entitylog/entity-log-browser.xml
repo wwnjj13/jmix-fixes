@@ -71,7 +71,12 @@
                     </condition>
                 </query>
             </loader>
-            <collection id="entityLogAttrDc" property="attributes"/>
+<!--            <collection id="entityLogAttrDc" property="attributes"/>-->
+        </collection>
+        <collection id="entityLogAttrDc" fetchPlan="_local">
+            <loader id="entityLogAttrDl">
+                <query>select a from audit_LoggedAttribute a where a.entity.id = :entityId</query>
+            </loader>
         </collection>
     </data>
 
@@ -137,7 +142,7 @@
 <!--                            <column property="value"/>-->
                             <column property="valueId"/>
 <!--                            <column property="oldValue"/>-->
-                            <column property="oldValueId"/>
+<!--                            <column property="oldValueId"/>-->
                         </columns>
                     </dataGrid>
                 </vbox>
