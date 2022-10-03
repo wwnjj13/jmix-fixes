@@ -164,7 +164,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected Checkbox selectAllCheckBox;
     @Autowired
     protected UserRepository userRepository;
-    @ViewComponent
+    @Autowired
     protected MessageTools messageTools;
 
     @ViewComponent
@@ -217,8 +217,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         changeTypeMap.put(messages.getMessage(EntityLogView.class, "restoreField"), "R");
 
         entityMetaClassesMap = getEntityMetaClasses();
-        entityNameField.setItems(entityMetaClassesMap.keySet());
-        changeTypeField.setItems(changeTypeMap.keySet());
+        entityNameField.setItems(entityMetaClassesMap.values());
+        changeTypeField.setItems(changeTypeMap.values());
         userField.setAutoOpen(true);
         userField.addCustomValueSetListener(new ComponentEventListener<GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>>() {
             @Override
