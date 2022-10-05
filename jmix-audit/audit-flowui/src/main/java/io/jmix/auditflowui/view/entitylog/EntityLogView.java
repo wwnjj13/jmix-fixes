@@ -55,6 +55,7 @@ import io.jmix.flowui.action.DialogAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.kit.action.ActionVariant;
 import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
@@ -504,8 +505,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         setSelectAllCheckBox(false);
 
         if (metaClassName != null) {
-//            String metaClassName1 = this.entityMetaClassesMap.entrySet().stream().filter(e->e.getValue().equals(metaClassName)).findFirst()
-//                    .get().getKey();
             MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
                     metadata.getClass(metaClassName));
             List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
@@ -769,7 +768,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                     dataContext.remove(removeAtr);
             }
         }
-        dataContext.commit();
+        dataContext.save();
 
         loggedEntityDl.load();
         disableControls();
@@ -786,7 +785,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             dialogs.createOptionDialog().withHeader(messages.getMessage("dialogs.Confirmation"))
                     .withText(messages.getMessage("dialogs.Confirmation.Remove"))
                     .withActions(
-                            new DialogAction(DialogAction.Type.YES).withHandler(e -> {
+                            new DialogAction(DialogAction.Type.OK).withHandler(e -> {
                                 DataContext dataContext = getDataContext();
                                 for (LoggedEntity item : selectedItems) {
                                     if (item.getAttributes() != null) {
@@ -794,16 +793,16 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                                         for (LoggedAttribute attribute : attributes) {
                                             dataContext.remove(attribute);
                                         }
-                                        dataContext.commit();
+                                        dataContext.save();
                                     }
                                     dataContext.remove(item);
-                                    dataContext.commit();
+                                    dataContext.save();
                                 }
                                 loggedEntityDc.getMutableItems().removeAll(selectedItems);
                                 entityLog.invalidateCache();
-                            }),
+                            }).withVariant(ActionVariant.PRIMARY),
                             new DialogAction(DialogAction.Type.NO)
-                    );
+                    ).open();
         }
     }
 

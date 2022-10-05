@@ -74,6 +74,9 @@
         </collection>
         <collection id="entityLogAttrDc" class="io.jmix.audit.entity.EntityLogAttr" fetchPlan="_local">
         </collection>
+<!--        <instance id="entityInstanceDc" class="java.lang.Object">-->
+<!--            <loader/>-->
+<!--        </instance>-->
     </data>
 
     <layout spacing="true">
@@ -93,14 +96,18 @@
                 <dateTimePicker label="msg://from" minWidth="3em" id="fromDateField" datatype="dateTime"/>
                 <button id="searchBtn" width="${buttonWidth}" text="msg://search"/>
                 <comboBox label="msg://entity" id="filterEntityNameField" width="${fieldWidth}"/>
-                <valuePicker id="instancePicker" label="msg://instance">
-                </valuePicker>
-                <!--                <entityPicker id="instancePicker" dataContainer="" width="${fieldWidth}">-->
-                <!--                    <actions>-->
-                <!--                        <action id="lookup" type="entity_lookup"/>-->
-                <!--                        <action id="clear" type="entity_clear"/>-->
-                <!--                    </actions>-->
-                <!--                </entityPicker>-->
+                <hbox alignItems="END" expand="instancePicker">
+                    <valuePicker id="instancePicker" label="msg://instance">
+                    </valuePicker>
+                    <button icon="ELLIPSIS_DOTS_H"/>
+                    <button icon="CLOSE_SMALL"/>
+                </hbox>
+<!--                <entityPicker id="instancePicker" width="${fieldWidth}">-->
+<!--                    <actions>-->
+<!--                        <action id="lookup" type="entity_lookup"/>-->
+<!--                        <action id="clear" type="entity_clear"/>-->
+<!--                    </actions>-->
+<!--                </entityPicker>-->
                 <dateTimePicker label="msg://till" minWidth="3em" id="tillDateField" datatype="dateTime"/>
                 <button id="clearEntityLogTableBtn" width="${buttonWidth}" text="msg://clear"/>
 
@@ -146,7 +153,7 @@
                         <hbox id="loggedEntityButtonPanel" className="buttons-panel">
                             <button icon="FILE_O" action="loggedEntityTable.create"/>
                             <button icon="PENCIL" action="loggedEntityTable.edit"/>
-                            <button id="removeBtn" action="loggedEntityTable.remove" icon="DEL" text="msg://remove"/>
+                            <button id="removeBtn" icon="CLOSE" text="msg://remove"/>
                             <button id="reloadBtn" icon="CHECK" text="msg://reloadConfiguration"/>
                         </hbox>
                         <dataGrid id="loggedEntityTable" width="100%" height="100%" dataContainer="loggedEntityDc">
