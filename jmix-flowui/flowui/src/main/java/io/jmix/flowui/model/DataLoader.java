@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * The root interface in the <i>data loaders</i> hierarchy. Data loaders are designed to load entity instances and
- * collections from the middle tier to data containers.
+ * collections from DataManager or custom services to data containers.
  *
  * @see InstanceContainer
  * @see CollectionContainer

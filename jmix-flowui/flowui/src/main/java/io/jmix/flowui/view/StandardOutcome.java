@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,25 +24,24 @@ package io.jmix.flowui.view;
  * method to determine how the view was closed.
  *
  * @see #CLOSE
- * @see #COMMIT
+ * @see #SAVE
  * @see #DISCARD
  * @see #SELECT
  */
 public enum StandardOutcome {
 
-    // TODO: gg, extract action id constants
     /**
-     * The view is closed without an explicit commit. However, the view notifies the user if there are unsaved changes.
+     * The view is closed without an explicit save. However, the view notifies the user if there are unsaved changes.
      */
     CLOSE(new StandardCloseAction("close")),
 
     /**
-     * The view is closed after an explicit commit. If the view still contains unsaved changes, the user is notified about it.
+     * The view is closed after an explicit save. If the view still contains unsaved changes, the user is notified about it.
      */
-    COMMIT(new StandardCloseAction("commit")),
+    SAVE(new StandardCloseAction("save")),
 
     /**
-     * The view is closed without an explicit commit and it did not notify the user about unsaved changes.
+     * The view is closed without an explicit save and it did not notify the user about unsaved changes.
      */
     DISCARD(new StandardCloseAction("close", false)),
 

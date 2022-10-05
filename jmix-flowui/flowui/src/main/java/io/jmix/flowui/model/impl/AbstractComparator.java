@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
         } else if (o1 instanceof Comparable && o2 instanceof Comparable) {
             c = ((Comparable) o1).compareTo(o2);
         } else if (o1 instanceof Entity && o2 instanceof Entity) {
-            MetaClass metaClass = metadata.getClass(o1.getClass());
+            MetaClass metaClass = metadata.getClass(o1);
             Collection<MetaProperty> namePatternProperties = metadataTools.getInstanceNameRelatedProperties(metaClass, true);
             if (namePatternProperties.isEmpty()) {
                 String instanceName1 = metadataTools.getInstanceName(o1);

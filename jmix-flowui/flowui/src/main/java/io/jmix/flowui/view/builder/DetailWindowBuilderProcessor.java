@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.jmix.flowui.view.builder;
 
 import com.vaadin.flow.component.Focusable;
@@ -86,11 +102,11 @@ public class DetailWindowBuilderProcessor extends AbstractWindowBuilderProcessor
         }
 
         dialog.addAfterCloseListener(closeEvent -> {
-            if (closeEvent.closedWith(StandardOutcome.COMMIT)) {
-                E entityFromDetail = getCommittedEntity(detailView, parentDataContext);
+            if (closeEvent.closedWith(StandardOutcome.SAVE)) {
+                E entityFromDetail = getSavedEntity(detailView, parentDataContext);
                 E reloadedEntity = transformForCollectionContainer(entityFromDetail, container);
-                E committedEntity = transform(reloadedEntity, builder);
-                E mergedEntity = merge(committedEntity, builder.getOrigin(), parentDataContext);
+                E savedEntity = transform(reloadedEntity, builder);
+                E mergedEntity = merge(savedEntity, builder.getOrigin(), parentDataContext);
 
                 if (builder.getMode() == DetailViewMode.CREATE) {
                     boolean addsFirst = false;
@@ -135,7 +151,7 @@ public class DetailWindowBuilderProcessor extends AbstractWindowBuilderProcessor
                                                                                            DetailWindowBuilder<E, S> builder,
                                                                                            DetailView<E> detailView) {
         return closeEvent -> {
-            if (closeEvent.closedWith(StandardOutcome.COMMIT)) {
+            if (closeEvent.closedWith(StandardOutcome.SAVE)) {
                 E entityFromDetail = detailView.getEditedEntity();
                 E reloadedEntity = transformForField(entityFromDetail, field);
                 E editedEntity = transform(reloadedEntity, builder);
@@ -338,7 +354,7 @@ public class DetailWindowBuilderProcessor extends AbstractWindowBuilderProcessor
         return result;
     }
 
-    protected <E> E getCommittedEntity(DetailView<E> detailView, @Nullable DataContext parentDataContext) {
+    protected <E> E getSavedEntity(DetailView<E> detailView, @Nullable DataContext parentDataContext) {
         E editedEntity = detailView.getEditedEntity();
         if (parentDataContext != null) {
             E trackedEntity = parentDataContext.find(editedEntity);

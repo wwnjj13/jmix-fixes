@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.jmix.flowui.impl;
 
 import com.vaadin.flow.component.Component;
@@ -260,7 +276,7 @@ public class DialogsImpl implements Dialogs {
 
         @Override
         public void open() {
-            DialogAction firstCommitAction = findFirstActionWithType(actions,
+            DialogAction firstOkAction = findFirstActionWithType(actions,
                     EnumSet.of(DialogAction.Type.YES, DialogAction.Type.OK)
             );
             DialogAction firstDeclineAction = findFirstActionWithType(actions,
@@ -286,7 +302,7 @@ public class DialogsImpl implements Dialogs {
                         break;
                 }
 
-                initKeyCombination(firstCommitAction, firstDeclineAction, action, button);
+                initKeyCombination(firstOkAction, firstDeclineAction, action, button);
 
                 if (focusComponent == null) {
                     focusComponent = button;
@@ -302,15 +318,19 @@ public class DialogsImpl implements Dialogs {
             dialog.open();
         }
 
-        protected void initKeyCombination(@Nullable DialogAction firstCommitAction,
+        protected void initKeyCombination(@Nullable DialogAction firstOkAction,
                                           @Nullable DialogAction firstDeclineAction,
                                           Action action, Button button) {
-            if (action == firstCommitAction) {
-                KeyCombination commitShortcut = KeyCombination.create(flowUiViewProperties.getCommitShortcut());
-                button.addClickShortcut(commitShortcut.getKey(), commitShortcut.getKeyModifiers());
+            if (action == firstOkAction) {
+                KeyCombination saveShortcut = KeyCombination.create(flowUiViewProperties.getSaveShortcut());
+                if (saveShortcut != null) {
+                    button.addClickShortcut(saveShortcut.getKey(), saveShortcut.getKeyModifiers());
+                }
             } else if (action == firstDeclineAction) {
                 KeyCombination closeShortcut = KeyCombination.create(flowUiViewProperties.getCloseShortcut());
-                button.addClickShortcut(closeShortcut.getKey(), closeShortcut.getKeyModifiers());
+                if (closeShortcut != null) {
+                    button.addClickShortcut(closeShortcut.getKey(), closeShortcut.getKeyModifiers());
+                }
             }
         }
 
@@ -354,8 +374,10 @@ public class DialogsImpl implements Dialogs {
             DialogAction okAction = new DialogAction(DialogAction.Type.OK);
             okButton = createButton(okAction, dialog);
 
-            KeyCombination commitShortcut = KeyCombination.create(flowUiViewProperties.getCommitShortcut());
-            okButton.addClickShortcut(commitShortcut.getKey(), commitShortcut.getKeyModifiers());
+            KeyCombination saveShortcut = KeyCombination.create(flowUiViewProperties.getSaveShortcut());
+            if (saveShortcut != null) {
+                okButton.addClickShortcut(saveShortcut.getKey(), saveShortcut.getKeyModifiers());
+            }
 
             dialog.getFooter().add(okButton);
         }

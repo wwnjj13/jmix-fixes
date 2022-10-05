@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,4 +60,10 @@ public interface KeyValueContainer extends InstanceContainer<KeyValueEntity> {
      * @return this instance for chaining
      */
     KeyValueContainer addProperty(String name, Datatype<?> datatype);
+
+    /**
+     * Creates new {@code KeyValueEntity} instance initialized with {@code idName} and {@code instanceMetaClass}
+     * defined for the data container.
+     */
+    KeyValueEntity createEntity();
 }

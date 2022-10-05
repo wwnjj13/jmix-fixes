@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package io.jmix.flowui.view;
  * {@link StandardDetailView}, {@link StandardListView}.
  * <p>
  * If its {@link #isCheckForUnsavedChanges()} flag is set to true, the view checks if it contains unsaved changes and asks the
- * user whether to commit or discard them.
+ * user whether to save or discard them.
  */
 public class StandardCloseAction implements CloseAction, ChangeTrackerCloseAction {
 

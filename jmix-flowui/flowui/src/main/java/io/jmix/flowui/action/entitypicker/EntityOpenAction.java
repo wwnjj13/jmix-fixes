@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.jmix.flowui.action.entitypicker;
 
 import com.vaadin.flow.component.HasValue;
@@ -38,7 +54,7 @@ public class EntityOpenAction<E> extends PickerAction<EntityOpenAction<E>, Entit
 
     protected ActionViewInitializer viewInitializer = new ActionViewInitializer();
 
-    protected Consumer<E> afterCommitHandler;
+    protected Consumer<E> afterSaveHandler;
     protected Function<E, E> transformation;
 
     public EntityOpenAction() {
@@ -85,8 +101,8 @@ public class EntityOpenAction<E> extends PickerAction<EntityOpenAction<E>, Entit
         super.setTarget(target);
     }
 
-    public void setAfterCommitHandler(Consumer<E> afterCommitHandler) {
-        this.afterCommitHandler = afterCommitHandler;
+    public void setAfterSaveHandler(Consumer<E> afterSaveHandler) {
+        this.afterSaveHandler = afterSaveHandler;
     }
 
     public void setTransformation(Function<E, E> transformation) {
@@ -185,12 +201,12 @@ public class EntityOpenAction<E> extends PickerAction<EntityOpenAction<E>, Entit
         }
 
         DialogWindow<?> dialogWindow = builder.build();
-        if (afterCommitHandler != null) {
+        if (afterSaveHandler != null) {
             dialogWindow.addAfterCloseListener(event -> {
-                if (event.closedWith(StandardOutcome.COMMIT)
+                if (event.closedWith(StandardOutcome.SAVE)
                         && event.getView() instanceof DetailView) {
-                    E committedEntity = ((DetailView<E>) event.getView()).getEditedEntity();
-                    afterCommitHandler.accept(committedEntity);
+                    E savedEntity = ((DetailView<E>) event.getView()).getEditedEntity();
+                    afterSaveHandler.accept(savedEntity);
                 }
             });
         }
@@ -214,8 +230,8 @@ public class EntityOpenAction<E> extends PickerAction<EntityOpenAction<E>, Entit
         return this;
     }
 
-    public EntityOpenAction<E> withAfterCommitHandler(Consumer<E> afterCommitHandler) {
-        setAfterCommitHandler(afterCommitHandler);
+    public EntityOpenAction<E> withAfterSaveHandler(Consumer<E> afterSaveHandler) {
+        setAfterSaveHandler(afterSaveHandler);
         return this;
     }
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.jmix.flowui.view;
 
 import com.google.common.base.Strings;
@@ -35,7 +51,7 @@ import java.util.function.Consumer;
 public class DialogWindow<S extends View<?>> implements HasSize, HasTheme, HasStyle,
         ApplicationContextAware, InitializingBean {
 
-    protected static final String BASE_STYLE_NAME = "jmix-dialog-window";
+    protected static final String BASE_CLASS_NAME = "jmix-dialog-window";
 
     protected Dialog dialog;
     protected S view;
@@ -91,6 +107,13 @@ public class DialogWindow<S extends View<?>> implements HasSize, HasTheme, HasSt
         dialog.add(wrapper);
     }
 
+    protected void postInitDialog(Dialog dialog) {
+        String title = view.getPageTitle();
+
+        dialog.setHeaderTitle(title);
+        dialog.getElement().setAttribute("aria-label", title);
+    }
+
     protected void applyDialogModeSettings(S view) {
         DialogMode dialogMode = view.getClass().getAnnotation(DialogMode.class);
         if (dialogMode != null) {
@@ -124,7 +147,7 @@ public class DialogWindow<S extends View<?>> implements HasSize, HasTheme, HasSt
                 ButtonVariant.LUMO_ICON,
                 ButtonVariant.LUMO_CONTRAST
         );
-        closeButton.setClassName(BASE_STYLE_NAME + "-close-button");
+        closeButton.setClassName(BASE_CLASS_NAME + "-close-button");
         closeButton.setTitle(messages().getMessage("dialogWindow.closeButton.description"));
         closeButton.addClickListener(this::onCloseButtonClicked);
         return closeButton;
@@ -137,7 +160,7 @@ public class DialogWindow<S extends View<?>> implements HasSize, HasTheme, HasSt
     protected Component createViewWrapper(S view) {
         Scroller scroller = new Scroller(view);
         scroller.setHeightFull();
-        scroller.setClassName(BASE_STYLE_NAME + "-view-wrapper");
+        scroller.setClassName(BASE_CLASS_NAME + "-view-wrapper");
         return scroller;
     }
 
@@ -161,6 +184,10 @@ public class DialogWindow<S extends View<?>> implements HasSize, HasTheme, HasSt
 
     public void open() {
         fireViewBeforeShowEvent(view);
+        // In case of dynamic title, we can obtain it after
+        // all possible dependant properties are set
+        postInitDialog(dialog);
+
         dialog.open();
     }
 
