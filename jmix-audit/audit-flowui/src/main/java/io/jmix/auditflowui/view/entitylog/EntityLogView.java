@@ -162,6 +162,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected Button cancelBtn;
     @ViewComponent
     protected Checkbox selectAllCheckBox;
+    @ViewComponent
+    protected CollectionContainer<EntityLogAttr> entityLogAttrDc;
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -241,22 +243,27 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             if (entityNameField.isEnabled())
                 fillAttributes(e.getValue(), null, true);
         });
-        loggedEntityTable.addSelectionListener(new SelectionListener<Grid<LoggedEntity>, LoggedEntity>() {
-            @Override
-            public void selectionChange(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event) {
-                LoggedEntity entity = event.getFirstSelectedItem().orElse(null);
-                if (entity != null) {
-                    loggedAttrDl.setParameter("entityId", entity.getId());
-                    loggedAttrDl.load();
-                    loggedEntityDc.setItem(entity);
-                    fillAttributes(entity.getName(), entity, false);
-                    checkAllCheckboxes();
-                } else {
-                    setSelectAllCheckBox(false);
-                    clearAttributes();
-                }
-
+        entityLogTable.addSelectionListener((SelectionListener<Grid<EntityLogItem>, EntityLogItem>) event1 -> {
+            EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
+            if (entity!=null) {
+                entityLogAttrDc.setItems(entity.getAttributes());
+            } else {
+                entityLogAttrDc.setItems(null);
             }
+        });
+        loggedEntityTable.addSelectionListener((SelectionListener<Grid<LoggedEntity>, LoggedEntity>) event1 -> {
+            LoggedEntity entity = event1.getFirstSelectedItem().orElse(null);
+            if (entity != null) {
+                loggedAttrDl.setParameter("entityId", entity.getId());
+                loggedAttrDl.load();
+                loggedEntityDc.setItem(entity);
+                fillAttributes(entity.getName(), entity, false);
+                checkAllCheckboxes();
+            } else {
+                setSelectAllCheckBox(false);
+                clearAttributes();
+            }
+
         });
         loggedEntityDc.addItemChangeListener(e -> {
             if (e.getItem() != null) {
@@ -309,13 +316,15 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             } else {
                 return entityLogAttr.getName();
             }
-        });
+        }).setHeader(messages.getMessage(this.getClass(), "attribute"));
 
         entityLogAttrTable.addColumn(entityLogAttr ->
-                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue()));
+                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue()))
+                .setHeader(messages.getMessage(this.getClass(), "newValue"));
 
         entityLogAttrTable.addColumn(entityLogAttr ->
-                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()));
+                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()))
+                .setHeader(messages.getMessage(this.getClass(), "oldValue"));;
 
 
     }
