@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.view.builder;
+package io.jmix.flowui.data.grid;
 
-import io.jmix.flowui.view.DialogWindow.AfterCloseEvent;
-import io.jmix.flowui.view.DialogWindow.AfterOpenEvent;
-import io.jmix.flowui.view.View;
-
-import java.util.Optional;
-import java.util.function.Consumer;
-
-public interface DialogWindowBuilder<V extends View<?>> {
-
-    View<?> getOrigin();
-
-    Optional<String> getViewId();
-
-    Optional<Consumer<AfterOpenEvent<V>>> getAfterOpenListener();
-
-    Optional<Consumer<AfterCloseEvent<V>>> getAfterCloseListener();
+public interface TreeDataGridItems<T> extends DataGridItems<T> {
 }

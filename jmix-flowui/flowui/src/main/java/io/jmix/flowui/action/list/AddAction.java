@@ -21,7 +21,7 @@ import io.jmix.core.AccessManager;
 import io.jmix.core.Messages;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
-import io.jmix.flowui.DialogWindowBuilders;
+import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.FlowuiComponentProperties;
 import io.jmix.flowui.accesscontext.FlowuiEntityAttributeContext;
 import io.jmix.flowui.action.ActionType;
@@ -52,7 +52,7 @@ public class AddAction<E> extends ListDataComponentAction<AddAction<E>, E>
 
     public static final String ID = "add";
 
-    protected DialogWindowBuilders dialogWindowBuilders;
+    protected DialogWindows dialogWindows;
     protected AccessManager accessManager;
 
     protected ActionViewInitializer viewInitializer = new ActionViewInitializer();
@@ -90,8 +90,8 @@ public class AddAction<E> extends ListDataComponentAction<AddAction<E>, E>
     }
 
     @Autowired
-    public void setDialogWindowBuilders(DialogWindowBuilders dialogWindowBuilders) {
-        this.dialogWindowBuilders = dialogWindowBuilders;
+    public void setDialogWindowBuilders(DialogWindows dialogWindows) {
+        this.dialogWindows = dialogWindows;
     }
 
     @Nullable
@@ -166,7 +166,7 @@ public class AddAction<E> extends ListDataComponentAction<AddAction<E>, E>
     }
 
     @Override
-    public <S extends View<?>> void setAfterCloseHandler(@Nullable Consumer<AfterCloseEvent<S>> afterCloseHandler) {
+    public <V extends View<?>> void setAfterCloseHandler(@Nullable Consumer<AfterCloseEvent<V>> afterCloseHandler) {
         viewInitializer.setAfterCloseHandler(afterCloseHandler);
     }
 
@@ -215,7 +215,7 @@ public class AddAction<E> extends ListDataComponentAction<AddAction<E>, E>
     public void execute() {
         checkTarget();
 
-        LookupWindowBuilder<E, View<?>> builder = dialogWindowBuilders.lookup(target);
+        LookupWindowBuilder<E, View<?>> builder = dialogWindows.lookup(target);
 
         builder = viewInitializer.initWindowBuilder(builder);
 
@@ -249,8 +249,8 @@ public class AddAction<E> extends ListDataComponentAction<AddAction<E>, E>
     /**
      * @see #setAfterCloseHandler(Consumer)
      */
-    public <S extends View<?>> AddAction<E> withAfterCloseHandler(
-            @Nullable Consumer<AfterCloseEvent<S>> afterCloseHandler) {
+    public <V extends View<?>> AddAction<E> withAfterCloseHandler(
+            @Nullable Consumer<AfterCloseEvent<V>> afterCloseHandler) {
         setAfterCloseHandler(afterCloseHandler);
         return this;
     }

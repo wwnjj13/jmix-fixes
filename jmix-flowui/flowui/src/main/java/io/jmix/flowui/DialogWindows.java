@@ -31,35 +31,35 @@ import io.jmix.flowui.view.builder.*;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
-@org.springframework.stereotype.Component("flowui_DialogWindowBuilders")
-public class DialogWindowBuilders {
+@org.springframework.stereotype.Component("flowui_DialogWindows")
+public class DialogWindows {
 
     protected WindowBuilderProcessor windowBuilderProcessor;
     protected DetailWindowBuilderProcessor detailBuilderProcessor;
     protected LookupWindowBuilderProcessor lookupBuilderProcessor;
 
-    public DialogWindowBuilders(WindowBuilderProcessor windowBuilderProcessor,
-                                DetailWindowBuilderProcessor detailBuilderProcessor,
-                                LookupWindowBuilderProcessor lookupBuilderProcessor) {
+    public DialogWindows(WindowBuilderProcessor windowBuilderProcessor,
+                         DetailWindowBuilderProcessor detailBuilderProcessor,
+                         LookupWindowBuilderProcessor lookupBuilderProcessor) {
         this.windowBuilderProcessor = windowBuilderProcessor;
         this.detailBuilderProcessor = detailBuilderProcessor;
         this.lookupBuilderProcessor = lookupBuilderProcessor;
     }
 
-    public <E, S extends View<?>> DetailWindowBuilder<E, S> detail(View<?> origin, Class<E> entityClass) {
+    public <E, V extends View<?>> DetailWindowBuilder<E, V> detail(View<?> origin, Class<E> entityClass) {
         checkNotNullArgument(origin);
         checkNotNullArgument(entityClass);
 
         return new DetailWindowBuilder<>(origin, entityClass, detailBuilderProcessor::build);
     }
 
-    public <E, S extends View<?>> DetailWindowBuilder<E, S> detail(ListDataComponent<E> listDataComponent) {
+    public <E, V extends View<?>> DetailWindowBuilder<E, V> detail(ListDataComponent<E> listDataComponent) {
         checkNotNullArgument(listDataComponent);
 
         View<?> origin = getView((Component) listDataComponent);
         Class<E> beanType = getBeanType(listDataComponent);
 
-        DetailWindowBuilder<E, S> builder =
+        DetailWindowBuilder<E, V> builder =
                 new DetailWindowBuilder<>(origin, beanType, detailBuilderProcessor::build);
 
         builder.withListDataComponent(listDataComponent);
@@ -73,7 +73,7 @@ public class DialogWindowBuilders {
     }
 
     @SuppressWarnings("unchecked")
-    public <E, S extends View<?>> DetailWindowBuilder<E, S> detail(EntityPickerComponent<E> picker) {
+    public <E, V extends View<?>> DetailWindowBuilder<E, V> detail(EntityPickerComponent<E> picker) {
         checkNotNullArgument(picker);
         checkState(picker instanceof HasValue,
                 "A component must implement " + HasValue.class.getSimpleName());
@@ -81,7 +81,7 @@ public class DialogWindowBuilders {
         View<?> origin = getView((Component) picker);
         Class<E> beanType = getBeanType(picker);
 
-        DetailWindowBuilder<E, S> builder =
+        DetailWindowBuilder<E, V> builder =
                 new DetailWindowBuilder<>(origin, beanType, detailBuilderProcessor::build);
 
         builder.withField(((HasValue<?, E>) picker));
@@ -94,20 +94,20 @@ public class DialogWindowBuilders {
         return builder;
     }
 
-    public <E, S extends View<?>> LookupWindowBuilder<E, S> lookup(View<?> origin, Class<E> entityClass) {
+    public <E, V extends View<?>> LookupWindowBuilder<E, V> lookup(View<?> origin, Class<E> entityClass) {
         checkNotNullArgument(origin);
         checkNotNullArgument(entityClass);
 
         return new LookupWindowBuilder<>(origin, entityClass, lookupBuilderProcessor::build);
     }
 
-    public <E, S extends View<?>> LookupWindowBuilder<E, S> lookup(ListDataComponent<E> listDataComponent) {
+    public <E, V extends View<?>> LookupWindowBuilder<E, V> lookup(ListDataComponent<E> listDataComponent) {
         checkNotNullArgument(listDataComponent);
 
         View<?> origin = getView((Component) listDataComponent);
         Class<E> beanType = getBeanType(listDataComponent);
 
-        LookupWindowBuilder<E, S> builder =
+        LookupWindowBuilder<E, V> builder =
                 new LookupWindowBuilder<>(origin, beanType, lookupBuilderProcessor::build);
 
         builder.withListDataComponent(listDataComponent);
@@ -116,7 +116,7 @@ public class DialogWindowBuilders {
     }
 
     @SuppressWarnings("unchecked")
-    public <E, S extends View<?>> LookupWindowBuilder<E, S> lookup(EntityPickerComponent<E> picker) {
+    public <E, V extends View<?>> LookupWindowBuilder<E, V> lookup(EntityPickerComponent<E> picker) {
         checkNotNullArgument(picker);
         checkState(picker instanceof HasValue,
                 "A component must implement " + HasValue.class.getSimpleName());
@@ -124,7 +124,7 @@ public class DialogWindowBuilders {
         View<?> origin = getView((Component) picker);
         Class<E> beanType = getBeanType(picker);
 
-        LookupWindowBuilder<E, S> builder =
+        LookupWindowBuilder<E, V> builder =
                 new LookupWindowBuilder<>(origin, beanType, lookupBuilderProcessor::build);
 
 
@@ -133,7 +133,7 @@ public class DialogWindowBuilders {
         return builder;
     }
 
-    public <S extends View<?>> WindowBuilder<S> view(View<?> origin, Class<S> viewClass) {
+    public <V extends View<?>> WindowBuilder<V> view(View<?> origin, Class<V> viewClass) {
         return new WindowBuilder<>(origin, viewClass, windowBuilderProcessor::build);
     }
 

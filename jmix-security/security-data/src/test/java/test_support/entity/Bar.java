@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.view.builder;
+package test_support.entity;
 
-import io.jmix.flowui.view.DialogWindow.AfterCloseEvent;
-import io.jmix.flowui.view.DialogWindow.AfterOpenEvent;
-import io.jmix.flowui.view.View;
+import io.jmix.core.metamodel.annotation.JmixEntity;
 
-import java.util.Optional;
-import java.util.function.Consumer;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public interface DialogWindowBuilder<V extends View<?>> {
+@Entity(name = "test_Bar")
+@JmixEntity
+@Table(name = "TEST_BAR")
+public class Bar extends BaseEntity {
 
-    View<?> getOrigin();
+    private static final long serialVersionUID = -6329844972467897878L;
 
-    Optional<String> getViewId();
+    @Column(name = "NAME")
+    private String name;
 
-    Optional<Consumer<AfterOpenEvent<V>>> getAfterOpenListener();
+    public String getName() {
+        return name;
+    }
 
-    Optional<Consumer<AfterCloseEvent<V>>> getAfterCloseListener();
+    public void setName(String name) {
+        this.name = name;
+    }
 }

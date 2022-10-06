@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.data.grid;
+package test_support.entity;
 
+import io.jmix.core.entity.annotation.ReplaceEntity;
+import io.jmix.core.metamodel.annotation.JmixEntity;
 
-import io.jmix.flowui.data.EntityDataUnit;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
-public interface EntityGridDataItems<E> extends GridDataItems<E>, EntityDataUnit {
+@Entity(name = "test_ExtBar")
+@JmixEntity
+@ReplaceEntity(Bar.class)
+public class ExtBar extends Bar {
+
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

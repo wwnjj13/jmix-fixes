@@ -22,7 +22,7 @@ import io.jmix.core.Messages;
 import io.jmix.core.accesscontext.InMemoryCrudEntityContext;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.security.EntityOp;
-import io.jmix.flowui.DialogWindowBuilders;
+import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.FlowuiComponentProperties;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.accesscontext.FlowuiEntityContext;
@@ -51,7 +51,7 @@ public class EditAction<E> extends SecuredListDataComponentAction<EditAction<E>,
     public static final String ID = "edit";
 
     protected ViewNavigators viewNavigators;
-    protected DialogWindowBuilders dialogWindowBuilders;
+    protected DialogWindows dialogWindows;
 
     protected ActionViewInitializer viewInitializer = new ActionViewInitializer();
     protected Consumer<E> afterSaveHandler;
@@ -148,7 +148,7 @@ public class EditAction<E> extends SecuredListDataComponentAction<EditAction<E>,
     }
 
     @Override
-    public <S extends View<?>> void setAfterCloseHandler(@Nullable Consumer<AfterCloseEvent<S>> afterCloseHandler) {
+    public <V extends View<?>> void setAfterCloseHandler(@Nullable Consumer<AfterCloseEvent<V>> afterCloseHandler) {
         viewInitializer.setAfterCloseHandler(afterCloseHandler);
     }
 
@@ -206,8 +206,8 @@ public class EditAction<E> extends SecuredListDataComponentAction<EditAction<E>,
     }
 
     @Autowired
-    public void setDialogWindowBuilders(DialogWindowBuilders dialogWindowBuilders) {
-        this.dialogWindowBuilders = dialogWindowBuilders;
+    public void setDialogWindowBuilders(DialogWindows dialogWindows) {
+        this.dialogWindows = dialogWindows;
     }
 
     @Override
@@ -333,7 +333,7 @@ public class EditAction<E> extends SecuredListDataComponentAction<EditAction<E>,
 
     @SuppressWarnings("unchecked")
     protected void openDialog(E editedEntity) {
-        DetailWindowBuilder<E, View<?>> builder = dialogWindowBuilders.detail(target);
+        DetailWindowBuilder<E, View<?>> builder = dialogWindows.detail(target);
 
         builder = viewInitializer.initWindowBuilder(builder);
 
@@ -400,7 +400,7 @@ public class EditAction<E> extends SecuredListDataComponentAction<EditAction<E>,
     /**
      * @see #setAfterCloseHandler(Consumer)
      */
-    public <S extends View<?>> EditAction<E> withAfterCloseHandler(Consumer<AfterCloseEvent<S>> afterCloseHandler) {
+    public <V extends View<?>> EditAction<E> withAfterCloseHandler(Consumer<AfterCloseEvent<V>> afterCloseHandler) {
         setAfterCloseHandler(afterCloseHandler);
         return this;
     }
