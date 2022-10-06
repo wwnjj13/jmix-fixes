@@ -74,9 +74,6 @@
         </collection>
         <collection id="entityLogAttrDc" class="io.jmix.audit.entity.EntityLogAttr" fetchPlan="_local">
         </collection>
-<!--        <instance id="entityInstanceDc" class="java.lang.Object">-->
-<!--            <loader/>-->
-<!--        </instance>-->
     </data>
 
     <layout spacing="true">
@@ -89,14 +86,15 @@
         <vbox id="viewWrapper" width="100%" height="100%">
             <formLayout>
                 <responsiveSteps>
-                    <responsiveStep minWidth="0" columns="4"/>
+                    <responsiveStep minWidth="0" columns="2"/>
+                    <responsiveStep minWidth="65em" columns="4"/>
                 </responsiveSteps>
                 <comboBox label="msg://user" id="userField" width="${fieldWidth}"/>
                 <comboBox label="msg://changeType" id="changeTypeField" width="${fieldWidth}"/>
                 <dateTimePicker label="msg://from" minWidth="3em" id="fromDateField" datatype="dateTime"/>
                 <button id="searchBtn" width="${buttonWidth}" text="msg://search"/>
                 <comboBox label="msg://entity" id="filterEntityNameField" width="${fieldWidth}"/>
-                <hbox alignItems="END" expand="instancePicker">
+                <hbox alignItems="END" expand="instancePicker" spacing="false">
                     <valuePicker id="instancePicker" label="msg://instance">
                     </valuePicker>
                     <button id="instancePickerSelectButton" icon="ELLIPSIS_DOTS_H"/>
@@ -112,7 +110,7 @@
                 <button id="clearEntityLogTableBtn" width="${buttonWidth}" text="msg://clear"/>
 
             </formLayout>
-            <hbox id="split1"  height="100%" width="100%"> <!-- orientation="HORIZONTAL" -->
+            <hbox id="split1"  height="100%" width="100%">
                 <vbox id="entityLogTableBox"
                       expand="entityLogTable"
                       spacing="true"
@@ -132,10 +130,6 @@
                       spacing="true">
                     <dataGrid id="entityLogAttrTable" width="100%" height="100%" dataContainer="entityLogAttrDc">
                         <columns>
-<!--                            <column property="name"/>-->
-<!--                            <column property="value"/>-->
-<!--                            <column property="oldValue"/>-->
-
                             <column property="valueId"/>
                             <column property="oldValueId"/>
                         </columns>

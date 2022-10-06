@@ -96,8 +96,8 @@ import java.util.stream.Collectors;
 import static java.util.Collections.reverse;
 
 @Route(value = "entitylogview", layout = DefaultMainViewParent.class)
-@ViewController("entityLog.browse")
-@ViewDescriptor("entity-log-browser.xml")
+@ViewController("entityLog.view")
+@ViewDescriptor("entity-log-view.xml")
 @LookupComponent("entityLogTable")
 @DialogMode(width = "50em", height = "37.5em")
 public class EntityLogView extends StandardListView<EntityLogItem> {
