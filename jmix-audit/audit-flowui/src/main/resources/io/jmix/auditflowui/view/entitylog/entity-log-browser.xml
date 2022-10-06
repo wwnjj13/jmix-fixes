@@ -99,8 +99,8 @@
                 <hbox alignItems="END" expand="instancePicker">
                     <valuePicker id="instancePicker" label="msg://instance">
                     </valuePicker>
-                    <button icon="ELLIPSIS_DOTS_H"/>
-                    <button icon="CLOSE_SMALL"/>
+                    <button id="instancePickerSelectButton" icon="ELLIPSIS_DOTS_H"/>
+                    <button id="instancePickerClearButton" icon="CLOSE_SMALL"/>
                 </hbox>
 <!--                <entityPicker id="instancePicker" width="${fieldWidth}">-->
 <!--                    <actions>-->

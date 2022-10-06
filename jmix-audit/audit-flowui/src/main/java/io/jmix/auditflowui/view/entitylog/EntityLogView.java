@@ -48,6 +48,7 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.core.security.AccessDeniedException;
 import io.jmix.core.security.UserRepository;
+import io.jmix.flowui.DialogWindowBuilders;
 import io.jmix.flowui.Dialogs;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
@@ -142,6 +143,10 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected ValuePicker<String> instancePicker;
     @ViewComponent
+    protected Button instancePickerSelectButton;
+    @ViewComponent
+    protected Button instancePickerClearButton;
+    @ViewComponent
     protected DataGrid<EntityLogItem> entityLogTable;
     @ViewComponent
     protected DataGrid<LoggedEntity> loggedEntityTable;
@@ -169,6 +174,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected UserRepository userRepository;
     @Autowired
     protected MessageTools messageTools;
+    @Autowired
+    protected DialogWindowBuilders dialogBuilders;
 
     @ViewComponent
     private Tabs tabsheet;
@@ -176,7 +183,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     private VerticalLayout viewWrapper;
     @ViewComponent
     private VerticalLayout setupWrapper;
-
+    private Object selectedEntity;
 
     protected TreeMap<String, String> entityMetaClassesMap;
     protected Map<String, Object> changeTypeMap;
@@ -239,6 +246,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         setDateFieldTime();
 
         instancePicker.setEnabled(false);
+        instancePickerSelectButton.setEnabled(false);
+        instancePickerClearButton.setEnabled(false);
 
         entityNameField.addValueChangeListener(e -> {
             if (entityNameField.isEnabled())
@@ -281,10 +290,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         filterEntityNameField.addValueChangeListener(e -> {
             if (e.getValue() != null) {
                 instancePicker.setEnabled(true);
+                instancePickerSelectButton.setEnabled(true);
+                instancePickerClearButton.setEnabled(true);
                 MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(e.getValue()));
                 instancePicker.setValue(metaClass.getName());
             } else {
                 instancePicker.setEnabled(false);
+                instancePickerSelectButton.setEnabled(false);
+                instancePickerClearButton.setEnabled(false);
             }
             instancePicker.setValue(null);
         });
@@ -427,39 +440,40 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return null;
     }
 
-//    @Subscribe("instancePicker.lookup")
-//    public void onInstancePickerLookup(ActionPerformedEvent event) {
-//        final MetaClass metaClass = metadata.getSession().getClass(instancePicker.getValue());
-//        if (instancePicker.isEnabled()) {
-//            if (metaClass == null) {
-//                throw new IllegalStateException("Please specify metaclass or property for PickerField");
-//            }
-//            if (!secureOperations.isEntityReadPermitted(metaClass, policyStore)) {
-//                notifications.create(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
-//                        .withType(Notifications.Type.ERROR)
-//                        .show();
-//                return;
-//            }
-//            try {
-//                Screen lookup = screenBuilders.lookup(instancePicker)
-//                        .withSelectHandler(items -> {
-//                            if (!items.isEmpty()) {
-//                                Object item = items.iterator().next();
-//                                instancePicker.setValue(item);
-//                            }
-//                        })
-//                        .build();
-//
-//                lookup.addAfterCloseListener(afterCloseEvent -> instancePicker.focus());
-//                lookup.show();
-//            } catch (AccessDeniedException ex) {
-//                notifications.create(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
-//                        .withType(Notifications.Type.ERROR)
-//                        .show();
-//                return;
-//            }
-//        }
-//    }
+    @Subscribe("instancePickerSelectButton")
+    public void onInstancePickerLookup(ClickEvent<Button> event) {
+        final MetaClass metaClass = metadata.getSession().getClass(instancePicker.getValue());
+        if (instancePicker.isEnabled()) {
+            if (metaClass == null) {
+                throw new IllegalStateException("Please specify metaclass or property for PickerField");
+            }
+            if (!secureOperations.isEntityReadPermitted(metaClass, policyStore)) {
+                notifications.create(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
+                        .withType(Notifications.Type.ERROR)
+                        .show();
+                return;
+            }
+            try {
+                DialogWindow lookup = dialogBuilders.lookup(this, metaClass.getJavaClass())
+                        .withSelectHandler(items->{
+                            if (!items.isEmpty()) {
+                                Object item = items.iterator().next();
+                                selectedEntity = item;
+                                instancePicker.setValue(item.toString());
+                            }
+                        })
+                        .withAfterCloseListener(afterCloseEvent -> instancePicker.focus())
+                        .build();
+                lookup.open();
+
+            } catch (AccessDeniedException ex) {
+                notifications.create(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
+                        .withType(Notifications.Type.ERROR)
+                        .show();
+                return;
+            }
+        }
+    }
 
 
     public TreeMap<String, String> getEntityMetaClasses() {
