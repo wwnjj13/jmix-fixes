@@ -17,7 +17,6 @@
 
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
     <menu id="administration">
-        <item view="entityLog.browse" title="menu-config.entityLog.browse"/>
-<!--        <item view="menu-config.userSessions.browse"/>-->
+        <item view="entityLog.browse" title="msg://io.jmix.auditflowui.view.entitylog/menu-config.entityLog.view"/>
     </menu>
 </menu-config>

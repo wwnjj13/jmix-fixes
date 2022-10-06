@@ -36,7 +36,7 @@ import java.util.Collections;
 @ComponentScan
 @EnableTransactionManagement
 @JmixModule(dependsOn = {AuditConfiguration.class, FlowuiConfiguration.class})
-@PropertySource(name = "io.jmix.auditui", value = "classpath:/io/jmix/auditflowui/module.properties")
+@PropertySource(name = "io.jmix.auditflowui", value = "classpath:/io/jmix/auditflowui/module.properties")
 public class AuditFlowUiConfiguration {
 
     @Bean("flowui_AuditViewControllers")
