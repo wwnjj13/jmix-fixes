@@ -124,8 +124,7 @@
                             <column property="username"/>
                             <column property="type" />
                             <column property="entity" />
-<!--                            <column property="entityRef.entityId" />-->
-<!--                            <column property="entityInstanceName"/>-->
+
                         </columns>
                     </dataGrid>
                 </vbox>
@@ -135,9 +134,10 @@
                         <columns>
 <!--                            <column property="name"/>-->
 <!--                            <column property="value"/>-->
-<!--                            <column property="valueId"/>-->
 <!--                            <column property="oldValue"/>-->
-<!--                            <column property="oldValueId"/>-->
+
+                            <column property="valueId"/>
+                            <column property="oldValueId"/>
                         </columns>
                     </dataGrid>
                 </vbox>
@@ -148,8 +148,6 @@
                 <hbox height="100%" width="100%">
                     <vbox id="loggedEntityTableBox" width="80%" height="100%"
                           spacing="true">
-                        <!--
-                          action="loggedEntityTable.reload" -->
                         <hbox id="loggedEntityButtonPanel" className="buttons-panel">
                             <button icon="FILE_O" action="loggedEntityTable.create"/>
                             <button icon="PENCIL" action="loggedEntityTable.edit"/>
