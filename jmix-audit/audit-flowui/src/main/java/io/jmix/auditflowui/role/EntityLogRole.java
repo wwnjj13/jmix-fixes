@@ -43,7 +43,7 @@ public interface EntityLogRole {
     @EntityAttributePolicy(entityClass = EntityLogAttr.class, attributes = "*", action = EntityAttributePolicyAction.VIEW)
     @EntityAttributePolicy(entityClass = EntityLogItem.class, attributes = "*", action = EntityAttributePolicyAction.VIEW)
 
-    @ViewPolicy(viewIds = {"entityLog.browse"})
-    @MenuPolicy(menuIds = {"entityLog.browse"})
+    @ViewPolicy(viewIds = {"entityLog.view"})
+    @MenuPolicy(menuIds = {"entityLog.view"})
     void entityLog();
 }

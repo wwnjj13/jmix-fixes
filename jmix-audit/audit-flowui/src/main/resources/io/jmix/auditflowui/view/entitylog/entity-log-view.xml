@@ -83,7 +83,7 @@
         </tabs>
 
 
-        <vbox id="viewWrapper" width="100%" height="100%">
+        <vbox id="viewWrapper" visible="true" width="100%" height="100%">
             <formLayout>
                 <responsiveSteps>
                     <responsiveStep minWidth="0" columns="2"/>
@@ -138,7 +138,7 @@
             </hbox>
         </vbox>
 
-            <vbox id="setupWrapper" width="100%" height="100%">
+            <vbox id="setupWrapper" visible="false" width="100%" height="100%">
                 <hbox height="100%" width="100%">
                     <vbox id="loggedEntityTableBox" width="80%" height="100%"
                           spacing="true">

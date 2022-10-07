@@ -16,9 +16,11 @@
 
 package io.jmix.auditflowui.view.entitylog;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -27,6 +29,7 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.data.selection.SelectionListener;
 import com.vaadin.flow.router.Route;
 import io.jmix.audit.EntityLog;
@@ -93,9 +96,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.reverse;
-
-@Route(value = "entitylogview", layout = DefaultMainViewParent.class)
+@Route(value = "entitylog", layout = DefaultMainViewParent.class)
 @ViewController("entityLog.view")
 @ViewDescriptor("entity-log-view.xml")
 @LookupComponent("entityLogTable")
@@ -140,7 +141,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected CollectionLoader<LoggedAttribute> loggedAttrDl;
     @ViewComponent
-    protected ComboBox changeTypeField;
+    protected ComboBox<String> changeTypeField;
     @ViewComponent
     protected ComboBox<String> entityNameField;
     @ViewComponent
@@ -222,8 +223,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @Subscribe
     protected void onInit(View.InitEvent event) {
         tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
-        viewWrapper.setVisible(true);
-        setupWrapper.setVisible(false);
 
         loggedEntityDl.load();
 
@@ -241,15 +240,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .stream()
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
-        userField.addCustomValueSetListener((
-                ComponentEventListener<GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>>)
-                comboBoxCustomValueSetEvent -> {
-            String value = comboBoxCustomValueSetEvent.getDetail();
-            List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
-            comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
-                    .map(UserDetails::getUsername)
-                    .collect(Collectors.toList()));
-        });
 
         filterEntityNameField.setItems(entityMetaClassesMap.keySet());
 
@@ -260,10 +250,11 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         instancePickerSelectButton.setEnabled(false);
         instancePickerClearButton.setEnabled(false);
 
-        entityNameField.addValueChangeListener(e -> {
-            if (entityNameField.isEnabled())
-                fillAttributes(e.getValue(), null, true);
-        });
+//        entityNameField.addValueChangeListener(e -> {
+//            if (entityNameField.isEnabled())
+//                fillAttributes(e.getValue(), null, true);
+//        });
+
         entityLogTable.addSelectionListener((SelectionListener<Grid<EntityLogItem>, EntityLogItem>) event1 -> {
             EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
             if (entity!=null) {
@@ -417,6 +408,33 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             }
         }
         return null;
+    }
+
+    @Subscribe("userField")
+    public void onUserFieldComboBoxValueChange(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>
+                                                           comboBoxCustomValueSetEvent) {
+        String value = comboBoxCustomValueSetEvent.getDetail();
+        List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
+        comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
+                .map(UserDetails::getUsername)
+                .collect(Collectors.toList()));
+
+    }
+
+    @Subscribe("entityLogTable")
+    public void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
+        EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
+        if (entity!=null) {
+            entityLogAttrDc.setItems(entity.getAttributes());
+        } else {
+            entityLogAttrDc.setItems(null);
+        }
+    }
+
+    @Subscribe("entityNameField")
+    public void onEntityNameFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
+        if (entityNameField.isEnabled())
+            fillAttributes(event.getValue(), null, true);
     }
 
     @Subscribe("instancePickerSelectButton")
