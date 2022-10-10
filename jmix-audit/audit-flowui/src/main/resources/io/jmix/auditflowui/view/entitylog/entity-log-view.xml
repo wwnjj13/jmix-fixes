@@ -100,12 +100,6 @@
                     <button id="instancePickerSelectButton" icon="ELLIPSIS_DOTS_H"/>
                     <button id="instancePickerClearButton" icon="CLOSE_SMALL"/>
                 </hbox>
-<!--                <entityPicker id="instancePicker" width="${fieldWidth}">-->
-<!--                    <actions>-->
-<!--                        <action id="lookup" type="entity_lookup"/>-->
-<!--                        <action id="clear" type="entity_clear"/>-->
-<!--                    </actions>-->
-<!--                </entityPicker>-->
                 <dateTimePicker label="msg://till" minWidth="3em" id="tillDateField" datatype="dateTime"/>
                 <button id="clearEntityLogTableBtn" width="${buttonWidth}" text="msg://clear"/>
 
@@ -175,7 +169,7 @@
                                   expand="attributesBoxScroll">
                             <span text="msg://attributes"/>
                             <vbox>
-                                <checkbox id="selectAllCheckBox" label="msg://[all]"/>
+                                <checkbox id="selectAllCheckBox" enabled="false" label="msg://[all]"/>
                             </vbox>
                             <vbox id="attributesBoxScroll"  width="100%">
 

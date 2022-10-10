@@ -31,6 +31,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.data.selection.SelectionEvent;
 import com.vaadin.flow.data.selection.SelectionListener;
+import com.vaadin.flow.data.selection.SingleSelectionEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.audit.EntityLog;
 import io.jmix.audit.entity.EntityLogAttr;
@@ -60,6 +61,7 @@ import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.action.ActionVariant;
 import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
+import io.jmix.flowui.model.CollectionChangeType;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.model.DataContext;
@@ -69,6 +71,7 @@ import io.jmix.flowui.view.DialogWindow;
 import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.StandardListView;
 import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.View;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
@@ -250,64 +253,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         instancePickerSelectButton.setEnabled(false);
         instancePickerClearButton.setEnabled(false);
 
-//        entityNameField.addValueChangeListener(e -> {
-//            if (entityNameField.isEnabled())
-//                fillAttributes(e.getValue(), null, true);
-//        });
-
-        entityLogTable.addSelectionListener((SelectionListener<Grid<EntityLogItem>, EntityLogItem>) event1 -> {
-            EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
-            if (entity!=null) {
-                entityLogAttrDc.setItems(entity.getAttributes());
-            } else {
-                entityLogAttrDc.setItems(null);
-            }
-        });
-        loggedEntityTable.addSelectionListener((SelectionListener<Grid<LoggedEntity>, LoggedEntity>) event1 -> {
-            LoggedEntity entity = event1.getFirstSelectedItem().orElse(null);
-            if (entity != null) {
-                loggedAttrDl.setParameter("entityId", entity.getId());
-                loggedAttrDl.load();
-                loggedEntityDc.setItem(entity);
-                fillAttributes(entity.getName(), entity, false);
-                checkAllCheckboxes();
-            } else {
-                setSelectAllCheckBox(false);
-                clearAttributes();
-            }
-
-        });
-        loggedEntityDc.addItemChangeListener(e -> {
-            if (e.getItem() != null) {
-                loggedAttrDl.setParameter("entityId", e.getItem().getId());
-                loggedAttrDl.load();
-                fillAttributes(e.getItem().getName(), e.getItem(), false);
-                checkAllCheckboxes();
-            } else {
-                setSelectAllCheckBox(false);
-                clearAttributes();
-            }
-        });
-
-        filterEntityNameField.addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                instancePicker.setEnabled(true);
-                instancePickerSelectButton.setEnabled(true);
-                instancePickerClearButton.setEnabled(true);
-                MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(e.getValue()));
-                instancePicker.setValue(metaClass.getName());
-            } else {
-                instancePicker.setEnabled(false);
-                instancePickerSelectButton.setEnabled(false);
-                instancePickerClearButton.setEnabled(false);
-            }
-            instancePicker.setValue(null);
-        });
-        selectAllCheckBox.addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                enableAllCheckBoxes(e.getValue());
-            }
-        });
+        entityLogTable.addSelectionListener(this::onEntityLogTableSelect);
+        loggedEntityTable.addSelectionListener(this::onLoggedEntityTableSelectEvent);
+        userField.addCustomValueSetListener(this::onUserFieldComboBoxValueChange);
 
         entityLogTable.addColumn(entityLogItem -> {
             if (entityLogItem.getEntityRef().getObjectEntityId() != null) {
@@ -410,18 +358,51 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return null;
     }
 
-    @Subscribe("userField")
-    public void onUserFieldComboBoxValueChange(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>>
-                                                           comboBoxCustomValueSetEvent) {
-        String value = comboBoxCustomValueSetEvent.getDetail();
-        List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
-        comboBoxCustomValueSetEvent.getSource().setItems(users.stream()
-                .map(UserDetails::getUsername)
-                .collect(Collectors.toList()));
-
+    public void onLoggedEntityTableSelectEvent(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event){
+        LoggedEntity entity = event.getFirstSelectedItem().orElse(null);
+        if (entity != null) {
+            loggedAttrDl.setParameter("entityId", entity.getId());
+            loggedAttrDl.load();
+            loggedEntityDc.setItem(entity);
+            fillAttributes(entity.getName(), entity, false);
+            checkAllCheckboxes();
+        } else {
+            setSelectAllCheckBox(false);
+            clearAttributes();
+        }
     }
 
-    @Subscribe("entityLogTable")
+    @Subscribe("selectAllCheckBox")
+    public void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
+        if (event.getValue() != null) {
+            enableAllCheckBoxes(event.getValue());
+        }
+    }
+
+    public void onUserFieldComboBoxValueChange(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>> event) {
+        String value = event.getDetail();
+        List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
+        event.getSource().setItems(users.stream()
+                .map(UserDetails::getUsername)
+                .collect(Collectors.toList()));
+    }
+
+    @Subscribe("filterEntityNameField")
+    public void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
+        if (event.getValue() != null) {
+            instancePicker.setEnabled(true);
+            instancePickerSelectButton.setEnabled(true);
+            instancePickerClearButton.setEnabled(true);
+            MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(event.getValue()));
+            instancePicker.setValue(metaClass.getName());
+        } else {
+            instancePicker.setEnabled(false);
+            instancePickerSelectButton.setEnabled(false);
+            instancePickerClearButton.setEnabled(false);
+        }
+        instancePicker.setValue(null);
+    }
+
     public void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
         EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
         if (entity!=null) {
@@ -748,11 +729,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         if (range.isClass() && range.getCardinality().isMany()) {
             return false;
         }
-        //todo DynamicAttributes (until Haulmont/jmix-ui#272 & others will be finished and it can be tested)
-//        if (categoryAttribute != null &&
-//                BooleanUtils.isTrue(categoryAttribute.getIsCollection())) {
-//            return false;
-//        }
         return true;
     }
 
