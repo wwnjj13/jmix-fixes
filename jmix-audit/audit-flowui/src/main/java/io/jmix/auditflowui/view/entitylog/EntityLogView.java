@@ -19,19 +19,16 @@ package io.jmix.auditflowui.view.entitylog;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.GeneratedVaadinComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.data.selection.SelectionEvent;
-import com.vaadin.flow.data.selection.SelectionListener;
-import com.vaadin.flow.data.selection.SingleSelectionEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.audit.EntityLog;
 import io.jmix.audit.entity.EntityLogAttr;
@@ -58,10 +55,11 @@ import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.action.DialogAction;
 import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.component.select.JmixSelect;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.action.ActionVariant;
+import io.jmix.flowui.kit.component.FlowuiComponentUtils;
 import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
-import io.jmix.flowui.model.CollectionChangeType;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.model.DataContext;
@@ -71,7 +69,6 @@ import io.jmix.flowui.view.DialogWindow;
 import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.StandardListView;
 import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.View;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
@@ -88,7 +85,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -144,7 +140,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected CollectionLoader<LoggedAttribute> loggedAttrDl;
     @ViewComponent
-    protected ComboBox<String> changeTypeField;
+    protected JmixSelect<String> changeTypeField;
     @ViewComponent
     protected ComboBox<String> entityNameField;
     @ViewComponent
@@ -168,7 +164,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected Checkbox autoCheckBox;
     @ViewComponent
-    protected VerticalLayout actionsPaneLayout;
+    protected HorizontalLayout actionsPaneLayout;
     @ViewComponent
     protected VerticalLayout attributesBoxScroll;
     @ViewComponent
@@ -193,11 +189,13 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     private VerticalLayout viewWrapper;
     @ViewComponent
-    private VerticalLayout setupWrapper;
+    private HorizontalLayout setupWrapper;
+    @ViewComponent
+    private HorizontalLayout instancePickerContainer;
+
     private Object selectedEntity;
 
     protected TreeMap<String, String> entityMetaClassesMap;
-    protected Map<String, Object> changeTypeMap;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
     protected boolean canSelectAllCheckboxGenerateEvents = true;
@@ -229,48 +227,38 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         loggedEntityDl.load();
 
-        changeTypeMap = new LinkedHashMap<>();
-        changeTypeMap.put(messages.getMessage(EntityLogView.class, "createField"), "C");
-        changeTypeMap.put(messages.getMessage(EntityLogView.class, "modifyField"), "M");
-        changeTypeMap.put(messages.getMessage(EntityLogView.class, "deleteField"), "D");
-        changeTypeMap.put(messages.getMessage(EntityLogView.class, "restoreField"), "R");
+        Map<String, String> changeTypeMap = new LinkedHashMap<>();
+        changeTypeMap.put("C", messages.getMessage(EntityLogView.class, "createField"));
+        changeTypeMap.put("M", messages.getMessage(EntityLogView.class, "modifyField"));
+        changeTypeMap.put("D", messages.getMessage(EntityLogView.class, "deleteField"));
+        changeTypeMap.put("R", messages.getMessage(EntityLogView.class, "restoreField"));
 
-        entityMetaClassesMap = getEntityMetaClasses();
+        Map<String, String> entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setItems(entityMetaClassesMap.values());
-        changeTypeField.setItems(changeTypeMap.keySet());
-        userField.setAutoOpen(true);
+//        FlowuiComponentUtils.setItemsMap(entityNameField, entityMetaClassesMap);
+//        changeTypeField.setItems(changeTypeMap.keySet());
+        FlowuiComponentUtils.setItemsMap(changeTypeField, changeTypeMap);
+
         userField.setItems(userRepository.getByUsernameLike("")
                 .stream()
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
-
-        filterEntityNameField.setItems(entityMetaClassesMap.keySet());
+//        FlowuiComponentUtils.setItemsMap(filterEntityNameField, getEntityMetaClasses());
+        filterEntityNameField.setItems(entityMetaClassesMap.values());
 
         disableControls();
         setDateFieldTime();
 
-        instancePicker.setEnabled(false);
-        instancePickerSelectButton.setEnabled(false);
-        instancePickerClearButton.setEnabled(false);
-
         entityLogTable.addSelectionListener(this::onEntityLogTableSelect);
         loggedEntityTable.addSelectionListener(this::onLoggedEntityTableSelectEvent);
-        userField.addCustomValueSetListener(this::onUserFieldComboBoxValueChange);
 
-        entityLogTable.addColumn(entityLogItem -> {
-            if (entityLogItem.getEntityRef().getObjectEntityId() != null) {
-                return entityLogItem.getEntityRef().getObjectEntityId().toString();
-            }
-            return null;
-        }).setHeader(messages.getMessage(this.getClass(), "entityId")).setSortable(true);
+        entityLogTable.addColumn(this::generateEntityIdColumn)
+                .setHeader(messages.getMessage(this.getClass(), "entityId"))
+                .setSortable(true);
 
-        entityLogTable.addColumn(entityLogItem -> {
-            String entityName = evaluateEntityLogItemDisplayedEntityName(entityLogItem);
-            if (entityName != null) {
-                return entityName;
-            }
-            return null;
-        }).setHeader(messages.getMessage(this.getClass(), "entityInstanceName")).setSortable(true);
+        entityLogTable.addColumn(this::generateEntityInstanceNameColumn
+        ).setHeader(messages.getMessage(this.getClass(), "entityInstanceName"))
+                .setSortable(true);
 
         entityLogAttrTable.addColumn(entityLogAttr ->
                 evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()))
@@ -281,22 +269,40 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .setHeader(messages.getMessage(this.getClass(), "newValue"))
                 .setKey("newValue").setSortable(true);
 
-        entityLogAttrTable.addColumn(entityLogAttr -> {
-            String entityName = entityLogAttr.getLogItem().getEntity();
-            MetaClass metaClass = getClassFromEntityName(entityName);
-            if (metaClass != null) {
-                return messageTools.getPropertyCaption(metaClass, entityLogAttr.getName());
-            } else {
-                return entityLogAttr.getName();
-            }
-        }).setHeader(messages.getMessage(this.getClass(), "attribute"))
+        entityLogAttrTable.addColumn(this::generateAttributeColumn)
+                .setHeader(messages.getMessage(this.getClass(), "attribute"))
                 .setKey("attribute").setSortable(true);
 
         List<Grid.Column<EntityLogAttr>> columnsOrder = new ArrayList<>();
-        for (int i = entityLogAttrTable.getColumns().size()-1; i>=0; i--) {
+        for (int i = entityLogAttrTable.getColumns().size() - 1; i >= 0; i--) {
             columnsOrder.add(entityLogAttrTable.getColumns().get(i));
         }
         entityLogAttrTable.setColumnOrder(columnsOrder);
+    }
+
+    protected Object generateAttributeColumn(EntityLogAttr entityLogAttr) {
+        String entityName = entityLogAttr.getLogItem().getEntity();
+        MetaClass metaClass = getClassFromEntityName(entityName);
+        if (metaClass != null) {
+            return messageTools.getPropertyCaption(metaClass, entityLogAttr.getName());
+        } else {
+            return entityLogAttr.getName();
+        }
+    }
+
+    protected Object generateEntityInstanceNameColumn(EntityLogItem entityLogItem) {
+        String entityName = evaluateEntityLogItemDisplayedEntityName(entityLogItem);
+        if (entityName != null) {
+            return entityName;
+        }
+        return null;
+    }
+
+    protected Object generateEntityIdColumn(EntityLogItem entityLogItem) {
+        if (entityLogItem.getEntityRef().getObjectEntityId() != null) {
+            return entityLogItem.getEntityRef().getObjectEntityId().toString();
+        }
+        return null;
     }
 
     protected String evaluateEntityLogItemDisplayedEntityName(EntityLogItem entityLogItem) {
@@ -379,26 +385,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
     }
 
-    public void onUserFieldComboBoxValueChange(GeneratedVaadinComboBox.CustomValueSetEvent<ComboBox<String>> event) {
-        String value = event.getDetail();
-        List<? extends UserDetails> users = userRepository.getByUsernameLike(value);
-        event.getSource().setItems(users.stream()
-                .map(UserDetails::getUsername)
-                .collect(Collectors.toList()));
-    }
-
     @Subscribe("filterEntityNameField")
     public void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
         if (event.getValue() != null) {
-            instancePicker.setEnabled(true);
-            instancePickerSelectButton.setEnabled(true);
-            instancePickerClearButton.setEnabled(true);
-            MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(event.getValue()));
+            instancePickerContainer.setEnabled(true);
+            MetaClass metaClass = metadata.getSession().getClass(event.getValue());
             instancePicker.setValue(metaClass.getName());
         } else {
-            instancePicker.setEnabled(false);
-            instancePickerSelectButton.setEnabled(false);
-            instancePickerClearButton.setEnabled(false);
+            instancePickerContainer.setEnabled(false);
         }
         instancePicker.setValue(null);
     }
@@ -422,7 +416,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     public void onInstancePickerLookup(ClickEvent<Button> event) {
 
         if (instancePicker.isEnabled()) {
-            final MetaClass metaClass = metadata.getSession().getClass(entityMetaClassesMap.get(filterEntityNameField.getValue()));
+            final MetaClass metaClass = metadata.getSession().getClass(filterEntityNameField.getValue());
             if (metaClass == null) {
                 throw new IllegalStateException("Please specify metaclass or property for PickerField");
             }
@@ -548,7 +542,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         checkBox.setLabel(name);
         checkBox.setEnabled(editable);
         checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-
         attributesBoxScroll.addAndExpand(checkBox);
     }
 
@@ -673,12 +666,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             entityLogDl.removeParameter("user");
         }
         if (changeTypeField.getValue() != null) {
-            entityLogDl.setParameter("changeType", changeTypeMap.get(changeTypeField.getValue()));
+            entityLogDl.setParameter("changeType", changeTypeField.getValue());
         } else {
             entityLogDl.removeParameter("changeType");
         }
         if (filterEntityNameField.getValue() != null) {
-            entityLogDl.setParameter("entityName", entityMetaClassesMap.get(filterEntityNameField.getValue()));
+            entityLogDl.setParameter("entityName", filterEntityNameField.getValue());
         } else {
             entityLogDl.removeParameter("entityName");
         }
@@ -764,7 +757,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
         dataContext.save();
 
-        loggedEntityDl.load();
+//        loggedEntityDl.load();
         disableControls();
         loggedEntityTable.setEnabled(true);
         loggedEntityTable.focus();
