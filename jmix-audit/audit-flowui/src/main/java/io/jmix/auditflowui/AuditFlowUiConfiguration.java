@@ -48,12 +48,4 @@ public class AuditFlowUiConfiguration {
         return viewControllers;
     }
 
-//    @Bean("flowui_AuditActions")
-//    public ActionsConfiguration actions(ApplicationContext applicationContext,
-//                                        AnnotationScanMetadataReaderFactory metadataReaderFactory) {
-//        ActionsConfiguration actionsConfiguration = new ActionsConfiguration(applicationContext, metadataReaderFactory);
-//        actionsConfiguration.setBasePackages(Collections.singletonList("io.jmix.auditflowui.view"));
-//        return actionsConfiguration;
-//    }
-
 }

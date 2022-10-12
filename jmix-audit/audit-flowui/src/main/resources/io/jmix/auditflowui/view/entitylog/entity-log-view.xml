@@ -18,12 +18,19 @@
       xmlns:c="http://jmix.io/schema/ui/jpql-condition"
       title="msg://EntityLogView.list">
     <data>
+
         <collection id="loggedEntityDc"
                     class="io.jmix.audit.entity.LoggedEntity"
-                    fetchPlan="loggedAttrs">
+                    >
             <loader id="loggedEntityDl">
                 <query>select e from audit_LoggedEntity e order by e.name</query>
             </loader>
+            <fetchPlan>
+                <property name="attributes" fetchPlan="_local"/>
+                <property name="auto"/>
+                <property name="manual"/>
+                <property name="name"/>
+            </fetchPlan>
         </collection>
         <collection id="loggedAttrDc"
                     class="io.jmix.audit.entity.LoggedAttribute"
@@ -33,8 +40,10 @@
             </loader>
         </collection>
         <collection id="entityLogDc"
-                    class="io.jmix.audit.entity.EntityLogItem"
-                    fetchPlan="logView">
+                    class="io.jmix.audit.entity.EntityLogItem">
+            <fetchPlan>
+                <property name="entityRef" fetchPlan="_local"/>
+            </fetchPlan>
             <loader id="entityLogDl">
                 <query>
                     select e from audit_EntityLog e order by e.eventTs
@@ -84,7 +93,7 @@
 
 
         <vbox id="viewWrapper" visible="true" padding="false" width="100%">
-            <details opened="true" width="100%">
+            <details opened="true" width="100%" summaryText="msg://filterParameters">
                 <formLayout>
                     <responsiveSteps>
                         <responsiveStep minWidth="0" columns="1"/>
@@ -97,9 +106,12 @@
 
                     <comboBox label="msg://entity" id="filterEntityNameField" />
                     <hbox id="instancePickerContainer" alignItems="END" expand="instancePicker" enabled="false" spacing="false">
-                        <valuePicker id="instancePicker" readOnly="true" label="msg://instance"/>
-                        <button id="instancePickerSelectButton" icon="ELLIPSIS_DOTS_H"/>
-                        <button id="instancePickerClearButton" icon="CLOSE_SMALL"/>
+                        <valuePicker id="instancePicker" label="msg://instance">
+                            <actions>
+                                <action id="selectAction" type="entity_lookup"/>
+                                <action id="valueClearAction" type="value_clear"/>
+                            </actions>
+                        </valuePicker>
                     </hbox>
                     <dateTimePicker id="tillDateField" label="msg://till" minWidth="3em"  datatype="dateTime"/>
 
@@ -161,18 +173,17 @@
                 <vbox id="loggedEntityMiscBox" width="32em" expand="attributesBox">
                     <comboBox id="entityNameField" label="msg://name" width="100%" dataContainer="loggedEntityDc"  property="name"/>
                     <hbox id="checkersBox" width="100%">
-                        <checkbox id="autoCheckBox" dataContainer="loggedEntityDc"
+                        <checkbox id="autoCheckBox" label="msg://auto" dataContainer="loggedEntityDc"
                                   property="auto"/>
-                        <checkbox id="manualCheckBox" dataContainer="loggedEntityDc"
+                        <checkbox id="manualCheckBox" label="msg://manual" dataContainer="loggedEntityDc"
                                   property="manual"/>
                     </hbox>
-                    <vbox id="attributesBox" width="100%" padding="false"
-                              expand="attributesBoxScroll">
+                    <vbox id="attributesBox" width="100%" padding="false">
                         <h5 text="msg://attributes"/>
                         <checkbox id="selectAllCheckBox" label="msg://[all]"/>
-
-                        <vbox id="attributesBoxScroll" minHeight="15em" width="100%"/>
-
+                        <scroller id="attributesScroller" scrollBarsDirection="VERTICAL" width="100%"
+                                  minHeight="15em" maxHeight="20em"/>
+                        <vbox id="attributesBoxScroll" width="100%" maxHeight="100%"/>
                     </vbox>
                     <hbox id="actionsPaneLayout" visible="false" alignItems="END">
                             <button id="saveBtn" themeName="primary" text="msg://save" icon="CHECK"/>

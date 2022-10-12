@@ -26,6 +26,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.data.selection.SelectionEvent;
@@ -183,26 +184,27 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected MessageTools messageTools;
     @Autowired
     protected DialogWindows dialogBuilders;
+    @ViewComponent
+    protected Scroller attributesScroller;
+    @ViewComponent
+    protected Tabs tabsheet;
+    @ViewComponent
+    protected VerticalLayout viewWrapper;
+    @ViewComponent
+    protected HorizontalLayout setupWrapper;
+    @ViewComponent
+    protected HorizontalLayout instancePickerContainer;
 
-    @ViewComponent
-    private Tabs tabsheet;
-    @ViewComponent
-    private VerticalLayout viewWrapper;
-    @ViewComponent
-    private HorizontalLayout setupWrapper;
-    @ViewComponent
-    private HorizontalLayout instancePickerContainer;
-
-    private Object selectedEntity;
+    protected Object selectedEntity;
 
     protected TreeMap<String, String> entityMetaClassesMap;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
     protected boolean canSelectAllCheckboxGenerateEvents = true;
     @Autowired
-    private SecureOperations secureOperations;
+    protected SecureOperations secureOperations;
 
-    private void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
+    protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
         String tabId = event.getSelectedTab().getId()
                 .orElse("<no_id>");
 
@@ -226,7 +228,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
 
         loggedEntityDl.load();
-
+        attributesScroller.setContent(attributesBoxScroll);
         Map<String, String> changeTypeMap = new LinkedHashMap<>();
         changeTypeMap.put("C", messages.getMessage(EntityLogView.class, "createField"));
         changeTypeMap.put("M", messages.getMessage(EntityLogView.class, "modifyField"));
@@ -243,7 +245,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .stream()
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
-//        FlowuiComponentUtils.setItemsMap(filterEntityNameField, getEntityMetaClasses());
         filterEntityNameField.setItems(entityMetaClassesMap.values());
 
         disableControls();
@@ -272,7 +273,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         entityLogAttrTable.addColumn(this::generateAttributeColumn)
                 .setHeader(messages.getMessage(this.getClass(), "attribute"))
                 .setKey("attribute").setSortable(true);
-
         List<Grid.Column<EntityLogAttr>> columnsOrder = new ArrayList<>();
         for (int i = entityLogAttrTable.getColumns().size() - 1; i >= 0; i--) {
             columnsOrder.add(entityLogAttrTable.getColumns().get(i));
@@ -364,7 +364,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return null;
     }
 
-    public void onLoggedEntityTableSelectEvent(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event){
+    protected void onLoggedEntityTableSelectEvent(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event){
         LoggedEntity entity = event.getFirstSelectedItem().orElse(null);
         if (entity != null) {
             loggedAttrDl.setParameter("entityId", entity.getId());
@@ -379,14 +379,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("selectAllCheckBox")
-    public void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
+    protected void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
         if (event.getValue() != null) {
             enableAllCheckBoxes(event.getValue());
         }
     }
 
     @Subscribe("filterEntityNameField")
-    public void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
+    protected void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
         if (event.getValue() != null) {
             instancePickerContainer.setEnabled(true);
             MetaClass metaClass = metadata.getSession().getClass(event.getValue());
@@ -397,7 +397,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         instancePicker.setValue(null);
     }
 
-    public void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
+    protected void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
         EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
         if (entity!=null) {
             entityLogAttrDc.setItems(entity.getAttributes());
@@ -407,56 +407,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("entityNameField")
-    public void onEntityNameFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
+    protected void onEntityNameFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
         if (entityNameField.isEnabled())
             fillAttributes(event.getValue(), null, true);
     }
 
-    @Subscribe("instancePickerSelectButton")
-    public void onInstancePickerLookup(ClickEvent<Button> event) {
-
-        if (instancePicker.isEnabled()) {
-            final MetaClass metaClass = metadata.getSession().getClass(filterEntityNameField.getValue());
-            if (metaClass == null) {
-                throw new IllegalStateException("Please specify metaclass or property for PickerField");
-            }
-            if (!secureOperations.isEntityReadPermitted(metaClass, policyStore)) {
-                notifications.create(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
-                        .withType(Notifications.Type.ERROR)
-                        .show();
-                return;
-            }
-            try {
-                DialogWindow lookup = dialogBuilders.lookup(this, metaClass.getJavaClass())
-                        .withSelectHandler(items->{
-                            if (!items.isEmpty()) {
-                                Object item = items.iterator().next();
-                                selectedEntity = item;
-                                instancePicker.setValue(item.toString());
-                            }
-                        })
-                        .withAfterCloseListener(afterCloseEvent -> instancePicker.focus())
-                        .build();
-                lookup.open();
-
-            } catch (AccessDeniedException ex) {
-                notifications.create(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
-                        .withType(Notifications.Type.ERROR)
-                        .show();
-                return;
-            }
-        }
-    }
-
-    @Subscribe("instancePickerClearButton")
-    public void onInstancePickerClear(ClickEvent<Button> event) {
-        if (instancePicker.isEnabled()) {
-            selectedEntity = null;
-            instancePicker.setValue(null);
-        }
-    }
-
-    public TreeMap<String, String> getEntityMetaClasses() {
+    protected TreeMap<String, String> getEntityMetaClasses() {
         TreeMap<String, String> options = new TreeMap<>();
 
         for (MetaClass metaClass : metadataTools.getAllJpaEntityMetaClasses()) {
@@ -543,6 +499,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         checkBox.setEnabled(editable);
         checkBox.addValueChangeListener(e -> checkAllCheckboxes());
         attributesBoxScroll.addAndExpand(checkBox);
+
     }
 
     protected void enableAllCheckBoxes(boolean b) {
@@ -570,7 +527,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
     }
 
-    public void setSelectAllCheckBox(boolean value) {
+    protected void setSelectAllCheckBox(boolean value) {
         canSelectAllCheckboxGenerateEvents = false;
         boolean isEditable = selectAllCheckBox.isEnabled();
         try {
@@ -582,7 +539,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
     }
 
-    public void setDateFieldTime() {
+    protected void setDateFieldTime() {
         Date date = timeSource.currentTimestamp();
         fromDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, -1).toInstant(),
                 ZoneId.systemDefault()));
@@ -598,7 +555,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
     }
 
-    public boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
+    protected boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
         if (enabledAttr != null && (metaClass.findProperty(propertyName) == null || !metadataTools.isSystem(metaClass.getProperty(propertyName)))) {
             for (LoggedAttribute logAttr : enabledAttr)
                 if (logAttr.getName().equals(propertyName))
@@ -607,15 +564,57 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return false;
     }
 
-    public LoggedAttribute getLoggedAttribute(String name, Set<LoggedAttribute> enabledAttr) {
+    protected LoggedAttribute getLoggedAttribute(String name, Set<LoggedAttribute> enabledAttr) {
         for (LoggedAttribute atr : enabledAttr)
             if (atr.getName().equals(name))
                 return atr;
         return null;
     }
 
+    @Subscribe("instancePicker.valueClearAction")
+    protected void onValueClearAction(ActionPerformedEvent event) {
+        if (instancePicker.isEnabled()) {
+            selectedEntity = null;
+            instancePicker.setValue(null);
+        }
+    }
+
+    @Subscribe("instancePicker.selectAction")
+    protected void onSelectAction(ActionPerformedEvent event){
+        if (instancePicker.isEnabled()) {
+            final MetaClass metaClass = metadata.getSession().getClass(filterEntityNameField.getValue());
+            if (metaClass == null) {
+                throw new IllegalStateException("Please specify metaclass or property for PickerField");
+            }
+            if (!secureOperations.isEntityReadPermitted(metaClass, policyStore)) {
+                notifications.create(messages.getMessage(EntityLogView.class, "entityAccessDeniedMessage"))
+                        .withType(Notifications.Type.ERROR)
+                        .show();
+                return;
+            }
+            try {
+                DialogWindow lookup = dialogBuilders.lookup(this, metaClass.getJavaClass())
+                        .withSelectHandler(items->{
+                            if (!items.isEmpty()) {
+                                Object item = items.iterator().next();
+                                selectedEntity = item;
+                                instancePicker.setValue(item.toString());
+                            }
+                        })
+                        .withAfterCloseListener(afterCloseEvent -> instancePicker.focus())
+                        .build();
+                lookup.open();
+            } catch (AccessDeniedException ex) {
+                notifications.create(messages.getMessage(EntityLogView.class, "entityScreenAccessDeniedMessage"))
+                        .withType(Notifications.Type.ERROR)
+                        .show();
+                return;
+            }
+        }
+    }
+
     @Subscribe("loggedEntityTable.create")
-    public void onLoggedEntityTableCreate(ActionPerformedEvent event) {
+    protected void onLoggedEntityTableCreate(ActionPerformedEvent event) {
         LoggedEntity entity = metadata.create(LoggedEntity.class);
         entity.setAuto(false);
         entity.setManual(false);
@@ -632,7 +631,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("loggedEntityTable.edit")
-    public void onLoggedEntityTableEdit(ActionPerformedEvent event) {
+    protected void onLoggedEntityTableEdit(ActionPerformedEvent event) {
         enableControls();
 
         loggedEntityTable.setEnabled(false);
@@ -640,7 +639,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("searchBtn")
-    public void onSearchBtnClick(ClickEvent<Button> event) {
+    protected void onSearchBtnClick(ClickEvent<Button> event) {
         Object entity = selectedEntity;
 
         if (entity != null) {
@@ -691,7 +690,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("clearEntityLogTableBtn")
-    public void onClearEntityLogTableBtnClick(ClickEvent<Button> event) {
+    protected void onClearEntityLogTableBtnClick(ClickEvent<Button> event) {
         userField.setValue(null);
         filterEntityNameField.setValue(null);
         changeTypeField.setValue(null);
@@ -701,7 +700,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("reloadBtn")
-    public void onReloadBtnClick(ClickEvent<Button> event) {
+    protected void onReloadBtnClick(ClickEvent<Button> event) {
         entityLog.invalidateCache();
         notifications.create(messages.getMessage(EntityLogView.class, "changesApplied"))
                 .withType(Notifications.Type.DEFAULT)
@@ -757,7 +756,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         }
         dataContext.save();
 
-//        loggedEntityDl.load();
         disableControls();
         loggedEntityTable.setEnabled(true);
         loggedEntityTable.focus();
