@@ -237,8 +237,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         Map<String, String> entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setItems(entityMetaClassesMap.values());
-//        FlowuiComponentUtils.setItemsMap(entityNameField, entityMetaClassesMap);
-//        changeTypeField.setItems(changeTypeMap.keySet());
         FlowuiComponentUtils.setItemsMap(changeTypeField, changeTypeMap);
 
         userField.setItems(userRepository.getByUsernameLike("")
@@ -707,7 +705,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .show();
     }
 
-    protected boolean allowLogProperty(MetaProperty metaProperty /*, CategoryAttribute categoryAttribute*/) {
+    protected boolean allowLogProperty(MetaProperty metaProperty) {
         if (metadataTools.isSystem(metaProperty)
                 //log system property tenantId
                 && !metadataTools.isAnnotationPresent(metaProperty.getDomain().getJavaClass(), metaProperty.getName(), TenantId.class)) {

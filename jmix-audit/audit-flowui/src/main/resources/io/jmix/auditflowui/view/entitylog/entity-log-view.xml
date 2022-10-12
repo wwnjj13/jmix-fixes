@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2020 Haulmont.
+  ~ Copyright 2022 Haulmont.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@
     <data>
 
         <collection id="loggedEntityDc"
-                    class="io.jmix.audit.entity.LoggedEntity"
-                    >
+                    class="io.jmix.audit.entity.LoggedEntity">
             <loader id="loggedEntityDl">
                 <query>select e from audit_LoggedEntity e order by e.name</query>
             </loader>
@@ -41,7 +40,7 @@
         </collection>
         <collection id="entityLogDc"
                     class="io.jmix.audit.entity.EntityLogItem">
-            <fetchPlan>
+            <fetchPlan extends="_local">
                 <property name="entityRef" fetchPlan="_local"/>
             </fetchPlan>
             <loader id="entityLogDl">
@@ -59,10 +58,10 @@
                                 <c:where>e.username = :user</c:where>
                             </c:jpql>
                             <c:jpql>
-                                <c:where>e.eventTs &gt;= :fromDate</c:where>
+                                <c:where><![CDATA[e.eventTs >= :fromDate]]></c:where>
                             </c:jpql>
                             <c:jpql>
-                                <c:where>e.eventTs &lt;= :tillDate</c:where>
+                                <c:where><![CDATA[e.eventTs <= :tillDate]]></c:where>
                             </c:jpql>
                             <c:jpql>
                                 <c:where>e.entityRef.entityId = :entityId</c:where>
@@ -124,7 +123,6 @@
             <hbox id="split1" width="100%">
                 <vbox id="entityLogTableBox"
                       expand="entityLogTable"
-                      spacing="true"
                       width="60%">
                     <dataGrid id="entityLogTable"  dataContainer="entityLogDc">
                         <columns>
@@ -132,12 +130,10 @@
                             <column property="username"/>
                             <column property="type" />
                             <column property="entity" />
-
                         </columns>
                     </dataGrid>
                 </vbox>
-                <vbox id="entityLogAttrTableBox" width="40%"
-                      spacing="true">
+                <vbox id="entityLogAttrTableBox" width="40%">
                     <dataGrid id="entityLogAttrTable" width="100%"  dataContainer="entityLogAttrDc">
                         <columns>
                             <column property="valueId"/>
