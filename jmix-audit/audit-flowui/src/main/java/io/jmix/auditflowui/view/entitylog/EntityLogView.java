@@ -19,6 +19,7 @@ package io.jmix.auditflowui.view.entitylog;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -60,6 +61,7 @@ import io.jmix.flowui.component.select.JmixSelect;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.action.ActionVariant;
 import io.jmix.flowui.kit.component.FlowuiComponentUtils;
+import io.jmix.flowui.kit.component.formatter.Formatter;
 import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
@@ -96,7 +98,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Route(value = "entitylog", layout = DefaultMainViewParent.class)
+@Route(value = "audit/entitylog", layout = DefaultMainViewParent.class)
 @ViewController("entityLog.view")
 @ViewDescriptor("entity-log-view.xml")
 @LookupComponent("entityLogTable")
@@ -149,11 +151,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected ComboBox<String> filterEntityNameField;
     @ViewComponent
-    protected ValuePicker<String> instancePicker;
-    @ViewComponent
-    protected Button instancePickerSelectButton;
-    @ViewComponent
-    protected Button instancePickerClearButton;
+    protected ValuePicker<Object> instancePicker;
     @ViewComponent
     protected DataGrid<EntityLogItem> entityLogTable;
     @ViewComponent
@@ -227,7 +225,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected void onInit(View.InitEvent event) {
         tabsheet.addSelectedChangeListener(this::onSelectedTabChange);
 
-        loggedEntityDl.load();
+
         attributesScroller.setContent(attributesBoxScroll);
         Map<String, String> changeTypeMap = new LinkedHashMap<>();
         changeTypeMap.put("C", messages.getMessage(EntityLogView.class, "createField"));
@@ -244,6 +242,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
         filterEntityNameField.setItems(entityMetaClassesMap.values());
+        instancePicker.addValueChangeListener((HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ValuePicker<Object>, Object>>)
+                event1 -> instancePicker.getElement().setProperty("value", metadataTools.getInstanceName(event1.getValue())));
 
         disableControls();
         setDateFieldTime();
@@ -392,7 +392,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         } else {
             instancePickerContainer.setEnabled(false);
         }
-        instancePicker.setValue(null);
+        instancePicker.clear();
     }
 
     protected void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
@@ -689,12 +689,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
     @Subscribe("clearEntityLogTableBtn")
     protected void onClearEntityLogTableBtnClick(ClickEvent<Button> event) {
-        userField.setValue(null);
-        filterEntityNameField.setValue(null);
-        changeTypeField.setValue(null);
-        instancePicker.setValue(null);
-        fromDateField.setValue(null);
-        tillDateField.setValue(null);
+        userField.clear();
+        filterEntityNameField.clear();
+        changeTypeField.clear();
+        instancePicker.clear();
+        fromDateField.clear();
+        tillDateField.clear();
     }
 
     @Subscribe("reloadBtn")

@@ -45,7 +45,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Route(value = "usersession", layout = DefaultMainViewParent.class)
+@Route(value = "audit/usersessions", layout = DefaultMainViewParent.class)
 @ViewController("userSession.view")
 @ViewDescriptor("user-sessions-view.xml")
 @LookupComponent("sessionsTable")
@@ -70,11 +70,11 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
     protected Messages messages;
 
     @ViewComponent
-    private TextField userName;
+    protected TextField userName;
     @ViewComponent
-    private DateTimePicker lastRequestDateFrom;
+    protected DateTimePicker lastRequestDateFrom;
     @ViewComponent
-    private DateTimePicker lastRequestDateTo;
+    protected DateTimePicker lastRequestDateTo;
 
 
 
@@ -85,7 +85,7 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("sessionsTable.expire")
-    public void onSessionsTableExpire(ActionPerformedEvent event) {
+    protected void onSessionsTableExpire(ActionPerformedEvent event) {
         UserSession session = sessionsTable.getSingleSelectedItem();
         if (session != null) {
             userSessions.invalidate(session);
@@ -97,15 +97,15 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("clearButton")
-    public void onClearButtonClick(ClickEvent<Button> event) {
-        userName.setValue("");
-        lastRequestDateFrom.setValue(null);
-        lastRequestDateTo.setValue(null);
+    protected void onClearButtonClick(ClickEvent<Button> event) {
+        userName.clear();
+        lastRequestDateFrom.clear();
+        lastRequestDateTo.clear();
         refreshDlItems();
     }
 
     @Subscribe("sessionsTable.refresh")
-    public void onSessionsTableRefresh(ActionPerformedEvent event) {
+    protected void onSessionsTableRefresh(ActionPerformedEvent event) {
         refreshDlItems();
     }
 

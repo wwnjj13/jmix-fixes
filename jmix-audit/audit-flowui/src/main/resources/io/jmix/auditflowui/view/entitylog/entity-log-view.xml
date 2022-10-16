@@ -101,7 +101,7 @@
                     </responsiveSteps>
                     <comboBox id="userField"  label="msg://user" autoOpen="true" />
                     <select id="changeTypeField" label="msg://changeType" />
-                    <dateTimePicker id="fromDateField" label="msg://from" minWidth="3em"  datatype="dateTime"/>
+                    <dateTimePicker id="fromDateField" label="msg://from" datatype="dateTime"/>
 
                     <comboBox label="msg://entity" id="filterEntityNameField" />
                     <hbox id="instancePickerContainer" alignItems="END" expand="instancePicker" enabled="false" spacing="false">
@@ -112,11 +112,11 @@
                             </actions>
                         </valuePicker>
                     </hbox>
-                    <dateTimePicker id="tillDateField" label="msg://till" minWidth="3em"  datatype="dateTime"/>
+                    <dateTimePicker id="tillDateField" label="msg://till" datatype="dateTime"/>
 
                 </formLayout>
-                <hbox width="100%">
-                    <button id="searchBtn" icon="SEARCH" themeName="primary" text="msg://search"/>
+                <hbox>
+                    <button id="searchBtn" icon="SEARCH" themeNames="primary" text="msg://search"/>
                     <button id="clearEntityLogTableBtn" icon="ERASER" text="msg://clear"/>
                 </hbox>
             </details>
@@ -182,7 +182,7 @@
                         <vbox id="attributesBoxScroll" width="100%" maxHeight="100%"/>
                     </vbox>
                     <hbox id="actionsPaneLayout" visible="false" alignItems="END">
-                            <button id="saveBtn" themeName="primary" text="msg://save" icon="CHECK"/>
+                            <button id="saveBtn" themeNames="primary" text="msg://save" icon="CHECK"/>
                             <button id="cancelBtn" text="msg://cancel" icon="BAN"/>
                     </hbox>
                 </vbox>
