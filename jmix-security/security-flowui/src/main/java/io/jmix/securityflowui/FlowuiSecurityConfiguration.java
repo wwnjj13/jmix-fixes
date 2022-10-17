@@ -15,6 +15,7 @@ import io.jmix.core.JmixOrder;
 import io.jmix.flowui.FlowuiProperties;
 import io.jmix.flowui.view.View;
 import io.jmix.flowui.view.ViewRegistry;
+import io.jmix.security.SecurityConfigurers;
 import io.jmix.security.configurer.AnonymousConfigurer;
 import io.jmix.security.configurer.SessionManagementConfigurer;
 import io.jmix.security.impl.StandardAuthenticationProvidersProducer;
@@ -22,13 +23,12 @@ import io.jmix.securityflowui.access.FlowuiViewAccessChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -68,6 +68,7 @@ public class FlowuiSecurityConfiguration {
 
     public static final String LOGOUT_URL = "/logout";
     public static final String LOGOUT_SUCCESS_URL = "/";
+    public static final String SECURITY_CONFIGURER_QUALIFIER = "flowui";
 
     protected VaadinDefaultRequestCache vaadinDefaultRequestCache;
     protected VaadinConfigurationProperties configurationProperties;
@@ -172,13 +173,22 @@ public class FlowuiSecurityConfiguration {
 
         initLoginView(http);
 
+        SecurityConfigurers.applySecurityConfigurersWithQualifier(http, SECURITY_CONFIGURER_QUALIFIER);
         return http.build();
     }
 
     @Bean("sec_AuthenticationManager")
-    public AuthenticationManager providerManager(StandardAuthenticationProvidersProducer providersProducer) {
+    public AuthenticationManager providerManager(StandardAuthenticationProvidersProducer providersProducer,
+                                                 AuthenticationEventPublisher authenticationEventPublisher) {
         List<AuthenticationProvider> providers = providersProducer.getStandardProviders();
-        return new ProviderManager(providers);
+        ProviderManager providerManager = new ProviderManager(providers);
+        providerManager.setAuthenticationEventPublisher(authenticationEventPublisher);
+        return providerManager;
+    }
+
+    @Bean("sec_AuthenticationEventPublisher")
+    public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
+        return new DefaultAuthenticationEventPublisher(publisher);
     }
 
     protected void initLoginView(HttpSecurity http) throws Exception {

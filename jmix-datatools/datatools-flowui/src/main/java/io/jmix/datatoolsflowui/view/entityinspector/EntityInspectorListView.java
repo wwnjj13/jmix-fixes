@@ -67,7 +67,7 @@ import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
-import io.jmix.flowui.view.navigation.UrlIdSerializer;
+import io.jmix.flowui.view.navigation.UrlParamSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Modifier;
@@ -81,8 +81,8 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-@Route(value = "entityinspector", layout = DefaultMainViewParent.class)
-@ViewController("datatlf_entityInspectorListView")
+@Route(value = "datatl/entityinspector", layout = DefaultMainViewParent.class)
+@ViewController("datatl_entityInspectorListView")
 @ViewDescriptor("entity-inspector-list-view.xml")
 @LookupComponent("entitiesDataGrid")
 @DialogMode(width = "50em", height = "37.5em")
@@ -130,6 +130,8 @@ public class EntityInspectorListView extends StandardListView<Object> {
     protected EntityRestore entityRestore;
     @Autowired
     protected DataManager dataManager;
+    @Autowired
+    protected UrlParamSerializer urlParamSerializer;
 
     protected DataGrid<Object> entitiesDataGrid;
     protected MetaClass selectedMeta;
@@ -386,9 +388,10 @@ public class EntityInspectorListView extends StandardListView<Object> {
             Object selectedItem = dataGrid.getSingleSelectedItem();
             Object id = EntityValues.getId(selectedItem);
             if (selectedItem != null && id != null) {
-                String serializedId = UrlIdSerializer.serializeId(id);
+                String serializedEntityName = urlParamSerializer.serialize(selectedMeta.getName());
+                String serializedId = urlParamSerializer.serialize(id);
                 ImmutableMap<String, String> routeParameterMap = ImmutableMap.of(
-                        EntityInspectorDetailView.ROUTE_PARAM_NAME, selectedMeta.getName(),
+                        EntityInspectorDetailView.ROUTE_PARAM_NAME, serializedEntityName,
                         EntityInspectorDetailView.ROUTE_PARAM_ID, serializedId
                 );
                 return new RouteParameters(routeParameterMap);

@@ -32,7 +32,7 @@ import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.util.RemoveOperation;
 import io.jmix.flowui.view.*;
-import io.jmix.flowui.view.navigation.UrlIdSerializer;
+import io.jmix.flowui.view.navigation.UrlParamSerializer;
 import io.jmix.security.model.RowLevelPolicyAction;
 import io.jmix.security.model.RowLevelPolicyType;
 import io.jmix.security.model.RowLevelRole;
@@ -47,7 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Route(value = "rowlevelrolemodels/:code", layout = DefaultMainViewParent.class)
+@Route(value = "sec/rowlevelrolemodels/:code", layout = DefaultMainViewParent.class)
 @ViewController("sec_RowLevelRoleModel.detail")
 @ViewDescriptor("row-level-role-model-detail-view.xml")
 @EditedEntityContainer("roleModelDc")
@@ -87,6 +87,8 @@ public class RowLevelRoleModelDetailView extends StandardDetailView<RowLevelRole
     private RoleModelConverter roleModelConverter;
     @Autowired
     private RowLevelRoleRepository roleRepository;
+    @Autowired
+    private UrlParamSerializer urlParamSerializer;
 
     private boolean openedByCreateAction = false;
     private final Set<UUID> forRemove = new HashSet<>();
@@ -132,7 +134,7 @@ public class RowLevelRoleModelDetailView extends StandardDetailView<RowLevelRole
 
     @Override
     protected void initExistingEntity(String serializedEntityCode) {
-        String code = UrlIdSerializer.deserializeId(String.class, serializedEntityCode);
+        String code = urlParamSerializer.deserialize(String.class, serializedEntityCode);
         RowLevelRole roleByCode = roleRepository.findRoleByCode(code);
 
         RowLevelRoleModel rowLevelRoleModel = roleModelConverter.createRowLevelRoleModel(roleByCode);

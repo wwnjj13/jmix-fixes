@@ -46,7 +46,7 @@ import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.*;
 import io.jmix.flowui.view.*;
-import io.jmix.flowui.view.navigation.UrlIdSerializer;
+import io.jmix.flowui.view.navigation.UrlParamSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
@@ -57,8 +57,8 @@ import java.util.HashMap;
 import static io.jmix.core.metamodel.model.MetaProperty.Type.ASSOCIATION;
 import static io.jmix.core.metamodel.model.MetaProperty.Type.COMPOSITION;
 
-@Route(value = "entityinspector/:entityName/:entityId", layout = DefaultMainViewParent.class)
-@ViewController("datatlf_entityInspectorDetailView")
+@Route(value = "datatl/entityinspector/:entityName/:entityId", layout = DefaultMainViewParent.class)
+@ViewController("datatl_entityInspectorDetailView")
 @ViewDescriptor("entity-inspector-detail-view.xml")
 @DialogMode(width = "50em", resizable = true)
 public class EntityInspectorDetailView extends StandardDetailView<Object> {
@@ -90,6 +90,8 @@ public class EntityInspectorDetailView extends StandardDetailView<Object> {
     protected DataManager dataManager;
     @Autowired
     protected MessageBundle messageBundle;
+    @Autowired
+    protected UrlParamSerializer urlParamSerializer;
 
     protected Tabs tabs;
     @Nullable
@@ -143,7 +145,7 @@ public class EntityInspectorDetailView extends StandardDetailView<Object> {
             MetaProperty keyProperty = metadataTools.getPrimaryKeyProperty(metaClass);
             if (keyProperty != null) {
                 Class<?> idType = keyProperty.getJavaType();
-                Object deserializedId = UrlIdSerializer.deserializeId(idType, metadataId);
+                Object deserializedId = urlParamSerializer.deserialize(idType, metadataId);
 
                 String queryString = String.format(SINGLE_SELECT_QUERY, metaClass.getName(), deserializedId);
                 Object entity = dataManager.load(metaClass.getJavaClass())
@@ -470,7 +472,7 @@ public class EntityInspectorDetailView extends StandardDetailView<Object> {
             Object selectedItem = dataGrid.getSingleSelectedItem();
             Object id = selectedItem != null ? EntityValues.getId(selectedItem) : null;
             if (id != null) {
-                editAction.setEntityId(UrlIdSerializer.serializeId(id));
+                editAction.setEntityId(urlParamSerializer.serialize(id));
             }
         });
 

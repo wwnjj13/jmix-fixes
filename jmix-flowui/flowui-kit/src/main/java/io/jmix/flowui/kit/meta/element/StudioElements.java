@@ -17,9 +17,12 @@
 package io.jmix.flowui.kit.meta.element;
 
 import com.vaadin.flow.component.accordion.AccordionPanel;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.login.LoginI18n;
+import com.vaadin.flow.component.tabs.Tab;
+import io.jmix.flowui.kit.component.loginform.JmixLoginI18n;
+import io.jmix.flowui.kit.component.dropdownbutton.DropdownButtonItem;
 import io.jmix.flowui.kit.meta.StudioElement;
 import io.jmix.flowui.kit.meta.StudioProperty;
 import io.jmix.flowui.kit.meta.StudioPropertyType;
@@ -80,13 +83,13 @@ public interface StudioElements {
             xmlElement = "tab",
             visible = true,
             properties = {
-                    @StudioProperty(xmlAttribute = "className", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN),
                     @StudioProperty(xmlAttribute = "flewGrow", type = StudioPropertyType.DOUBLE),
                     @StudioProperty(xmlAttribute = "id", type = StudioPropertyType.COMPONENT_ID),
                     @StudioProperty(xmlAttribute = "label", type = StudioPropertyType.LOCALIZED_STRING),
-                    @StudioProperty(xmlAttribute = "themeName", type = StudioPropertyType.VALUES_LIST,
+                    @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST,
                             options = {"icon-on-top"}),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
@@ -101,7 +104,7 @@ public interface StudioElements {
             xmlElement = "accordionPanel",
             visible = true,
             properties = {
-                    @StudioProperty(xmlAttribute = "className", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN),
                     @StudioProperty(xmlAttribute = "height", type = StudioPropertyType.SIZE),
@@ -111,7 +114,7 @@ public interface StudioElements {
                     @StudioProperty(xmlAttribute = "minHeight", type = StudioPropertyType.SIZE),
                     @StudioProperty(xmlAttribute = "minWidth", type = StudioPropertyType.SIZE),
                     @StudioProperty(xmlAttribute = "summaryText", type = StudioPropertyType.LOCALIZED_STRING),
-                    @StudioProperty(xmlAttribute = "themeName", type = StudioPropertyType.VALUES_LIST,
+                    @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST,
                             options = {"filled", "reverse", "small"}),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
@@ -163,4 +166,74 @@ public interface StudioElements {
             }
     )
     FormLayout.ResponsiveStep responsiveStep();
+
+    @StudioElement(
+            name = "Form",
+            classFqn = "io.jmix.flowui.kit.component.loginform.JmixLoginI18n.JmixForm",
+            xmlElement = "form",
+            target = {"io.jmix.flowui.kit.component.loginform.EnhancedLoginForm"},
+            properties = {
+                    @StudioProperty(xmlAttribute = "forgotPassword", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "password", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "rememberMe", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "submit", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "title", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "username", type = StudioPropertyType.LOCALIZED_STRING)
+            }
+    )
+    JmixLoginI18n.JmixForm loginForm();
+
+    @StudioElement(
+            name = "ErrorMessage",
+            classFqn = "com.vaadin.flow.component.login.LoginI18n.ErrorMessage",
+            xmlElement = "errorMessage",
+            target = {"io.jmix.flowui.kit.component.loginform.EnhancedLoginForm"},
+            properties = {
+                    @StudioProperty(xmlAttribute = "title", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "message", type = StudioPropertyType.LOCALIZED_STRING)
+            }
+    )
+    LoginI18n.ErrorMessage loginErrorMessage();
+
+    @StudioElement(
+            name = "AdditionalInformation",
+            xmlElement = "additionalInformation",
+            target = {"io.jmix.flowui.kit.component.loginform.EnhancedLoginForm"},
+            properties = {
+                    @StudioProperty(xmlAttribute = "message", type = StudioPropertyType.LOCALIZED_STRING)
+            }
+    )
+    void additionalInformation();
+
+    @StudioElement(
+            name = "ActionItem",
+            classFqn = "io.jmix.flowui.kit.component.dropdownbutton.ActionItem",
+            xmlElement = "actionItem",
+            properties = {
+                    @StudioProperty(xmlAttribute = "id", type = StudioPropertyType.COMPONENT_ID, required = true),
+                    @StudioProperty(xmlAttribute = "ref", type = StudioPropertyType.ACTION_REF)
+            }
+    )
+    DropdownButtonItem actionItem();
+
+    @StudioElement(
+            name = "ComponentItem",
+            classFqn = "io.jmix.flowui.kit.component.dropdownbutton.ComponentItem",
+            xmlElement = "componentItem",
+            properties = {
+                    @StudioProperty(xmlAttribute = "id", type = StudioPropertyType.COMPONENT_ID, required = true)
+            }
+    )
+    DropdownButtonItem componentItem();
+
+    @StudioElement(
+            name = "TextItem",
+            classFqn = "io.jmix.flowui.kit.component.dropdownbutton.TextItem",
+            xmlElement = "textItem",
+            properties = {
+                    @StudioProperty(xmlAttribute = "id", type = StudioPropertyType.COMPONENT_ID, required = true),
+                    @StudioProperty(xmlAttribute = "text", type = StudioPropertyType.LOCALIZED_STRING)
+            }
+    )
+    DropdownButtonItem textItem();
 }

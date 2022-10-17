@@ -18,6 +18,7 @@ package io.jmix.flowui.view.navigation;
 
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.RouteParameters;
+import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.view.DetailViewMode;
 import io.jmix.flowui.view.View;
 
@@ -27,11 +28,18 @@ import java.util.function.Consumer;
 
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Provides a fluent interface to configure navigation parameters and navigate to an entity detail {@link View}.
+ * <p>
+ * An instance of this class should be obtained through {@link ViewNavigators#detailView(Class)} and its overloaded
+ * variants.
+ */
 public class DetailViewNavigator<E> extends ViewNavigator {
 
     protected final Class<E> entityClass;
 
     protected E editedEntity;
+    protected boolean readOnly;
 
     protected DetailViewMode mode = DetailViewMode.CREATE;
 
@@ -80,20 +88,41 @@ public class DetailViewNavigator<E> extends ViewNavigator {
     }
 
     @Override
-    public DetailViewNavigator<E> withBackNavigationTarget(@Nullable Class<? extends View> backNavigationTarget) {
-        super.withBackNavigationTarget(backNavigationTarget);
+    public DetailViewNavigator<E> withBackwardNavigation(boolean backwardNavigation) {
+        super.withBackwardNavigation(backwardNavigation);
         return this;
     }
 
+    public DetailViewNavigator<E> withReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        return this;
+    }
+
+    /**
+     * @return entity class of the detail view
+     */
     public Class<E> getEntityClass() {
         return entityClass;
     }
 
+    /**
+     * @return entity instance shown by the detail view
+     */
     public Optional<E> getEditedEntity() {
         return Optional.ofNullable(editedEntity);
     }
 
+    /**
+     * @return the detail view purpose (create or edit an entity)
+     */
     public DetailViewMode getMode() {
         return mode;
+    }
+
+    /**
+     * @return whether a view should be opened in read-only mode
+     */
+    public boolean isReadOnly() {
+        return readOnly;
     }
 }

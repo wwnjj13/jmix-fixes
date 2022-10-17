@@ -55,7 +55,10 @@ public class AuthorizationServerAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     public static class AuthorizationServerSecurityConfiguration {
 
-        @Bean("authsrv_AuthorizationServerSecurityFilterChain")
+        public static final String SECURITY_CONFIGURER_QUALIFIER = "authorization-server";
+        public static final String LOGIN_FORM_SECURITY_CONFIGURER_QUALIFIER = "authorization-server-login-form";
+
+        @Bean("authsr_AuthorizationServerSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 100)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
                 throws Exception {
@@ -68,10 +71,11 @@ public class AuthorizationServerAutoConfiguration {
                                     new LoginUrlAuthenticationEntryPoint("/login"))
                     );
 
+            SecurityConfigurers.applySecurityConfigurersWithQualifier(http, SECURITY_CONFIGURER_QUALIFIER);
             return http.build();
         }
 
-        @Bean("authsrv_LoginFormSecurityFilterChain")
+        @Bean("authsr_LoginFormSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 110)
         public SecurityFilterChain loginFormSecurityFilterChain(HttpSecurity http)
                 throws Exception {
@@ -82,6 +86,7 @@ public class AuthorizationServerAutoConfiguration {
                     })
                     .formLogin();
 
+            SecurityConfigurers.applySecurityConfigurersWithQualifier(http, LOGIN_FORM_SECURITY_CONFIGURER_QUALIFIER);
             return http.build();
         }
 
@@ -113,7 +118,9 @@ public class AuthorizationServerAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     public static class ResourceServerSecurityConfiguration {
 
-        @Bean("authsrv_ResourceServerSecurityFilterChain")
+        public static final String SECURITY_CONFIGURER_QUALIFIER = "authorization-server-resource-server";
+
+        @Bean("authsr_ResourceServerSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 150)
         public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http,
                                                                      OpaqueTokenIntrospector opaqueTokenIntrospector) throws Exception {
@@ -125,11 +132,12 @@ public class AuthorizationServerAutoConfiguration {
                     .oauth2ResourceServer(oauth2 -> oauth2
                             .opaqueToken(opaqueToken -> opaqueToken
                                     .introspector(opaqueTokenIntrospector)));
+            SecurityConfigurers.applySecurityConfigurersWithQualifier(http, SECURITY_CONFIGURER_QUALIFIER);
             return http.build();
         }
 
         @ConditionalOnMissingBean
-        @Bean("authsrv_OpaqueTokenIntrospector")
+        @Bean("authsr_OpaqueTokenIntrospector")
         public OpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2AuthorizationService authorizationService,
                                                                UserDetailsService userDetailsService) {
             return new AuthorizationServiceOpaqueTokenIntrospector(authorizationService, userDetailsService);

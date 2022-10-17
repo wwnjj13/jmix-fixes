@@ -17,15 +17,16 @@
 package io.jmix.flowui.xml.layout.loader.container;
 
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import io.jmix.flowui.component.scroller.JmixScroller;
 import io.jmix.flowui.xml.layout.ComponentLoader;
 import io.jmix.flowui.xml.layout.loader.LayoutLoader;
 import org.dom4j.Element;
 
-public class ScrollerLoader extends AbstractContainerLoader<Scroller> {
+public class ScrollerLoader extends AbstractContainerLoader<JmixScroller> {
 
     @Override
-    protected Scroller createComponent() {
-        return factory.create(Scroller.class);
+    protected JmixScroller createComponent() {
+        return factory.create(JmixScroller.class);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ScrollerLoader extends AbstractContainerLoader<Scroller> {
     public void loadComponent() {
         loadEnum(element, Scroller.ScrollDirection.class, "scrollBarsDirection", resultComponent::setScrollDirection);
 
-        componentLoader().loadClassName(resultComponent, element);
+        componentLoader().loadClassNames(resultComponent, element);
         componentLoader().loadSizeAttributes(resultComponent, element);
 
         loadSubComponents();

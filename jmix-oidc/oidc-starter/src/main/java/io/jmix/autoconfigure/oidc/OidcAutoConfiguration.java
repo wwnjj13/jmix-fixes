@@ -28,6 +28,7 @@ import io.jmix.oidc.userinfo.JmixOidcUserService;
 import io.jmix.oidc.usermapper.DefaultOidcUserMapper;
 import io.jmix.oidc.usermapper.OidcUserMapper;
 import io.jmix.security.SecurityConfigurers;
+import io.jmix.security.configurer.SessionManagementConfigurer;
 import io.jmix.security.role.ResourceRoleRepository;
 import io.jmix.security.role.RowLevelRoleRepository;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -82,12 +83,13 @@ public class OidcAutoConfiguration {
     @ConditionalOnProperty(value = "jmix.oidc.use-default-ui-configuration", havingValue = "true", matchIfMissing = true)
     public static class OAuth2LoginSecurityConfiguration {
 
+        public static final String SECURITY_CONFIGURER_QUALIFIER = "oidc-login";
+
         @Bean("oidc_OAuthLoginSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 200)
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                        JmixOidcUserService jmixOidcUserService,
                                                        ClientRegistrationRepository clientRegistrationRepository) throws Exception {
-            //todo session management
             http.authorizeHttpRequests(authorize -> {
                         authorize
                                 //if we don't allow /vaadinServlet/PUSH URL the Session Expired toolbox won't
@@ -105,8 +107,14 @@ public class OidcAutoConfiguration {
                     })
                     .csrf(csrf -> {
                         csrf.disable();
+                    })
+                    .headers(headers -> {
+                        headers.frameOptions(frameOptions -> {
+                            frameOptions.sameOrigin();
+                        });
                     });
-
+            http.apply(new SessionManagementConfigurer());
+            SecurityConfigurers.applySecurityConfigurersWithQualifier(http, SECURITY_CONFIGURER_QUALIFIER);
             return http.build();
         }
 
@@ -125,6 +133,8 @@ public class OidcAutoConfiguration {
     @ConditionalOnProperty(value = "jmix.oidc.use-default-jwt-configuration", havingValue = "true", matchIfMissing = true)
     public static class OAuth2ResourceServerConfiguration {
 
+        public static final String SECURITY_CONFIGURER_QUALIFIER = "oidc-resource-server";
+
         @Bean("oidc_JwtSecurityFilterChain")
         @Order(JmixOrder.HIGHEST_PRECEDENCE + 150)
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -139,6 +149,7 @@ public class OidcAutoConfiguration {
 
             OidcResourceServerLastSecurityFilter lastSecurityFilter = new OidcResourceServerLastSecurityFilter(applicationEventPublisher);
             http.addFilterAfter(lastSecurityFilter, FilterSecurityInterceptor.class);
+            SecurityConfigurers.applySecurityConfigurersWithQualifier(http, SECURITY_CONFIGURER_QUALIFIER);
             return http.build();
         }
 

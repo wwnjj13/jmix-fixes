@@ -23,12 +23,16 @@ import io.jmix.flowui.component.ListDataComponent;
 import io.jmix.flowui.data.DataUnit;
 import io.jmix.flowui.data.HasType;
 import io.jmix.flowui.view.View;
+import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.navigation.*;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Provides fluent interface for navigating to views.
+ */
 @Component("flowui_ViewNavigators")
 public class ViewNavigators {
 
@@ -44,17 +48,41 @@ public class ViewNavigators {
         this.viewNavigationProcessor = viewNavigationProcessor;
     }
 
+    /**
+     * Creates a detail view navigator for an entity class.
+     * <p>
+     * Example of navigating to a view for editing an entity:
+     * <pre>{@code
+     * viewNavigators.detailView(Customer.class)
+     *         .editEntity(customersTable.getSingleSelectedItem())
+     *         .withViewClass(CustomerDetailView.class)
+     *         .navigate();
+     * }</pre>
+     * <p>
+     * Example of navigating to a view for creating a new entity instance:
+     * <pre>{@code
+     * viewNavigators.detailView(Customer.class)
+     *         .newEntity()
+     *         .withViewClass(CustomerDetailView.class)
+     *         .navigate();
+     * }</pre>
+     *
+     * @param entityClass edited entity class
+     */
     public <E> DetailViewNavigator<E> detailView(Class<E> entityClass) {
         checkNotNullArgument(entityClass);
-        return new DetailViewNavigator<>(entityClass, detailViewNavigationProcessor::processNavigation);
+
+        return new DetailViewNavigator<>(entityClass, detailViewNavigationProcessor::processNavigation)
+                .withBackwardNavigation(true);
     }
 
-    public <E> DetailViewNavigator<E> detailView(Class<E> entityClass, View<?> parent) {
-        checkNotNullArgument(entityClass);
-        return detailView(entityClass)
-                .withBackNavigationTarget(parent.getClass());
-    }
-
+    /**
+     * Creates a detail view navigator to edit an entity selected in the list component.
+     *
+     * @param listDataComponent the component which provides a selected entity to edit
+     *
+     * @see #detailView(Class)
+     */
     public <E> DetailViewNavigator<E> detailView(ListDataComponent<E> listDataComponent) {
         checkNotNullArgument(listDataComponent);
 
@@ -68,14 +96,17 @@ public class ViewNavigators {
             navigator.editEntity(selected);
         }
 
-        return navigator;
+        return navigator
+                .withBackwardNavigation(true);
     }
 
-    public <E> DetailViewNavigator<E> detailView(ListDataComponent<E> listDataComponent, View<?> parent) {
-        return detailView(listDataComponent)
-                .withBackNavigationTarget(parent.getClass());
-    }
-
+    /**
+     * Creates a detail view navigator to edit an entity selected in the picker component.
+     *
+     * @param picker the component which provides an entity to edit
+     *
+     * @see #detailView(Class)
+     */
     public <E> DetailViewNavigator<E> detailView(EntityPickerComponent<E> picker) {
         checkNotNullArgument(picker);
         checkState(picker instanceof HasValue,
@@ -92,25 +123,44 @@ public class ViewNavigators {
             navigator.editEntity(value);
         }
 
-        return navigator;
+        return navigator
+                .withBackwardNavigation(true);
     }
 
-    public <E> DetailViewNavigator<E> detailView(EntityPickerComponent<E> picker, View<?> parent) {
-        return detailView(picker)
-                .withBackNavigationTarget(parent.getClass());
-    }
-
+    /**
+     * Creates a list view navigator for an entity class.
+     * <p>
+     * Example of navigating to a view for editing an entity and returning to the calling view:
+     * <pre>{@code
+     * viewNavigators.listView(Customer.class)
+     *         .withViewClass(CustomerListView.class)
+     *         .withBackwardNavigation(true)
+     *         .navigate();
+     * }</pre>
+     *
+     * @param entityClass edited entity class
+     */
     public <E> ListViewNavigator<E> listView(Class<E> entityClass) {
         checkNotNullArgument(entityClass);
 
         return new ListViewNavigator<>(entityClass, listViewNavigationProcessor::processNavigation);
     }
 
+    /**
+     * Creates a view navigator.
+     *
+     * @param viewClass class of the view to navigate to
+     */
     public ViewNavigator view(Class<? extends View> viewClass) {
         return new ViewNavigator(viewNavigationProcessor::processNavigation)
                 .withViewClass(viewClass);
     }
 
+    /**
+     * Creates a view navigator.
+     *
+     * @param viewId id of the view to navigate to (as set in the {@link ViewController} annotation)
+     */
     public ViewNavigator view(String viewId) {
         return new ViewNavigator(viewNavigationProcessor::processNavigation)
                 .withViewId(viewId);

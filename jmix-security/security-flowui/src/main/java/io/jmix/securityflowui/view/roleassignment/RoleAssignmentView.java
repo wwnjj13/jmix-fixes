@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Route(value = "roleassignment/:username", layout = DefaultMainViewParent.class)
+@Route(value = "sec/roleassignment/:username", layout = DefaultMainViewParent.class)
 @ViewController("roleAssignmentView")
 @ViewDescriptor("role-assignment-view.xml")
 public class RoleAssignmentView extends StandardView {
@@ -132,7 +132,7 @@ public class RoleAssignmentView extends StandardView {
                     .onDiscard(() -> result.resume(close(StandardOutcome.DISCARD)))
                     .onCancel(result::fail);
 
-            event.preventWindowClose(result);
+            event.preventClose(result);
         }
     }
 

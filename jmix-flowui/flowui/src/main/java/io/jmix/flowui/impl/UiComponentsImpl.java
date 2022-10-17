@@ -26,6 +26,8 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.textfield.*;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.component.treegrid.TreeGrid;
@@ -41,10 +43,12 @@ import io.jmix.flowui.component.datetimepicker.TypedDateTimePicker;
 import io.jmix.flowui.component.details.JmixDetails;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.grid.TreeDataGrid;
+import io.jmix.flowui.component.loginform.JmixLoginForm;
 import io.jmix.flowui.component.textfield.JmixBigDecimalField;
 import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.component.timepicker.TypedTimePicker;
 import io.jmix.flowui.kit.component.button.JmixButton;
+import io.jmix.flowui.kit.component.menubar.JmixMenuBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -80,6 +84,8 @@ public class UiComponentsImpl implements UiComponents {
         register(TypedDateTimePicker.class, DateTimePicker.class);
         register(TypedDatePicker.class, DatePicker.class);
         register(JmixBigDecimalField.class, BigDecimalField.class);
+        register(JmixLoginForm.class, LoginForm.class);
+        register(JmixMenuBar.class, MenuBar.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -98,7 +104,6 @@ public class UiComponentsImpl implements UiComponents {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
     public <T extends Component> T create(ParameterizedTypeReference<T> typeReference) {
         ParameterizedType type = (ParameterizedType) typeReference.getType();
         T component = create((Class<T>) type.getRawType());

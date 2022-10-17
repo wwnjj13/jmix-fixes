@@ -16,18 +16,22 @@
 
 package io.jmix.flowui.view.navigation;
 
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.RouteParameters;
+import io.jmix.flowui.view.StandardDetailView;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class NavigationUtils {
 
     private NavigationUtils() {
     }
 
-    public static RouteParameters generateRouteParameters(ViewNavigator navigator, String id, String value) {
+    public static RouteParameters generateRouteParameters(ViewNavigator navigator, String param, String value) {
         HashMap<String, String> paramsMap = new HashMap<>();
-        paramsMap.put(id, value);
+        paramsMap.put(param, value);
 
         if (navigator.getRouteParameters().isPresent()) {
             RouteParameters routeParameters = navigator.getRouteParameters().get();
@@ -38,5 +42,23 @@ public final class NavigationUtils {
         }
 
         return new RouteParameters(paramsMap);
+    }
+
+    public static QueryParameters combineQueryParameters(QueryParameters... parameters) {
+        Map<String, List<String>> combinedParams = new HashMap<>();
+
+        for (QueryParameters queryParameters : parameters) {
+            combinedParams.putAll(queryParameters.getParameters());
+        }
+
+        return new QueryParameters(combinedParams);
+    }
+
+    public static QueryParameters addQueryParameters(QueryParameters queryParameters, String name, String value) {
+        Map<String, List<String>> resultParams = new HashMap<>();
+        resultParams.put(name, List.of(value));
+        resultParams.putAll(queryParameters.getParameters());
+
+        return new QueryParameters(resultParams);
     }
 }
