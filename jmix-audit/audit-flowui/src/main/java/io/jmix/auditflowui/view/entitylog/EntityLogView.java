@@ -19,13 +19,12 @@ package io.jmix.auditflowui.view.entitylog;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -191,8 +190,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected HorizontalLayout setupWrapper;
     @ViewComponent
-    protected HorizontalLayout instancePickerContainer;
-
+    protected VerticalLayout loggedEntityMiscBox;
     protected Object selectedEntity;
 
     protected TreeMap<String, String> entityMetaClassesMap;
@@ -242,8 +240,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
         filterEntityNameField.setItems(entityMetaClassesMap.values());
-        instancePicker.addValueChangeListener((HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ValuePicker<Object>, Object>>)
-                event1 -> instancePicker.getElement().setProperty("value", metadataTools.getInstanceName(event1.getValue())));
+        instancePicker.setFormatter(value -> value!=null ? metadataTools.getInstanceName(value): null);
 
         disableControls();
         setDateFieldTime();
@@ -386,11 +383,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @Subscribe("filterEntityNameField")
     protected void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
         if (event.getValue() != null) {
-            instancePickerContainer.setEnabled(true);
-            MetaClass metaClass = metadata.getSession().getClass(event.getValue());
-            instancePicker.setValue(metaClass.getName());
+            instancePicker.setEnabled(true);
         } else {
-            instancePickerContainer.setEnabled(false);
+            instancePicker.setEnabled(false);
         }
         instancePicker.clear();
     }
@@ -430,19 +425,15 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
     protected void enableControls() {
         loggedEntityTable.setEnabled(false);
-        entityNameField.setEnabled(true);
-        autoCheckBox.setEnabled(true);
-        manualCheckBox.setEnabled(true);
+        loggedEntityMiscBox.setEnabled(true);
         for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
             ((Checkbox) c).setEnabled(true);
         actionsPaneLayout.setVisible(true);
     }
 
     protected void disableControls() {
-        entityNameField.setEnabled(false);
         loggedEntityTable.setEnabled(true);
-        autoCheckBox.setEnabled(false);
-        manualCheckBox.setEnabled(false);
+        loggedEntityMiscBox.setEnabled(false);
         for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
             ((Checkbox) c).setEnabled(false);
         actionsPaneLayout.setVisible(false);
@@ -496,8 +487,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         checkBox.setLabel(name);
         checkBox.setEnabled(editable);
         checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-        attributesBoxScroll.addAndExpand(checkBox);
-
+        attributesBoxScroll.add(checkBox);
     }
 
     protected void enableAllCheckBoxes(boolean b) {
@@ -573,7 +563,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected void onValueClearAction(ActionPerformedEvent event) {
         if (instancePicker.isEnabled()) {
             selectedEntity = null;
-            instancePicker.setValue(null);
+            instancePicker.clear();
         }
     }
 
@@ -596,7 +586,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                             if (!items.isEmpty()) {
                                 Object item = items.iterator().next();
                                 selectedEntity = item;
-                                instancePicker.setValue(item.toString());
+                                instancePicker.setValue(item);
                             }
                         })
                         .withAfterCloseListener(afterCloseEvent -> instancePicker.focus())

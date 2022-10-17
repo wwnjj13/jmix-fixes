@@ -15,38 +15,40 @@
   -->
 
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://UserSessions.view"
-        focusComponent="sessionsTable">
+      title="msg://view"
+      focusComponent="sessionsTable">
     <data readOnly="true">
         <collection id="userSessionsDc"
                     class="io.jmix.audit.entity.UserSession">
             <loader id="userSessionsDl"/>
         </collection>
     </data>
-
-    <layout spacing="true" expand="sessionsTable">
-        <formLayout>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <layout>
+        <formLayout id="filterPanel">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
-                <responsiveStep minWidth="32em" columns="2"/>
-                <responsiveStep minWidth="50em" columns="4"/>
+                <responsiveStep minWidth="40em" columns="2"/>
+                <responsiveStep minWidth="60em" columns="4"/>
             </responsiveSteps>
             <textField id="userName" datatype="string"
-                       label="msg://UserSessions.nameField"/>
+                       label="msg://nameField"/>
             <dateTimePicker id="lastRequestDateFrom" datatype="date"
-                        label="msg://UserSessions.lastRequestDateFrom"/>
+                            label="msg://lastRequestDateFrom"/>
             <dateTimePicker id="lastRequestDateTo" datatype="date"
-                        label="msg://UserSessions.lastRequestDateTo"/>
-            <button id="clearButton" text="msg://UserSessions.clear"/>
+                            label="msg://lastRequestDateTo"/>
+            <button id="clearButton" text="msg://clear" icon="ERASER"/>
         </formLayout>
-        <hbox id="buttonsPanel" padding="false">
+        <hbox id="buttonsPanel" classNames="buttons-panel">
             <button id="refreshBtn" action="sessionsTable.refresh"/>
             <button id="expireBtn" action="sessionsTable.expire"/>
         </hbox>
-        <dataGrid id="sessionsTable" minHeight="10em"
-            width="100%"
-            dataContainer="userSessionsDc"
-            selectionMode="MULTI">
+        <dataGrid id="sessionsTable" minHeight="20em"
+                  width="100%"
+                  dataContainer="userSessionsDc"
+                  selectionMode="MULTI">
             <actions>
                 <action id="refresh" type="refresh"/>
                 <action id="expire" text="msg://expire" icon="BAN"/>

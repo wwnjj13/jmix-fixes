@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 
-<menu-config xmlns="http://jmix.io/schema/flowui/menu">
-    <menu id="administration">
+<menu-config xmlns="http://jmix.io/schema/flowui/menu" order="300">
+    <menu id="audit">
         <item view="entityLog.view" title="msg://io.jmix.auditflowui.view.entitylog/entityLogView.menu"/>
         <item view="userSession.view" title="msg://io.jmix.auditflowui.view.entitylog/UserSessionsView.menu"/>
     </menu>

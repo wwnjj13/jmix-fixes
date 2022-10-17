@@ -18,7 +18,6 @@
       xmlns:c="http://jmix.io/schema/ui/jpql-condition"
       title="msg://EntityLogView.list">
     <data>
-
         <collection id="loggedEntityDc"
                     class="io.jmix.audit.entity.LoggedEntity">
             <loader id="loggedEntityDl">
@@ -83,7 +82,9 @@
         <collection id="entityLogAttrDc" class="io.jmix.audit.entity.EntityLogAttr" fetchPlan="_local">
         </collection>
     </data>
-
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
     <layout>
         <tabs id="tabsheet" width="100%">
             <tab id="view" label="msg://view"/>
@@ -104,15 +105,12 @@
                     <dateTimePicker id="fromDateField" label="msg://from" datatype="dateTime"/>
 
                     <comboBox label="msg://entity" id="filterEntityNameField"/>
-                    <hbox id="instancePickerContainer" alignItems="END" expand="instancePicker" enabled="false"
-                          spacing="false">
-                        <valuePicker id="instancePicker" label="msg://instance">
-                            <actions>
-                                <action id="selectAction" type="entity_lookup"/>
-                                <action id="valueClearAction" type="value_clear"/>
-                            </actions>
-                        </valuePicker>
-                    </hbox>
+                    <valuePicker id="instancePicker" label="msg://instance" enabled="false">
+                        <actions>
+                            <action id="selectAction" type="entity_lookup"/>
+                            <action id="valueClearAction" type="value_clear"/>
+                        </actions>
+                    </valuePicker>
                     <dateTimePicker id="tillDateField" label="msg://till" datatype="dateTime"/>
 
                 </formLayout>
@@ -121,40 +119,41 @@
                     <button id="clearEntityLogTableBtn" icon="ERASER" text="msg://clear"/>
                 </hbox>
             </details>
-            <hbox id="split1" width="100%">
-                <vbox id="entityLogTableBox"
-                      expand="entityLogTable"
-                      width="60%">
-                    <dataGrid id="entityLogTable" dataContainer="entityLogDc">
-                        <columns>
-                            <column property="eventTs"/>
-                            <column property="username"/>
-                            <column property="type"/>
-                            <column property="entity"/>
-                        </columns>
-                    </dataGrid>
-                </vbox>
-                <vbox id="entityLogAttrTableBox" width="40%">
-                    <dataGrid id="entityLogAttrTable" width="100%" dataContainer="entityLogAttrDc">
-                        <columns>
-                            <column property="valueId"/>
-                            <column property="oldValueId"/>
-                        </columns>
-                    </dataGrid>
-                </vbox>
-            </hbox>
+            <formLayout>
+                <responsiveSteps>
+                    <responsiveStep minWidth="0" columns="1"/>
+                    <responsiveStep minWidth="80em" columns="2"/>
+                </responsiveSteps>
+                <dataGrid id="entityLogTable" dataContainer="entityLogDc">
+                    <columns>
+                        <column property="eventTs"/>
+                        <column property="username"/>
+                        <column property="type"/>
+                        <column property="entity"/>
+                    </columns>
+                </dataGrid>
+
+                <dataGrid id="entityLogAttrTable" width="100%" dataContainer="entityLogAttrDc">
+                    <columns>
+                        <column property="valueId"/>
+                        <column property="oldValueId"/>
+                    </columns>
+                </dataGrid>
+
+            </formLayout>
+
         </vbox>
 
         <hbox id="setupWrapper" visible="false" width="100%">
             <vbox id="loggedEntityTableBox"
                   expand="loggedEntityTable" padding="false">
                 <hbox id="loggedEntityButtonPanel" className="buttons-panel">
-                    <button action="loggedEntityTable.create"/>
-                    <button action="loggedEntityTable.edit"/>
-                    <button id="removeBtn" action="loggedEntityTable.remove" text="msg://remove"/>
+                    <button id="createBtn" action="loggedEntityTable.create"/>
+                    <button id="editBtn" action="loggedEntityTable.edit"/>
+                    <button id="removeBtn" action="loggedEntityTable.remove"/>
                     <button id="reloadBtn" icon="CHECK" text="msg://reloadConfiguration"/>
                 </hbox>
-                <dataGrid id="loggedEntityTable" minHeight="10em" width="100%" dataContainer="loggedEntityDc">
+                <dataGrid id="loggedEntityTable" minHeight="20em" dataContainer="loggedEntityDc">
                     <actions>
                         <action id="create" type="create" icon="FILE_O"/>
                         <action id="edit" type="edit" icon="PENCIL"/>
@@ -167,10 +166,10 @@
                     </columns>
                 </dataGrid>
             </vbox>
-            <vbox id="loggedEntityMiscBox" width="32em" expand="attributesBox">
+            <vbox id="loggedEntityMiscBox" width="32em" padding="false" expand="attributesBox">
                 <comboBox id="entityNameField" label="msg://name" width="100%" dataContainer="loggedEntityDc"
                           property="name"/>
-                <hbox id="checkersBox" width="100%">
+                <hbox id="checkersBox" padding="false" width="100%">
                     <checkbox id="autoCheckBox" label="msg://auto" dataContainer="loggedEntityDc"
                               property="auto"/>
                     <checkbox id="manualCheckBox" label="msg://manual" dataContainer="loggedEntityDc"
@@ -179,9 +178,9 @@
                 <vbox id="attributesBox" width="100%" padding="false">
                     <h5 text="msg://attributes"/>
                     <checkbox id="selectAllCheckBox" label="msg://[all]"/>
-                    <scroller id="attributesScroller" scrollBarsDirection="VERTICAL" width="100%"
-                              minHeight="15em" maxHeight="20em"/>
-                    <vbox id="attributesBoxScroll" width="100%" maxHeight="100%"/>
+                    <scroller id="attributesScroller" scrollBarsDirection="VERTICAL"
+                              minHeight="15em" maxHeight="20em" width="100%"/>
+                    <vbox id="attributesBoxScroll" padding="false"/>
                 </vbox>
                 <hbox id="actionsPaneLayout" visible="false" alignItems="END">
                     <button id="saveBtn" themeNames="primary" text="msg://save" icon="CHECK"/>

@@ -16,7 +16,9 @@
 
 package io.jmix.auditflowui.view.sessions;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.textfield.TextField;
@@ -40,6 +42,7 @@ import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -54,62 +57,24 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
 
     @ViewComponent
     protected DataGrid<UserSession> sessionsTable;
-
-    @ViewComponent
-    protected CollectionContainer<UserSession> userSessionsDc;
-
-    @ViewComponent
-    protected CollectionLoader<UserSession> userSessionsDl;
-
-    @Autowired
-    protected UserSessions userSessions;
-
-    @Autowired
-    protected Notifications notifications;
-    @Autowired
-    protected Messages messages;
-
     @ViewComponent
     protected TextField userName;
     @ViewComponent
     protected DateTimePicker lastRequestDateFrom;
     @ViewComponent
     protected DateTimePicker lastRequestDateTo;
+    @ViewComponent
+    protected CollectionLoader<UserSession> userSessionsDl;
 
-
+    @Autowired
+    protected UserSessions userSessions;
+    @Autowired
+    protected Notifications notifications;
+    @Autowired
+    protected Messages messages;
 
     @Subscribe
     protected void onInit(InitEvent event) {
-        userSessionsDl.setLoadDelegate(loadContext -> userSessions.sessions().collect(Collectors.toList()));
-        userSessionsDl.load();
-    }
-
-    @Subscribe("sessionsTable.expire")
-    protected void onSessionsTableExpire(ActionPerformedEvent event) {
-        UserSession session = sessionsTable.getSingleSelectedItem();
-        if (session != null) {
-            userSessions.invalidate(session);
-            notifications.create(messages.formatMessage(UserSessionsView.class, "sessionInvalidated", session.getSessionId()))
-                    .withType(Notifications.Type.DEFAULT)
-                    .show();
-            userSessionsDl.load();
-        }
-    }
-
-    @Subscribe("clearButton")
-    protected void onClearButtonClick(ClickEvent<Button> event) {
-        userName.clear();
-        lastRequestDateFrom.clear();
-        lastRequestDateTo.clear();
-        refreshDlItems();
-    }
-
-    @Subscribe("sessionsTable.refresh")
-    protected void onSessionsTableRefresh(ActionPerformedEvent event) {
-        refreshDlItems();
-    }
-
-    private void refreshDlItems() {
         userSessionsDl.setLoadDelegate(loadContext -> {
             Stream<UserSession> sessions = userSessions.sessions();
             if (userName.getValue() != null) {
@@ -128,6 +93,40 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
             }
             return sessions.collect(Collectors.toList());
         });
+    }
+
+    @Subscribe("sessionsTable.expire")
+    protected void onSessionsTableExpire(ActionPerformedEvent event) {
+        if (sessionsTable.getSelectedItems().size()==0){
+            notifications.create(messages.getMessage(UserSessionsView.class, "needSelectSession"))
+                    .withType(Notifications.Type.WARNING)
+                    .show();
+        } else {
+            for (UserSession session : sessionsTable.getSelectedItems()) {
+                userSessions.invalidate(session);
+                notifications.create(messages.formatMessage(UserSessionsView.class, "sessionInvalidated", session.getSessionId()))
+                        .withType(Notifications.Type.DEFAULT)
+                        .show();
+                userSessionsDl.load();
+            }
+        }
+    }
+
+    @Subscribe("clearButton")
+    protected void onClearButtonClick(ClickEvent<Button> event) {
+        userName.clear();
+        lastRequestDateFrom.clear();
+        lastRequestDateTo.clear();
+        refreshDlItems();
+    }
+
+    @Subscribe("sessionsTable.refresh")
+    protected void onSessionsTableRefresh(ActionPerformedEvent event) {
+        refreshDlItems();
+    }
+
+    private void refreshDlItems() {
+
         userSessionsDl.load();
     }
 
