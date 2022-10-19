@@ -29,6 +29,7 @@
                 <property name="manual"/>
                 <property name="name"/>
             </fetchPlan>
+<!--            <collection id="loggedEntityAttributesDc" property="attributes"/>-->
         </collection>
         <collection id="loggedAttrDc"
                     class="io.jmix.audit.entity.LoggedAttribute"
@@ -179,8 +180,9 @@
                     <h5 text="msg://attributes"/>
                     <checkbox id="selectAllCheckBox" label="msg://[all]"/>
                     <scroller id="attributesScroller" scrollBarsDirection="VERTICAL"
-                              minHeight="15em" maxHeight="20em" width="100%">
-                        <vbox id="attributesBoxScroll" padding="false"/>
+                              minHeight="15em" width="100%">
+                        <checkboxGroup id="attributesCheckboxGroup" property="attributes" itemsContainer="loggedEntityDc"/>
+<!--                        <vbox id="attributesBoxScroll" padding="false"/>-->
                     </scroller>
 
                 </vbox>
