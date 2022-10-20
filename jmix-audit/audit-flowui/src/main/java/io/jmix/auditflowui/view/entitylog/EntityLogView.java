@@ -189,7 +189,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected VerticalLayout loggedEntityMiscBox;
     @ViewComponent
-    protected CheckboxGroup attributesCheckboxGroup;
+    protected CheckboxGroup<String> attributesCheckboxGroup;
     protected Object selectedEntity;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
@@ -268,6 +268,28 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             columnsOrder.add(entityLogAttrTable.getColumns().get(i));
         }
         entityLogAttrTable.setColumnOrder(columnsOrder);
+
+        attributesCheckboxGroup.addValueChangeListener(event1 -> {
+            if (event1.getValue().size() == event1.getSource()
+                    .getListDataView().getItems().toArray().length) {
+
+                selectAllCheckBox.setValue(true);
+                selectAllCheckBox.setIndeterminate(false);
+            } else if (event1.getValue().size() == 0) {
+                selectAllCheckBox.setValue(false);
+                selectAllCheckBox.setIndeterminate(false);
+            } else {
+                selectAllCheckBox.setIndeterminate(true);
+            }
+        });
+        selectAllCheckBox.addValueChangeListener(event1 -> {
+            if (selectAllCheckBox.getValue()) {
+                attributesCheckboxGroup.setValue(new HashSet<>(attributesCheckboxGroup.getListDataView()
+                        .getItems().collect(Collectors.toList())));
+            } else {
+                attributesCheckboxGroup.deselectAll();
+            }
+        });
     }
 
     protected Object generateAttributeColumn(EntityLogAttr entityLogAttr) {
@@ -361,10 +383,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             loggedAttrDl.load();
             loggedEntityDc.setItem(entity);
             fillAttributes(entity.getName(), entity, false);
+            selectAllCheckBox.setEnabled(true);
 //            checkAllCheckboxes();
         } else {
             setSelectAllCheckBox(false);
             attributesCheckboxGroup.clear();
+            selectAllCheckBox.setEnabled(false);
 //            clearAttributes();
         }
     }
@@ -446,6 +470,10 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
                     metadata.getClass(metaClassName));
             List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
+
+            List<String> selectedItems = new ArrayList<>();
+            List<String> items = new ArrayList<>();
+
             selectAllCheckBox.setEnabled(editable);
             Set<LoggedAttribute> enabledAttr = null;
             if (item != null)
@@ -456,12 +484,22 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                         MetaClass embeddedMetaClass = property.getRange().asClass();
                         for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
                             if (allowLogProperty(embeddedProperty)) {
-                                addAttribute(enabledAttr,
-                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
+                                String name = String.format("%s.%s", property.getName(), embeddedProperty.getName());
+                                items.add(name);
+                                if (attributeIsSelected(enabledAttr, name, metaClass)){
+                                    selectedItems.add(name);
+                                }
+//                                addAttribute(enabledAttr,
+//                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
                             }
                         }
                     } else {
-                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+
+                        items.add(property.getName());
+                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
+                            selectedItems.add(property.getName());
+                        }
                     }
                 }
             }
@@ -470,14 +508,24 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             if (additionalProperties != null) {
                 for (MetaProperty property : additionalProperties) {
                     if (allowLogProperty(property)) {
-                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+
+                        items.add(property.getName());
+                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
+                            selectedItems.add(property.getName());
+                        }
                     }
                 }
             }
-            attributesCheckboxGroup.setItems();
-            attributesCheckboxGroup.select();
+            attributesCheckboxGroup.setItems(items);
+            attributesCheckboxGroup.select(selectedItems);
             attributesCheckboxGroup.setEnabled(editable);
         }
+    }
+
+    protected boolean attributeIsSelected(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass) {
+
+        return enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes);
     }
 
     protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass, boolean editable) {
@@ -489,7 +537,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         checkBox.setLabel(name);
         checkBox.setEnabled(editable);
 //        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-        attributesBoxScroll.add(checkBox);
+//        attributesBoxScroll.add(checkBox);
     }
 
 //    protected void enableAllCheckBoxes(boolean b) {
@@ -727,21 +775,25 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         DataContext dataContext = getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);
         Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
-        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
-            Checkbox currentCheckBox = (Checkbox) c;
-            if (UiComponentUtils.sameId(currentCheckBox, SELECT_ALL_CHECK_BOX))
-                continue;
-            Boolean currentCheckBoxValue = currentCheckBox.getValue();
+        Set<String> selectedItems = attributesCheckboxGroup.getSelectedItems();
+        for (Object c : attributesCheckboxGroup.getListDataView().getItems().toArray()) {
+            String currentElementCheckbox = (String) c;
+
+
             MetaClass metaClass = metadata.getSession().getClass(entityNameField.getValue());
-            if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+            if (selectedItems.contains(currentElementCheckbox) && !isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //add attribute if checked and not exist in table
                 LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
-                newLoggedAttribute.setName(currentCheckBox.getId().orElse(""));
+                newLoggedAttribute.setName(currentElementCheckbox);
                 newLoggedAttribute.setEntity(selectedEntity);
+                if (selectedEntity.getAttributes()==null){
+                    selectedEntity.setAttributes(new HashSet<>());
+                }
+                selectedEntity.getAttributes().add(newLoggedAttribute);
             }
-            if (!currentCheckBoxValue && isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+            if (!selectedItems.contains(currentElementCheckbox) && isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //remove attribute if unchecked and exist in table
-                LoggedAttribute removeAtr = getLoggedAttribute(currentCheckBox.getId().orElse(null), enabledAttributes);
+                LoggedAttribute removeAtr = getLoggedAttribute(currentElementCheckbox, enabledAttributes);
                 if (removeAtr != null)
                     dataContext.remove(removeAtr);
             }
