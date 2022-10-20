@@ -19,7 +19,6 @@ package io.jmix.auditflowui.view.entitylog;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -166,8 +165,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected HorizontalLayout actionsPaneLayout;
     @ViewComponent
-    protected CheckboxGroup<LoggedAttribute> attributesCheckboxGroup;
-    @ViewComponent
     protected DateTimePicker tillDateField;
     @ViewComponent
     protected DateTimePicker fromDateField;
@@ -191,6 +188,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected HorizontalLayout setupWrapper;
     @ViewComponent
     protected VerticalLayout loggedEntityMiscBox;
+    @ViewComponent
+    protected CheckboxGroup attributesCheckboxGroup;
     protected Object selectedEntity;
 
     // allow or not selectAllCheckBox to change values of other checkboxes
@@ -226,7 +225,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         changeTypeMap.put("M", messages.getMessage(EntityLogView.class, "modifyField"));
         changeTypeMap.put("D", messages.getMessage(EntityLogView.class, "deleteField"));
         changeTypeMap.put("R", messages.getMessage(EntityLogView.class, "restoreField"));
-        attributesCheckboxGroup.setItemLabelGenerator((ItemLabelGenerator<LoggedAttribute>) item -> item.getName());
+
         Map<String, String> entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setItems(entityMetaClassesMap.values());
         FlowuiComponentUtils.setItemsMap(changeTypeField, changeTypeMap);
@@ -249,11 +248,11 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .setSortable(true);
 
         entityLogTable.addColumn(this::generateEntityInstanceNameColumn
-        ).setHeader(messages.getMessage(this.getClass(), "entityInstanceName"))
+                ).setHeader(messages.getMessage(this.getClass(), "entityInstanceName"))
                 .setSortable(true);
 
         entityLogAttrTable.addColumn(entityLogAttr ->
-                evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()))
+                        evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()))
                 .setHeader(messages.getMessage(this.getClass(), "oldValue"))
                 .setKey("oldValue").setSortable(true);
         entityLogAttrTable.addColumn(entityLogAttr ->
@@ -361,20 +360,21 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             loggedAttrDl.setParameter("entityId", entity.getId());
             loggedAttrDl.load();
             loggedEntityDc.setItem(entity);
-//            fillAttributes(entity.getName(), entity, false);
+            fillAttributes(entity.getName(), entity, false);
 //            checkAllCheckboxes();
         } else {
             setSelectAllCheckBox(false);
+            attributesCheckboxGroup.clear();
 //            clearAttributes();
         }
     }
 
-    @Subscribe("selectAllCheckBox")
-    protected void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
-        if (event.getValue() != null) {
-            enableAllCheckBoxes(event.getValue());
-        }
-    }
+//    @Subscribe("selectAllCheckBox")
+//    protected void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
+//        if (event.getValue() != null) {
+//            enableAllCheckBoxes(event.getValue());
+//        }
+//    }
 
     @Subscribe("filterEntityNameField")
     protected void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
@@ -398,47 +398,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @Subscribe("entityNameField")
     protected void onEntityNameFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
         if (entityNameField.isEnabled())
-            createAttributes(event.getValue());
-    }
-
-    protected void createAttributes(String nameClass) {
-        Set<LoggedAttribute> loggedAttributes = new HashSet<>();
-        MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
-                metadata.getClass(nameClass));
-        List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
-        for (MetaProperty property : metaProperties) {
-            if (allowLogProperty(property)) {
-                if (metadataTools.isEmbedded(property)) {
-                    MetaClass embeddedMetaClass = property.getRange().asClass();
-                    for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
-                        if (allowLogProperty(embeddedProperty)) {
-                            LoggedAttribute loggedAttribute = getDataContext().create(LoggedAttribute.class);
-                            loggedAttribute.setName(String.format("%s.%s", property.getName(), embeddedProperty.getName()));
-                            loggedAttribute.setEntity(loggedEntityDc.getItem());
-                            loggedAttributes.add(loggedAttribute);
-                        }
-                    }
-                } else {
-                    LoggedAttribute loggedAttribute = getDataContext().create(LoggedAttribute.class);
-                    loggedAttribute.setName(property.getName());
-                    loggedAttribute.setEntity(loggedEntityDc.getItem());
-                    loggedAttributes.add(loggedAttribute);
-                }
-            }
-        }
-
-        Collection<MetaProperty> additionalProperties = metadataTools.getAdditionalProperties(metaClass);
-        if (additionalProperties != null) {
-            for (MetaProperty property : additionalProperties) {
-                if (allowLogProperty(property)) {
-                    LoggedAttribute loggedAttribute = getDataContext().create(LoggedAttribute.class);
-                    loggedAttribute.setName(property.getName());
-                    loggedAttribute.setEntity(loggedEntityDc.getItem());
-                    loggedAttributes.add(loggedAttribute);
-                }
-            }
-        }
-
+            fillAttributes(event.getValue(), null, true);
     }
 
     protected TreeMap<String, String> getEntityMetaClasses() {
@@ -463,6 +423,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         loggedEntityTable.setEnabled(false);
         loggedEntityMiscBox.setEnabled(true);
         attributesCheckboxGroup.setEnabled(true);
+//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+//            ((Checkbox) c).setEnabled(true);
         actionsPaneLayout.setVisible(true);
     }
 
@@ -470,19 +432,93 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         loggedEntityTable.setEnabled(true);
         loggedEntityMiscBox.setEnabled(false);
         attributesCheckboxGroup.setEnabled(false);
+//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+//            ((Checkbox) c).setEnabled(false);
         actionsPaneLayout.setVisible(false);
     }
 
-    protected void enableAllCheckBoxes(boolean b) {
+    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
+//        clearAttributes();
+        attributesCheckboxGroup.clear();
+        setSelectAllCheckBox(false);
 
-        if (canSelectAllCheckboxGenerateEvents) {
-            if (b) {
-                attributesCheckboxGroup.setItemEnabledProvider(item -> true);
-            } else {
-                attributesCheckboxGroup.deselectAll();
+        if (metaClassName != null) {
+            MetaClass metaClass = extendedEntities.getEffectiveMetaClass(
+                    metadata.getClass(metaClassName));
+            List<MetaProperty> metaProperties = new ArrayList<>(metaClass.getProperties());
+            selectAllCheckBox.setEnabled(editable);
+            Set<LoggedAttribute> enabledAttr = null;
+            if (item != null)
+                enabledAttr = item.getAttributes();
+            for (MetaProperty property : metaProperties) {
+                if (allowLogProperty(property)) {
+                    if (metadataTools.isEmbedded(property)) {
+                        MetaClass embeddedMetaClass = property.getRange().asClass();
+                        for (MetaProperty embeddedProperty : embeddedMetaClass.getProperties()) {
+                            if (allowLogProperty(embeddedProperty)) {
+                                addAttribute(enabledAttr,
+                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
+                            }
+                        }
+                    } else {
+                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+                    }
+                }
             }
+
+            Collection<MetaProperty> additionalProperties = metadataTools.getAdditionalProperties(metaClass);
+            if (additionalProperties != null) {
+                for (MetaProperty property : additionalProperties) {
+                    if (allowLogProperty(property)) {
+                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
+                    }
+                }
+            }
+            attributesCheckboxGroup.setItems();
+            attributesCheckboxGroup.select();
+            attributesCheckboxGroup.setEnabled(editable);
         }
     }
+
+    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass, boolean editable) {
+        Checkbox checkBox = uiComponents.create(Checkbox.class);
+        if (enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes)) {
+            checkBox.setValue(true);
+        }
+        checkBox.setId(name);
+        checkBox.setLabel(name);
+        checkBox.setEnabled(editable);
+//        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
+        attributesBoxScroll.add(checkBox);
+    }
+
+//    protected void enableAllCheckBoxes(boolean b) {
+//
+//        if (canSelectAllCheckboxGenerateEvents) {
+//            for (Component box : attributesBoxScroll.getChildren().collect(Collectors.toList()))
+//                ((Checkbox) box).setValue(b);
+//        }
+//    }
+
+//    protected void checkAllCheckboxes() {
+//        Checkbox selectAllCheckBox = (Checkbox) attributesBoxScroll.getChildren().
+//                filter(e -> UiComponentUtils.sameId(e, SELECT_ALL_CHECK_BOX))
+//                .findFirst().orElse(null);
+//
+//        if (selectAllCheckBox != null) {
+//            for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+//                if (!c.equals(selectAllCheckBox)) {
+//                    Checkbox checkBox = (Checkbox) c;
+//                    if (!checkBox.getValue()) {
+//                        setSelectAllCheckBox(false);
+//                        return;
+//                    }
+//                }
+//            }
+//            if (attributesBoxScroll.getChildren().toArray().length != 1)
+//                setSelectAllCheckBox(true);
+//        }
+//    }
 
     protected void setSelectAllCheckBox(boolean value) {
         canSelectAllCheckboxGenerateEvents = false;
@@ -503,6 +539,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         tillDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, 1).toInstant(),
                 ZoneId.systemDefault()));
     }
+
+//    public void clearAttributes() {
+//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+//            if (!UiComponentUtils.sameId(c, SELECT_ALL_CHECK_BOX)) {
+//                attributesBoxScroll.remove(c);
+//            }
+//        }
+//    }
 
     protected boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
         if (enabledAttr != null && (metaClass.findProperty(propertyName) == null
@@ -681,6 +725,27 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected void onSaveBtnClick(ClickEvent<Button> event) {
         LoggedEntity selectedEntity = loggedEntityTable.getSingleSelectedItem();
         DataContext dataContext = getDataContext();
+        selectedEntity = dataContext.merge(selectedEntity);
+        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
+        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
+            Checkbox currentCheckBox = (Checkbox) c;
+            if (UiComponentUtils.sameId(currentCheckBox, SELECT_ALL_CHECK_BOX))
+                continue;
+            Boolean currentCheckBoxValue = currentCheckBox.getValue();
+            MetaClass metaClass = metadata.getSession().getClass(entityNameField.getValue());
+            if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+                //add attribute if checked and not exist in table
+                LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
+                newLoggedAttribute.setName(currentCheckBox.getId().orElse(""));
+                newLoggedAttribute.setEntity(selectedEntity);
+            }
+            if (!currentCheckBoxValue && isEntityHaveAttribute(currentCheckBox.getId().orElse(null), metaClass, enabledAttributes)) {
+                //remove attribute if unchecked and exist in table
+                LoggedAttribute removeAtr = getLoggedAttribute(currentCheckBox.getId().orElse(null), enabledAttributes);
+                if (removeAtr != null)
+                    dataContext.remove(removeAtr);
+            }
+        }
         dataContext.save();
 
         disableControls();
