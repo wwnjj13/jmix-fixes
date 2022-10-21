@@ -18,7 +18,6 @@ package io.jmix.auditflowui.view.entitylog;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -54,14 +53,11 @@ import io.jmix.flowui.Dialogs;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.action.DialogAction;
-import io.jmix.flowui.component.UiComponentUtils;
 import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.component.scroller.JmixScroller;
 import io.jmix.flowui.component.select.JmixSelect;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.action.ActionVariant;
 import io.jmix.flowui.kit.component.FlowuiComponentUtils;
-import io.jmix.flowui.kit.component.formatter.Formatter;
 import io.jmix.flowui.kit.component.valuepicker.ValuePicker;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
@@ -384,21 +380,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             loggedEntityDc.setItem(entity);
             fillAttributes(entity.getName(), entity, false);
             selectAllCheckBox.setEnabled(true);
-//            checkAllCheckboxes();
         } else {
             setSelectAllCheckBox(false);
             attributesCheckboxGroup.clear();
             selectAllCheckBox.setEnabled(false);
-//            clearAttributes();
         }
     }
-
-//    @Subscribe("selectAllCheckBox")
-//    protected void selectAllCheckBoxValueChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
-//        if (event.getValue() != null) {
-//            enableAllCheckBoxes(event.getValue());
-//        }
-//    }
 
     @Subscribe("filterEntityNameField")
     protected void onFilterEntityNameFieldComboBoxValueChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
@@ -447,8 +434,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         loggedEntityTable.setEnabled(false);
         loggedEntityMiscBox.setEnabled(true);
         attributesCheckboxGroup.setEnabled(true);
-//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
-//            ((Checkbox) c).setEnabled(true);
         actionsPaneLayout.setVisible(true);
     }
 
@@ -456,13 +441,10 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         loggedEntityTable.setEnabled(true);
         loggedEntityMiscBox.setEnabled(false);
         attributesCheckboxGroup.setEnabled(false);
-//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList()))
-//            ((Checkbox) c).setEnabled(false);
         actionsPaneLayout.setVisible(false);
     }
 
     protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
-//        clearAttributes();
         attributesCheckboxGroup.clear();
         setSelectAllCheckBox(false);
 
@@ -489,13 +471,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                                 if (attributeIsSelected(enabledAttr, name, metaClass)){
                                     selectedItems.add(name);
                                 }
-//                                addAttribute(enabledAttr,
-//                                        String.format("%s.%s", property.getName(), embeddedProperty.getName()), metaClass, editable);
                             }
                         }
                     } else {
-//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
-
                         items.add(property.getName());
                         if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
                             selectedItems.add(property.getName());
@@ -508,7 +486,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             if (additionalProperties != null) {
                 for (MetaProperty property : additionalProperties) {
                     if (allowLogProperty(property)) {
-//                        addAttribute(enabledAttr, property.getName(), metaClass, editable);
 
                         items.add(property.getName());
                         if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
@@ -536,37 +513,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         checkBox.setId(name);
         checkBox.setLabel(name);
         checkBox.setEnabled(editable);
-//        checkBox.addValueChangeListener(e -> checkAllCheckboxes());
-//        attributesBoxScroll.add(checkBox);
     }
-
-//    protected void enableAllCheckBoxes(boolean b) {
-//
-//        if (canSelectAllCheckboxGenerateEvents) {
-//            for (Component box : attributesBoxScroll.getChildren().collect(Collectors.toList()))
-//                ((Checkbox) box).setValue(b);
-//        }
-//    }
-
-//    protected void checkAllCheckboxes() {
-//        Checkbox selectAllCheckBox = (Checkbox) attributesBoxScroll.getChildren().
-//                filter(e -> UiComponentUtils.sameId(e, SELECT_ALL_CHECK_BOX))
-//                .findFirst().orElse(null);
-//
-//        if (selectAllCheckBox != null) {
-//            for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
-//                if (!c.equals(selectAllCheckBox)) {
-//                    Checkbox checkBox = (Checkbox) c;
-//                    if (!checkBox.getValue()) {
-//                        setSelectAllCheckBox(false);
-//                        return;
-//                    }
-//                }
-//            }
-//            if (attributesBoxScroll.getChildren().toArray().length != 1)
-//                setSelectAllCheckBox(true);
-//        }
-//    }
 
     protected void setSelectAllCheckBox(boolean value) {
         canSelectAllCheckboxGenerateEvents = false;
@@ -587,14 +534,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         tillDateField.setValue(LocalDateTime.ofInstant(DateUtils.addDays(date, 1).toInstant(),
                 ZoneId.systemDefault()));
     }
-
-//    public void clearAttributes() {
-//        for (Component c : attributesBoxScroll.getChildren().collect(Collectors.toList())) {
-//            if (!UiComponentUtils.sameId(c, SELECT_ALL_CHECK_BOX)) {
-//                attributesBoxScroll.remove(c);
-//            }
-//        }
-//    }
 
     protected boolean isEntityHaveAttribute(String propertyName, MetaClass metaClass, Set<LoggedAttribute> enabledAttr) {
         if (enabledAttr != null && (metaClass.findProperty(propertyName) == null
