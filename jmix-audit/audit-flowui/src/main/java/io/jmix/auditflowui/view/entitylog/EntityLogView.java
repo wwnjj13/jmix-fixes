@@ -264,28 +264,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             columnsOrder.add(entityLogAttrTable.getColumns().get(i));
         }
         entityLogAttrTable.setColumnOrder(columnsOrder);
-
-        attributesCheckboxGroup.addValueChangeListener(event1 -> {
-            if (event1.getValue().size() == event1.getSource()
-                    .getListDataView().getItems().toArray().length) {
-
-                selectAllCheckBox.setValue(true);
-                selectAllCheckBox.setIndeterminate(false);
-            } else if (event1.getValue().size() == 0) {
-                selectAllCheckBox.setValue(false);
-                selectAllCheckBox.setIndeterminate(false);
-            } else {
-                selectAllCheckBox.setIndeterminate(true);
-            }
-        });
-        selectAllCheckBox.addValueChangeListener(event1 -> {
-            if (selectAllCheckBox.getValue()) {
-                attributesCheckboxGroup.setValue(new HashSet<>(attributesCheckboxGroup.getListDataView()
-                        .getItems().collect(Collectors.toList())));
-            } else {
-                attributesCheckboxGroup.deselectAll();
-            }
-        });
     }
 
     protected Object generateAttributeColumn(EntityLogAttr entityLogAttr) {
@@ -405,6 +383,33 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             entityLogAttrDc.setItems(null);
         }
     }
+
+    @Subscribe("attributesCheckboxGroup")
+    protected void onAttributesCheckboxGroupValueChange (AbstractField.ComponentValueChangeEvent<CheckboxGroup<String>,
+            Set<String>> event) {
+        if (event.getValue().size() == event.getSource()
+                .getListDataView().getItems().toArray().length) {
+
+            selectAllCheckBox.setValue(true);
+            selectAllCheckBox.setIndeterminate(false);
+        } else if (event.getValue().size() == 0) {
+            selectAllCheckBox.setValue(false);
+            selectAllCheckBox.setIndeterminate(false);
+        } else {
+            selectAllCheckBox.setIndeterminate(true);
+        }
+    }
+
+    @Subscribe("selectAllCheckBox")
+    protected void onSelectAllCheckBoxChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event){
+        if (selectAllCheckBox.getValue()) {
+            attributesCheckboxGroup.setValue(new HashSet<>(attributesCheckboxGroup.getListDataView()
+                    .getItems().collect(Collectors.toList())));
+        } else {
+            attributesCheckboxGroup.deselectAll();
+        }
+    }
+
 
     @Subscribe("entityNameField")
     protected void onEntityNameFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
