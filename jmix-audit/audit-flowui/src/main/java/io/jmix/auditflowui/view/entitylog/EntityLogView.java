@@ -34,6 +34,7 @@ import io.jmix.audit.entity.EntityLogAttr;
 import io.jmix.audit.entity.EntityLogItem;
 import io.jmix.audit.entity.LoggedAttribute;
 import io.jmix.audit.entity.LoggedEntity;
+import io.jmix.core.EntitySet;
 import io.jmix.core.ExtendedEntities;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
@@ -92,6 +93,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 @Route(value = "audit/entitylog", layout = DefaultMainViewParent.class)
@@ -716,7 +719,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @Subscribe("saveBtn")
     protected void onSaveBtnClick(ClickEvent<Button> event) {
         LoggedEntity selectedEntity = loggedEntityTable.getSingleSelectedItem();
-        DataContext dataContext = getDataContext();
+        DataContext dataContext = loggedEntityDl.getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);
         Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
         Set<String> selectedItems = attributesCheckboxGroup.getSelectedItems();
@@ -730,10 +733,10 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
                 newLoggedAttribute.setName(currentElementCheckbox);
                 newLoggedAttribute.setEntity(selectedEntity);
-                if (selectedEntity.getAttributes()==null){
-                    selectedEntity.setAttributes(new HashSet<>());
-                }
-                selectedEntity.getAttributes().add(newLoggedAttribute);
+//                if (selectedEntity.getAttributes()==null){
+//                    selectedEntity.setAttributes(new HashSet<>());
+//                }
+//                selectedEntity.getAttributes().add(newLoggedAttribute);
             }
             if (!selectedItems.contains(currentElementCheckbox) && isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //remove attribute if unchecked and exist in table
@@ -743,7 +746,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             }
         }
         dataContext.save();
-
+        loggedEntityDc.replaceItem(selectedEntity);
         disableControls();
         loggedEntityTable.setEnabled(true);
         loggedEntityTable.focus();
