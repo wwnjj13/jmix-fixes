@@ -129,7 +129,7 @@
                         <column property="eventTs"/>
                         <column property="username"/>
                         <column property="type"/>
-                        <column property="entity"/>
+                        <column property="entityInstanceName"/>
                     </columns>
                 </dataGrid>
 

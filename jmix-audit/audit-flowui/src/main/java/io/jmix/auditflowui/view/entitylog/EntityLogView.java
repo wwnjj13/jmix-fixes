@@ -239,12 +239,12 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         entityLogTable.addSelectionListener(this::onEntityLogTableSelect);
         loggedEntityTable.addSelectionListener(this::onLoggedEntityTableSelectEvent);
 
-        entityLogTable.addColumn(this::generateEntityIdColumn)
-                .setHeader(messages.getMessage(this.getClass(), "entityId"))
+        entityLogTable.addColumn(this::generateEntityInstanceNameColumn
+                ).setHeader(messages.getMessage(this.getClass(), "entity"))
                 .setSortable(true);
 
-        entityLogTable.addColumn(this::generateEntityInstanceNameColumn
-                ).setHeader(messages.getMessage(this.getClass(), "entityInstanceName"))
+        entityLogTable.addColumn(this::generateEntityIdColumn)
+                .setHeader(messages.getMessage(this.getClass(), "entityId"))
                 .setSortable(true);
 
         entityLogAttrTable.addColumn(entityLogAttr ->
