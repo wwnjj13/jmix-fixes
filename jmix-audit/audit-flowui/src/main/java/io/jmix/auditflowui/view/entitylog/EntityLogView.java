@@ -716,21 +716,21 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
     @Subscribe("saveBtn")
     protected void onSaveBtnClick(ClickEvent<Button> event) {
-        LoggedEntity selectedEntity = loggedEntityTable.getSingleSelectedItem();
+        LoggedEntity selectedEntity = loggedEntityDc.getItem();
         DataContext dataContext = loggedEntityDl.getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);
-        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
+        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes()!=null ?
+                selectedEntity.getAttributes() : new HashSet<>();
         Set<String> selectedItems = attributesCheckboxGroup.getSelectedItems();
         for (Object c : attributesCheckboxGroup.getListDataView().getItems().toArray()) {
             String currentElementCheckbox = (String) c;
-
-
             MetaClass metaClass = metadata.getSession().getClass(entityNameField.getValue());
             if (selectedItems.contains(currentElementCheckbox) && !isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //add attribute if checked and not exist in table
                 LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
                 newLoggedAttribute.setName(currentElementCheckbox);
                 newLoggedAttribute.setEntity(selectedEntity);
+                enabledAttributes.add(newLoggedAttribute);
             }
             if (!selectedItems.contains(currentElementCheckbox) && isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //remove attribute if unchecked and exist in table
@@ -739,8 +739,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                     dataContext.remove(removeAtr);
             }
         }
-        dataContext.save();
+        selectedEntity.setAttributes(enabledAttributes);
         loggedEntityDc.replaceItem(selectedEntity);
+        dataContext.save();
         disableControls();
         loggedEntityTable.setEnabled(true);
         loggedEntityTable.focus();
