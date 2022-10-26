@@ -104,8 +104,6 @@ import java.util.stream.Collectors;
 @DialogMode(width = "50em", height = "37.5em")
 public class EntityLogView extends StandardListView<EntityLogItem> {
 
-    protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
-
     @Autowired
     protected Messages messages;
     @Autowired
@@ -363,7 +361,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             selectAllCheckBox.setEnabled(true);
         } else {
             setSelectAllCheckBox(false);
-            attributesCheckboxGroup.clear();
+            attributesCheckboxGroup.setItems();
             selectAllCheckBox.setEnabled(false);
         }
     }
@@ -453,7 +451,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     protected void fillAttributes(String metaClassName, LoggedEntity item, boolean editable) {
-        attributesCheckboxGroup.clear();
+        attributesCheckboxGroup.setItems();
         setSelectAllCheckBox(false);
 
         if (metaClassName != null) {
@@ -733,10 +731,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 LoggedAttribute newLoggedAttribute = dataContext.create(LoggedAttribute.class);
                 newLoggedAttribute.setName(currentElementCheckbox);
                 newLoggedAttribute.setEntity(selectedEntity);
-//                if (selectedEntity.getAttributes()==null){
-//                    selectedEntity.setAttributes(new HashSet<>());
-//                }
-//                selectedEntity.getAttributes().add(newLoggedAttribute);
             }
             if (!selectedItems.contains(currentElementCheckbox) && isEntityHaveAttribute(currentElementCheckbox, metaClass, enabledAttributes)) {
                 //remove attribute if unchecked and exist in table
