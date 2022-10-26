@@ -34,7 +34,6 @@ import io.jmix.audit.entity.EntityLogAttr;
 import io.jmix.audit.entity.EntityLogItem;
 import io.jmix.audit.entity.LoggedAttribute;
 import io.jmix.audit.entity.LoggedEntity;
-import io.jmix.core.EntitySet;
 import io.jmix.core.ExtendedEntities;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
@@ -93,8 +92,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 @Route(value = "audit/entitylog", layout = DefaultMainViewParent.class)
@@ -134,10 +131,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected CollectionLoader<EntityLogItem> entityLogDl;
     @ViewComponent
-    protected CollectionContainer<LoggedAttribute> loggedAttrDc;
-    @ViewComponent
-    protected CollectionContainer<EntityLogItem> entityLogDc;
-    @ViewComponent
     protected CollectionLoader<LoggedAttribute> loggedAttrDl;
     @ViewComponent
     protected JmixSelect<String> changeTypeField;
@@ -155,10 +148,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected DataGrid<LoggedEntity> loggedEntityTable;
     @ViewComponent
     protected DataGrid<EntityLogAttr> entityLogAttrTable;
-    @ViewComponent
-    protected Checkbox manualCheckBox;
-    @ViewComponent
-    protected Checkbox autoCheckBox;
     @ViewComponent
     protected HorizontalLayout actionsPaneLayout;
     @ViewComponent
@@ -511,16 +500,6 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes);
     }
 
-    protected void addAttribute(Set<LoggedAttribute> enabledAttributes, String name, MetaClass metaclass, boolean editable) {
-        Checkbox checkBox = uiComponents.create(Checkbox.class);
-        if (enabledAttributes != null && isEntityHaveAttribute(name, metaclass, enabledAttributes)) {
-            checkBox.setValue(true);
-        }
-        checkBox.setId(name);
-        checkBox.setLabel(name);
-        checkBox.setEnabled(editable);
-    }
-
     protected void setSelectAllCheckBox(boolean value) {
         canSelectAllCheckboxGenerateEvents = false;
         boolean isEditable = selectAllCheckBox.isEnabled();
@@ -749,8 +728,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         entityLog.invalidateCache();
     }
 
-    @Subscribe("removeBtn")
-    protected void onRemoveBtnClick(ClickEvent<Button> event) {
+    @Subscribe("loggedEntityTable.remove")
+    protected void onLoggedEntityTableRemove(ActionPerformedEvent event) {
         Set<LoggedEntity> selectedItems = loggedEntityTable.getSelectedItems();
         if (!selectedItems.isEmpty()) {
             dialogs.createOptionDialog().withHeader(messages.getMessage("dialogs.Confirmation"))
