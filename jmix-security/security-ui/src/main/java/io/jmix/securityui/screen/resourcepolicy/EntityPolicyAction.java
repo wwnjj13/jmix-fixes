@@ -20,7 +20,6 @@ import io.jmix.core.metamodel.datatype.impl.EnumClass;
 
 public enum EntityPolicyAction implements EnumClass<String> {
 
-    ALL(io.jmix.security.model.EntityPolicyAction.ALL.getId()),
     CREATE(io.jmix.security.model.EntityPolicyAction.CREATE.getId()),
     READ(io.jmix.security.model.EntityPolicyAction.READ.getId()),
     UPDATE(io.jmix.security.model.EntityPolicyAction.UPDATE.getId()),

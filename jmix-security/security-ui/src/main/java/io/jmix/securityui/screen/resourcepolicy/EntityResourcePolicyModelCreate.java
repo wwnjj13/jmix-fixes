@@ -43,7 +43,8 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
 
     @Autowired
     private ComboBox<String> entityField;
-
+    @Autowired
+    private CheckBox allCheckBox;
     @Autowired
     private CheckBoxGroup<EntityPolicyAction> actionsCheckBoxGroup;
 
@@ -75,20 +76,26 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
 
     private Set<String> getPolicyActions() {
         Set<String> actions = new HashSet<>(actionsCheckBoxGroup.getValue()
-                .stream().filter(e-> !e.equals(EntityPolicyAction.ALL))
-                .map(EntityPolicyAction::getId).collect(Collectors.toList()));
+                .stream().map(EntityPolicyAction::getId).collect(Collectors.toList()));
         return actions;
     }
 
-
     @Subscribe("actionsCheckBoxGroup")
-    public void onAllActionsCheckBoxValueChange(HasValue.ValueChangeEvent<Collection<EntityPolicyAction>>
-                                                            collectionValueChangeEvent) {
-        Boolean allIsChecked = collectionValueChangeEvent.getValue()!=null ? Boolean.TRUE.equals(collectionValueChangeEvent.getValue()
-                .contains(EntityPolicyAction.ALL)) : false;
-        Boolean prevAllIsChecked = collectionValueChangeEvent.getPrevValue()!=null ? Boolean.TRUE.equals(collectionValueChangeEvent.getPrevValue()
-                .contains(EntityPolicyAction.ALL)) : null;
-        if (!allIsChecked.equals(prevAllIsChecked)) {
+    public void onActionsCheckBoxGroupValueChange(HasValue.ValueChangeEvent<Collection<EntityPolicyAction>> event) {
+        allCheckBox.setEditable(false);
+        if(event.getValue()!=null && event.getValue().size()==EntityPolicyAction.values().length){
+            allCheckBox.setValue(true);
+        } else {
+            allCheckBox.setValue(false);
+        }
+        allCheckBox.setEditable(true);
+    }
+
+    @Subscribe("allCheckBox")
+    public void onAllActionsCheckBoxValueChange(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
+
+        Boolean allIsChecked = Boolean.TRUE.equals(booleanValueChangeEvent.getValue());
+        if(booleanValueChangeEvent.isUserOriginated()) {
             if (allIsChecked) {
                 actionsCheckBoxGroup.setValue(Arrays.stream(EntityPolicyAction.values())
                         .collect(Collectors.toList()));
@@ -96,6 +103,7 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
                 actionsCheckBoxGroup.clear();
             }
         }
+
     }
 
     @Override

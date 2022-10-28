@@ -30,16 +30,11 @@
 <!--                <textField id="scopeField" property="scope"/>-->
             </column>
         </form>
-        <checkBoxGroup id="actionsCheckBoxGroup" width="100%" caption="msg://EntityResourcePolicyModelCreate.actions"
-                       optionsEnum="io.jmix.securityui.screen.resourcepolicy.EntityPolicyAction"/>
-
-<!--        <groupBox caption="msg://EntityResourcePolicyModelCreate.actions" width="100%">-->
-<!--            <checkBox id="allActionsCheckBox" caption="msg://EntityResourcePolicyModelCreate.allActions"/>-->
-<!--            <checkBox id="createCheckBox" caption="msg://EntityResourcePolicyModelCreate.create"/>-->
-<!--            <checkBox id="readCheckBox" caption="msg://EntityResourcePolicyModelCreate.read"/>-->
-<!--            <checkBox id="updateCheckBox" caption="msg://EntityResourcePolicyModelCreate.update"/>-->
-<!--            <checkBox id="deleteCheckBox" caption="msg://EntityResourcePolicyModelCreate.delete"/>-->
-<!--        </groupBox>-->
+        <groupBox caption="msg://EntityResourcePolicyModelCreate.actions" width="100%">
+            <checkBox id="allCheckBox" caption="msg://EntityResourcePolicyModelCreate.ALL"/>
+            <checkBoxGroup id="actionsCheckBoxGroup" width="100%"
+                           optionsEnum="io.jmix.securityui.screen.resourcepolicy.EntityPolicyAction"/>
+        </groupBox>
         <hbox id="editActions" spacing="true">
             <button action="commit"/>
             <button action="cancel"/>
