@@ -18,20 +18,24 @@ package io.jmix.securityui.screen.resourcepolicy;
 
 import io.jmix.core.Messages;
 import io.jmix.securityui.model.ResourcePolicyModel;
+import io.jmix.ui.UiScreenProperties;
 import io.jmix.ui.action.Action;
 import io.jmix.ui.action.BaseAction;
+import io.jmix.ui.component.CheckBox;
+import io.jmix.ui.component.HasValue;
 import io.jmix.ui.component.ValidationErrors;
 import io.jmix.ui.component.Window;
 import io.jmix.ui.icon.Icons;
 import io.jmix.ui.icon.JmixIcon;
-import io.jmix.ui.UiScreenProperties;
 import io.jmix.ui.screen.Screen;
 import io.jmix.ui.screen.ScreenValidation;
 import io.jmix.ui.screen.StandardCloseAction;
 import io.jmix.ui.screen.Subscribe;
+import io.jmix.ui.util.UnknownOperationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A base class for screens that create multiple database resource policies ({@link EntityResourcePolicyModelCreate} and
@@ -41,7 +45,6 @@ public abstract class MultipleResourcePolicyModelCreateScreen extends Screen {
 
     public static final String COMMIT_ACTION_ID = "commit";
     public static final String CANCEL_ACTION_ID = "cancel";
-
     @Autowired
     private ScreenValidation screenValidation;
 
@@ -73,11 +76,24 @@ public abstract class MultipleResourcePolicyModelCreateScreen extends Screen {
                 });
 
         window.addAction(commitAndCloseAction);
-
         Action closeAction = new BaseAction(CANCEL_ACTION_ID)
                 .withIcon(icons.get(JmixIcon.EDITOR_CANCEL))
                 .withCaption(messages.getMessage("actions.Cancel"))
-                .withHandler(actionPerformedEvent -> close(new StandardCloseAction(CANCEL_ACTION_ID)));
+                .withHandler(actionPerformedEvent -> {
+                    boolean fieldsNotEmpty = window.getComponents().stream().anyMatch(component -> component instanceof HasValue &&
+                            !(component instanceof CheckBox) &&
+                            !((HasValue<?>) component).isEmpty());
+                    if (fieldsNotEmpty) {
+                        UnknownOperationResult result = new UnknownOperationResult();
+                        screenValidation.showSaveConfirmationDialog(MultipleResourcePolicyModelCreateScreen.this,
+                                        new StandardCloseAction(Window.CLOSE_ACTION_ID))
+                                .onCommit(() -> result.resume(close(new StandardCloseAction(COMMIT_ACTION_ID))))
+                                .onDiscard(() -> result.resume(close(WINDOW_DISCARD_AND_CLOSE_ACTION)))
+                                .onCancel(result::fail);
+                    } else {
+                        close(new StandardCloseAction(CANCEL_ACTION_ID));
+                    }
+                });
 
         window.addAction(closeAction);
     }
