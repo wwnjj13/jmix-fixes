@@ -358,6 +358,8 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
                 return ScreenResourcePolicyModelEdit.class;
             case ResourcePolicyType.ENTITY:
                 return EntityResourcePolicyModelEdit.class;
+            case ResourcePolicyType.GRAPHQL:
+                return GraphQLResourcePolicyModelEdit.class;
             case ResourcePolicyType.ENTITY_ATTRIBUTE:
                 return EntityAttributeResourcePolicyModelEdit.class;
             case ResourcePolicyType.SPECIFIC:

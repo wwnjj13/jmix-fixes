@@ -45,11 +45,11 @@
                                   contextHelpText="msg://scriptFieldHelp" contextHelpTextHtmlEnabled="true"/>
             </column>
         </form>
-        <hbox id="editActions" spacing="true" align="MIDDLE_CENTER">
+        <hbox id="editActions" spacing="true" align="MIDDLE_LEFT" width="100%">
             <button action="windowCommitAndClose"/>
             <button action="windowClose"/>
             <button id="testBtn" caption="msg://test"/>
-            <linkButton id="docsBtn" caption="msg://docs" align="MIDDLE_LEFT"/>
+            <link id="docsBtn" url="https://docs.jmix.io/jmix/security/row-level-roles.html#policies" caption="msg://docs"/>
         </hbox>
     </layout>
 </window>

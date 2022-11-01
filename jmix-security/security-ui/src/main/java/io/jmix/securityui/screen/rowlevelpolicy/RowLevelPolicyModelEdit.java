@@ -252,11 +252,4 @@ public class RowLevelPolicyModelEdit extends StandardEditor<RowLevelPolicyModel>
                 .show();
     }
 
-    @Subscribe("docsBtn")
-    public void onDocsBtnClick(Button.ClickEvent event) {
-        webBrowserTools.showWebPage(
-                messageBundle.getMessage("docUrl"),
-                ParamsMap.of("target", "_blank")
-        );
-    }
 }
