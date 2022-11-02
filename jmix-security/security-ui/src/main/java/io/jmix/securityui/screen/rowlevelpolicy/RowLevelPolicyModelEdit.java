@@ -145,7 +145,6 @@ public class RowLevelPolicyModelEdit extends StandardEditor<RowLevelPolicyModel>
                 scriptField.setVisible(true);
                 whereClauseField.setVisible(false);
                 joinClauseField.setVisible(false);
-                actionField.setEditable(true);
                 getEditedEntity().setWhereClause(null);
                 getEditedEntity().setJoinClause(null);
                 break;
