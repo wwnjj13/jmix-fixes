@@ -139,6 +139,11 @@ public class EntityAttributeResourcePolicyModelCreate extends MultipleResourcePo
     }
 
     @Override
+    public boolean hasUnsavedChanges() {
+        return false;
+    }
+
+    @Override
     protected ValidationErrors validateScreen() {
         ValidationErrors validationErrors = new ValidationErrors();
         if (Strings.isNullOrEmpty(entityField.getValue())) {

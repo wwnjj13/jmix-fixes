@@ -35,7 +35,6 @@ import io.jmix.ui.util.UnknownOperationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A base class for screens that create multiple database resource policies ({@link EntityResourcePolicyModelCreate} and
@@ -101,4 +100,6 @@ public abstract class MultipleResourcePolicyModelCreateScreen extends Screen {
     protected abstract ValidationErrors validateScreen();
 
     public abstract List<ResourcePolicyModel> getResourcePolicies();
+
+    public abstract boolean hasUnsavedChanges();
 }
