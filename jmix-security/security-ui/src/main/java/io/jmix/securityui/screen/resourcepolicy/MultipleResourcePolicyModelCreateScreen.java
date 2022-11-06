@@ -79,14 +79,11 @@ public abstract class MultipleResourcePolicyModelCreateScreen extends Screen {
                 .withIcon(icons.get(JmixIcon.EDITOR_CANCEL))
                 .withCaption(messages.getMessage("actions.Cancel"))
                 .withHandler(actionPerformedEvent -> {
-                    boolean fieldsNotEmpty = window.getComponents().stream().anyMatch(component -> component instanceof HasValue &&
-                            !(component instanceof CheckBox) &&
-                            !((HasValue<?>) component).isEmpty());
-                    if (fieldsNotEmpty) {
+                    if (this.hasUnsavedChanges()) {
                         UnknownOperationResult result = new UnknownOperationResult();
                         screenValidation.showSaveConfirmationDialog(MultipleResourcePolicyModelCreateScreen.this,
                                         new StandardCloseAction(Window.CLOSE_ACTION_ID))
-                                .onCommit(() -> result.resume(close(new StandardCloseAction(COMMIT_ACTION_ID))))
+                                .onCommit(() -> result.resume(close(WINDOW_COMMIT_AND_CLOSE_ACTION)))
                                 .onDiscard(() -> result.resume(close(WINDOW_DISCARD_AND_CLOSE_ACTION)))
                                 .onCancel(result::fail);
                     } else {

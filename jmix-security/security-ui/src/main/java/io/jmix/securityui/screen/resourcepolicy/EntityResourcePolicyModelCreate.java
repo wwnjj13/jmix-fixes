@@ -22,7 +22,12 @@ import io.jmix.security.model.ResourcePolicyEffect;
 import io.jmix.security.model.ResourcePolicyType;
 import io.jmix.securityui.model.DefaultResourcePolicyGroupResolver;
 import io.jmix.securityui.model.ResourcePolicyModel;
-import io.jmix.ui.component.*;
+import io.jmix.ui.component.CheckBox;
+import io.jmix.ui.component.CheckBoxGroup;
+import io.jmix.ui.component.ComboBox;
+import io.jmix.ui.component.HasValue;
+import io.jmix.ui.component.TextField;
+import io.jmix.ui.component.ValidationErrors;
 import io.jmix.ui.screen.MessageBundle;
 import io.jmix.ui.screen.Subscribe;
 import io.jmix.ui.screen.UiController;
@@ -63,15 +68,22 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
     @Autowired
     private MessageBundle messageBundle;
 
+    private boolean hasChanges = false;
     @Subscribe
     public void onInit(InitEvent event) {
         entityField.setOptionsMap(resourcePolicyEditorUtils.getEntityOptionsMap());
+    }
+
+    @Subscribe("policyGroupField")
+    public void onPolicyGroupFieldValueChange(HasValue.ValueChangeEvent<String> event) {
+        hasChanges = true;
     }
 
     @Subscribe("entityField")
     public void onEntityFieldValueChange(HasValue.ValueChangeEvent<String> event) {
         String entityName = event.getValue();
         policyGroupField.setValue(resourcePolicyGroupResolver.resolvePolicyGroup(ResourcePolicyType.ENTITY, entityName));
+        hasChanges = true;
     }
 
     private Set<String> getPolicyActions() {
@@ -89,6 +101,7 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
             allCheckBox.setValue(false);
         }
         allCheckBox.setEditable(true);
+        hasChanges = true;
     }
 
     @Subscribe("allCheckBox")
@@ -103,7 +116,7 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
                 actionsCheckBoxGroup.clear();
             }
         }
-
+        hasChanges = true;
     }
 
     @Override
@@ -132,5 +145,10 @@ public class EntityResourcePolicyModelCreate extends MultipleResourcePolicyModel
             policies.add(policy);
         }
         return policies;
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        return hasChanges;
     }
 }
