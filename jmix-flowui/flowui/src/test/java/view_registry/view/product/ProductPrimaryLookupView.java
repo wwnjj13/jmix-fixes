@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-@Internal
-package io.jmix.autoconfigure.uidata;
+package view_registry.view.product;
 
-import io.jmix.core.annotation.Internal;
+import io.jmix.flowui.view.PrimaryLookupView;
+import io.jmix.flowui.view.StandardListView;
+import io.jmix.flowui.view.ViewController;
+import test_support.entity.sales.Product;
+
+@PrimaryLookupView(Product.class)
+@ViewController(ProductPrimaryLookupView.VIEW_ID)
+public class ProductPrimaryLookupView extends StandardListView<Product> {
+    public static final String VIEW_ID = "product-primary-lookup-view";
+}

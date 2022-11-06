@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package io.jmix.autoconfigure.uidata;
+package view_registry.view.producttag;
 
-import io.jmix.core.CoreConfiguration;
-import io.jmix.data.DataConfiguration;
-import io.jmix.flowui.FlowuiConfiguration;
-import io.jmix.flowuidata.FlowuiDataConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Import;
+import io.jmix.flowui.view.PrimaryListView;
+import io.jmix.flowui.view.StandardListView;
+import io.jmix.flowui.view.ViewController;
+import test_support.entity.sales.Order;
+import test_support.entity.sales.ProductTag;
 
-@AutoConfiguration
-@Import({CoreConfiguration.class,
-        DataConfiguration.class,
-        FlowuiConfiguration.class,
-        FlowuiDataConfiguration.class})
-public class FlowuiDataAutoConfiguration {
+@ViewController(ProductTagListView.VIEW_ID)
+public class ProductTagListView extends StandardListView<ProductTag> {
+
+    public static final String VIEW_ID = "test_ProductTag.list";
 }
