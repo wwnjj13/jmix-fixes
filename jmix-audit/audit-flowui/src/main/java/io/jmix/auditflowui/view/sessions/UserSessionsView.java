@@ -28,6 +28,8 @@ import io.jmix.audit.entity.EntityLogItem;
 import io.jmix.audit.entity.UserSession;
 import io.jmix.core.Messages;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.component.datepicker.TypedDatePicker;
+import io.jmix.flowui.component.datetimepicker.TypedDateTimePicker;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionContainer;
@@ -60,9 +62,9 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
     @ViewComponent
     protected TextField userName;
     @ViewComponent
-    protected DateTimePicker lastRequestDateFrom;
+    protected TypedDatePicker<Date> lastRequestDateFrom; // DateTimePicker
     @ViewComponent
-    protected DateTimePicker lastRequestDateTo;
+    protected TypedDatePicker<Date> lastRequestDateTo;
     @ViewComponent
     protected CollectionLoader<UserSession> userSessionsDl;
 
@@ -81,14 +83,12 @@ public class UserSessionsView extends StandardListView<EntityLogItem> {
                 sessions = sessions.filter(o -> o.getPrincipalName().toLowerCase().contains(userName.getValue()));
             }
             if (lastRequestDateFrom.getValue() != null) {
-                Date afterDate =
-                        Date.from(lastRequestDateFrom.getValue().atZone(ZoneId.systemDefault()).toInstant());
+
+                Date afterDate = lastRequestDateFrom.getTypedValue();
                 sessions = sessions.filter(o -> o.getLastRequest().after(afterDate));
             }
             if (lastRequestDateTo.getValue() != null) {
-                Date beforeDate =
-                        Date.from(lastRequestDateTo.getValue().atZone(ZoneId.systemDefault()).toInstant());
-
+                Date beforeDate = lastRequestDateTo.getTypedValue();
                 sessions = sessions.filter(o -> o.getLastRequest().before(beforeDate));
             }
             return sessions.collect(Collectors.toList());
