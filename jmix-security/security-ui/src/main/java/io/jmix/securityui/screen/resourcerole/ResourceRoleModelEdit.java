@@ -28,6 +28,7 @@ import io.jmix.securityui.model.BaseRoleModel;
 import io.jmix.securityui.model.ResourcePolicyModel;
 import io.jmix.securityui.model.ResourceRoleModel;
 import io.jmix.securityui.model.RoleModelConverter;
+import io.jmix.securityui.model.RowLevelPolicyModel;
 import io.jmix.securityui.screen.resourcepolicy.*;
 import io.jmix.ui.RemoveOperation;
 import io.jmix.ui.ScreenBuilders;
@@ -70,6 +71,8 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
     @Autowired
     private CheckBoxGroup<String> scopesField;
 
+    @Autowired
+    private GroupTable<RowLevelPolicyModel> rowLevelPoliciesTable;
     @Autowired
     @Qualifier("resourcePoliciesTable.edit")
     private EditAction<ResourcePolicyModel> resourcePoliciesTableEdit;
@@ -139,6 +142,11 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
 
     public void setOpenedByCreateAction(boolean openedByCreateAction) {
         this.openedByCreateAction = openedByCreateAction;
+    }
+
+    @Subscribe
+    public void onInit(InitEvent event) {
+        rowLevelPoliciesTable.getColumn("type").setFormatter(value -> messages.getMessage("ResourcePolicyType."+value));
     }
 
     @Install(to = "childRolesDl", target = Target.DATA_LOADER)
