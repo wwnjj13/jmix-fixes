@@ -28,7 +28,6 @@ import io.jmix.securityui.model.BaseRoleModel;
 import io.jmix.securityui.model.ResourcePolicyModel;
 import io.jmix.securityui.model.ResourceRoleModel;
 import io.jmix.securityui.model.RoleModelConverter;
-import io.jmix.securityui.model.RowLevelPolicyModel;
 import io.jmix.securityui.screen.resourcepolicy.*;
 import io.jmix.ui.RemoveOperation;
 import io.jmix.ui.ScreenBuilders;
@@ -71,8 +70,6 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
     @Autowired
     private CheckBoxGroup<String> scopesField;
 
-    @Autowired
-    private GroupTable<RowLevelPolicyModel> rowLevelPoliciesTable;
     @Autowired
     @Qualifier("resourcePoliciesTable.edit")
     private EditAction<ResourcePolicyModel> resourcePoliciesTableEdit;
@@ -136,6 +133,20 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
 
     private Set<UUID> forRemove;
 
+    private final Map<String, String> RESOURCE_ROLE_TYPE_TO_MESSAGE_MAP = ImmutableMap.of(
+            ResourcePolicyType.SCREEN, "ResourcePolicyType.SCREEN",
+            ResourcePolicyType.GRAPHQL, "ResourcePolicyType.GRAPHQL",
+            ResourcePolicyType.ENTITY, "ResourcePolicyType.ENTITY",
+            ResourcePolicyType.ENTITY_ATTRIBUTE, "ResourcePolicyType.ENTITY_ATTRIBUTE",
+            ResourcePolicyType.SPECIFIC, "ResourcePolicyType.SPECIFIC",
+            ResourcePolicyType.MENU, "ResourcePolicyType.MENU"
+            );
+
+    private final Map<String, String> ROLE_SOURCE_TO_MESSAGE_MAP = ImmutableMap.of(
+            RoleSource.ANNOTATED_CLASS, "RoleSource.ANNOTATED_CLASS",
+            RoleSource.DATABASE, "RoleSource.DATABASE"
+    );
+
     private boolean resourcePoliciesTableExpanded = true;
     @Named("resourcePoliciesTable.createGraphQLPolicy")
     private BaseAction resourcePoliciesTableCreateGraphQLPolicy;
@@ -144,9 +155,19 @@ public class ResourceRoleModelEdit extends StandardEditor<ResourceRoleModel> {
         this.openedByCreateAction = openedByCreateAction;
     }
 
-    @Subscribe
-    public void onInit(InitEvent event) {
-        rowLevelPoliciesTable.getColumn("type").setFormatter(value -> messages.getMessage("ResourcePolicyType."+value));
+    @Install(to = "childRolesTable.source", subject = "formatter")
+    private String childRolesTableSourceFormatter(String value) {
+        return messages.getMessage(ResourceRoleModelEdit.class, ROLE_SOURCE_TO_MESSAGE_MAP.get(value));
+    }
+
+    @Install(to = "resourcePoliciesTable.type", subject = "formatter")
+    private String resourcePoliciesTableTypeFormatter(String value) {
+        return messages.getMessage(ResourceRoleModelEdit.class, RESOURCE_ROLE_TYPE_TO_MESSAGE_MAP.get(value));
+    }
+
+    @Install(to = "resourcePoliciesTable.action", subject = "formatter")
+    private String resourcePoliciesTableActionFormatter(String value) {
+        return messages.getMessage(ResourceRoleModelEdit.class, "RoleAction." +value);
     }
 
     @Install(to = "childRolesDl", target = Target.DATA_LOADER)
