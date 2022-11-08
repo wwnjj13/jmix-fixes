@@ -150,13 +150,14 @@
                 <hbox id="loggedEntityButtonPanel" classNames="buttons-panel">
                     <button id="createBtn" action="loggedEntityTable.create"/>
                     <button id="editBtn" action="loggedEntityTable.edit"/>
-                    <button id="removeBtn" icon="CLOSE" text="msg://remove"/>
+                    <button id="removeBtn" action="loggedEntityTable.remove"/>
                     <button id="reloadBtn" icon="CHECK" text="msg://reloadConfiguration"/>
                 </hbox>
                 <dataGrid id="loggedEntityTable" minHeight="20em" dataContainer="loggedEntityDc">
                     <actions>
                         <action id="create" type="create" icon="FILE_O"/>
                         <action id="edit" type="edit" icon="PENCIL"/>
+                        <action id="remove" type="remove" icon="CLOSE"/>
                     </actions>
                     <columns>
                         <column property="name"/>

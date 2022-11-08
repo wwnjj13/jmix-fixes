@@ -20,13 +20,17 @@
 }
 
 .datetime-picker-container {
-  position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
+  gap: calc(var(--lumo-space-xs) / 2);
 }
 
-.datetime-picker-container * {
-  padding-left: 2px;
-  margin-left: 2px;
-  width: 50%;
+.datetime-picker-container vaadin-date-picker {
+  min-width: 0;
+  flex: 1 1 auto; /*same as for Vaadin Date Time Picker date-part*/
+}
+
+.datetime-picker-container vaadin-time-picker {
+  min-width: 0;
+  flex: 1 1.65 auto; /*same as for Vaadin Date Time Picker time-part*/
 }
