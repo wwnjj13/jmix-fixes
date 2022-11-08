@@ -21,8 +21,6 @@ import io.jmix.securityui.model.ResourcePolicyModel;
 import io.jmix.ui.UiScreenProperties;
 import io.jmix.ui.action.Action;
 import io.jmix.ui.action.BaseAction;
-import io.jmix.ui.component.CheckBox;
-import io.jmix.ui.component.HasValue;
 import io.jmix.ui.component.ValidationErrors;
 import io.jmix.ui.component.Window;
 import io.jmix.ui.icon.Icons;

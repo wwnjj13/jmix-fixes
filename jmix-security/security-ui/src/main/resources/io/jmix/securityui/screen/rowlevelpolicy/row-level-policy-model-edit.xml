@@ -49,7 +49,8 @@
             <button action="windowCommitAndClose"/>
             <button action="windowClose"/>
             <button id="testBtn" caption="msg://test"/>
-            <link id="docsBtn" target="_blank" align="MIDDLE_LEFT" url="https://docs.jmix.io/jmix/security/row-level-roles.html#policies" caption="msg://docs"/>
+            <link id="docsBtn" target="_blank" align="MIDDLE_LEFT"
+                  url="https://docs.jmix.io/jmix/security/row-level-roles.html#policies" caption="msg://docs"/>
         </hbox>
     </layout>
 </window>
