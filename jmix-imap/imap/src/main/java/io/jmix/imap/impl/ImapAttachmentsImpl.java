@@ -137,10 +137,10 @@ public class ImapAttachmentsImpl implements ImapAttachments {
     /**
      * Sometimes email clients encode filenames according to the RFC6266 standard.
      * This method resolve this problem
-     * @param encodedName encoded attach,ent name
+     * @param encodedName encoded attachment name
      * @return name of attachment
      */
-    protected static String decodeNameAttachment(String encodedName) {
+    protected String decodeAttachmentName(String encodedName) {
         String decodedName = encodedName;
         try {
             if (encodedName.matches(RFC6266_ATTACHMENT_NAME_REGEX_PATTERN)) {
@@ -161,7 +161,7 @@ public class ImapAttachmentsImpl implements ImapAttachments {
     protected ImapMessageAttachment createImapMessageAttachment(int i, BodyPart bodyPart) throws MessagingException {
         ImapMessageAttachment attachment = metadata.create(ImapMessageAttachment.class);
         String name = bodyPart.getFileName();
-        name = decodeNameAttachment(name);
+        name = decodeAttachmentName(name);
         attachment.setName(name);
         attachment.setFileSize((long) bodyPart.getSize());
         attachment.setCreatedTs(timeSource.currentTimestamp());
