@@ -86,6 +86,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -260,31 +261,35 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         entityLogTable.addSelectionListener(this::onEntityLogTableSelect);
         loggedEntityTable.addSelectionListener(this::onLoggedEntityTableSelectEvent);
-
         entityLogTable.addColumn(this::generateEntityInstanceNameColumn
                 ).setHeader(messages.getMessage(this.getClass(), "entity"))
                 .setSortable(true);
 
         entityLogTable.addColumn(this::generateEntityIdColumn)
                 .setHeader(messages.getMessage(this.getClass(), "entityId"))
+                .setResizable(true)
                 .setSortable(true);
 
         entityLogAttrTable.addColumn(entityLogAttr ->
                         evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getOldValue()))
                 .setHeader(messages.getMessage(this.getClass(), "oldValue"))
-                .setKey("oldValue").setSortable(true);
+                .setResizable(true).setKey("oldValue").setSortable(true);
         entityLogAttrTable.addColumn(entityLogAttr ->
                         evaluateEntityLogItemAttrDisplayValue(entityLogAttr, entityLogAttr.getValue()))
                 .setHeader(messages.getMessage(this.getClass(), "newValue"))
-                .setKey("newValue").setSortable(true);
+                .setResizable(true).setKey("newValue").setSortable(true);
 
         entityLogAttrTable.addColumn(this::generateAttributeColumn)
                 .setHeader(messages.getMessage(this.getClass(), "attribute"))
-                .setKey("attribute").setSortable(true);
-        List<Grid.Column<EntityLogAttr>> columnsOrder = new ArrayList<>();
-        for (int i = entityLogAttrTable.getColumns().size() - 1; i >= 0; i--) {
-            columnsOrder.add(entityLogAttrTable.getColumns().get(i));
-        }
+                .setResizable(true).setKey("attribute").setSortable(true);
+
+        List<Grid.Column<EntityLogAttr>> columnsOrder = new ArrayList<>(Arrays.asList(
+                entityLogAttrTable.getColumnByKey("attribute"),
+                entityLogAttrTable.getColumnByKey("newValue"),
+                entityLogAttrTable.getColumnByKey("valueId"),
+                entityLogAttrTable.getColumnByKey("oldValue"),
+                entityLogAttrTable.getColumnByKey("oldValueId")
+        ));
         entityLogAttrTable.setColumnOrder(columnsOrder);
     }
 
@@ -699,15 +704,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         changeTypeField.clear();
         instancePicker.clear();
         fromDateField.clear();
+        fromTimeField.clear();
         tillDateField.clear();
-    }
-
-    @Subscribe("reloadBtn")
-    protected void onReloadBtnClick(ClickEvent<Button> event) {
-        entityLog.invalidateCache();
-        notifications.create(messages.getMessage(EntityLogView.class, "changesApplied"))
-                .withType(Notifications.Type.DEFAULT)
-                .show();
+        tillTimeField.clear();
     }
 
     protected boolean allowLogProperty(MetaProperty metaProperty) {
@@ -734,6 +733,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     @Subscribe("saveBtn")
     protected void onSaveBtnClick(ClickEvent<Button> event) {
         LoggedEntity selectedEntity = loggedEntityDc.getItem();
+        final LoggedEntity selected = selectedEntity;
+        if(loggedEntityDc.getItems().stream().anyMatch(e->!(selected==e) && e.getName().equals(selected.getName()))){
+            notifications.create(messages.getMessage(EntityLogView.class, "settingAlreadyExist"))
+                    .withType(Notifications.Type.ERROR)
+                    .show();
+            return;
+        }
+
         DataContext dataContext = loggedEntityDl.getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);
         Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes()!=null ?
