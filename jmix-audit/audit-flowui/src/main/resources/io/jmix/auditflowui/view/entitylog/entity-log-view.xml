@@ -157,7 +157,12 @@
 
         </vbox>
 
-        <hbox id="setupWrapper" visible="false" width="100%">
+<!--        <hbox id="setupWrapper" visible="false" width="100%">-->
+        <formLayout id="setupWrapper" visible="false" width="100%">
+            <responsiveSteps>
+                <responsiveStep minWidth="0" columns="1"/>
+                <responsiveStep minWidth="32em" columns="2"/>
+            </responsiveSteps>
             <vbox id="loggedEntityTableBox"
                   expand="loggedEntityTable" padding="false">
                 <hbox id="loggedEntityButtonPanel" classNames="buttons-panel">
@@ -179,7 +184,7 @@
                     </columns>
                 </dataGrid>
             </vbox>
-            <vbox id="loggedEntityMiscBox" width="32em" padding="false" expand="attributesBox">
+            <vbox id="loggedEntityMiscBox" maxWidth="32em" padding="false" expand="attributesBox">
                 <comboBox id="entityNameField" label="msg://name" width="100%" dataContainer="loggedEntityDc"
                           property="name"/>
                 <hbox id="checkersBox" padding="false" width="100%">
@@ -202,8 +207,8 @@
                     <button id="cancelBtn" text="msg://cancel" icon="BAN"/>
                 </hbox>
             </vbox>
-
-        </hbox>
+        </formLayout>
+<!--        </hbox>-->
 
     </layout>
 </view>
