@@ -156,12 +156,11 @@
             </formLayout>
 
         </vbox>
-
-<!--        <hbox id="setupWrapper" visible="false" width="100%">-->
+        
         <formLayout id="setupWrapper" visible="false" width="100%">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
-                <responsiveStep minWidth="32em" columns="2"/>
+                <responsiveStep minWidth="32em" columns="3"/>
             </responsiveSteps>
             <vbox id="loggedEntityTableBox"
                   expand="loggedEntityTable" padding="false">
@@ -208,7 +207,6 @@
                 </hbox>
             </vbox>
         </formLayout>
-<!--        </hbox>-->
 
     </layout>
 </view>

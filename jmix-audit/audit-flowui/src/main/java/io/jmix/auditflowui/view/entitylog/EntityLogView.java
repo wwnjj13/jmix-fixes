@@ -169,6 +169,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected Checkbox selectAllCheckBox;
     @ViewComponent
     protected CollectionContainer<EntityLogAttr> entityLogAttrDc;
+    @ViewComponent
+    protected VerticalLayout loggedEntityTableBox;
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -292,6 +294,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 entityLogAttrTable.getColumnByKey("oldValueId")
         ));
         entityLogAttrTable.setColumnOrder(columnsOrder);
+
+        setupWrapper.setColspan(loggedEntityTableBox, 2);
     }
 
     protected Object generateAttributeColumn(EntityLogAttr entityLogAttr) {
