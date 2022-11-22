@@ -33,27 +33,35 @@
 package io.jmix.securityui.screen.pesimisticlocking;
 
 
+import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
+import io.jmix.core.Metadata;
+import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.pessimisticlocking.LockInfo;
 import io.jmix.core.pessimisticlocking.LockManager;
 import io.jmix.ui.Notifications;
-import io.jmix.ui.component.GroupTable;
+import io.jmix.ui.action.Action;
+import io.jmix.ui.component.Table;
 import io.jmix.ui.model.CollectionContainer;
 import io.jmix.ui.navigation.Route;
-import io.jmix.ui.screen.LookupComponent;
 import io.jmix.ui.screen.Screen;
 import io.jmix.ui.screen.Subscribe;
 import io.jmix.ui.screen.UiController;
 import io.jmix.ui.screen.UiDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
 import java.util.Collection;
 
 @UiController("sec_LockBrowser.browse")
 @UiDescriptor("lock-browser.xml")
 @Route("lockbrowser")
 public class LockBrowser extends Screen {
+
+    @Autowired
+    protected CollectionContainer<LockInfo> locksDs;
+
+    @Autowired
+    protected Table<LockInfo> locksTable;
 
     @Autowired
     protected LockManager service;
@@ -64,27 +72,14 @@ public class LockBrowser extends Screen {
     @Autowired
     protected Messages messages;
 
-    @Inject
-    protected CollectionContainer<LockInfo> locksDs;
-
-//    @Named("locks")
-    protected GroupTable<LockInfo> table;
-
     @Subscribe
     public void onInit(InitEvent event) {
-
-        refresh();
+       refresh();
     }
-
-////    @Named("setupTable.create")
-//    protected CreateAction createAction;
-//
-////    @Named("setupTable.edit")
-//    protected EditAction editAction;
-
-
-    public void unlock() {
-        LockInfo lockInfo = table.getSingleSelected();
+    
+    @Subscribe("locksTable.unlock")
+    public void onLocksUnlock(Action.ActionPerformedEvent event) {
+        LockInfo lockInfo = locksTable.getSingleSelected();
         if (lockInfo != null) {
             service.unlock(lockInfo.getObjectType(), lockInfo.getObjectId());
             refresh();
@@ -107,18 +102,14 @@ public class LockBrowser extends Screen {
         }
     }
 
-    public void refresh() {
+    protected void refresh() {
         locksDs.getMutableItems().clear();
         Collection<LockInfo> locks = service.getCurrentLocks();
         locksDs.getMutableItems().addAll(locks);
     }
 
-    public void reloadConfig() {
-        service.reloadConfiguration();
-        notifications.create().withCaption(
-                        messages.getMessage(LockBrowser.class,
-                                "locksConfigurationHasBeenReloaded"))
-                .withType(Notifications.NotificationType.HUMANIZED)
-                .show();
+    @Subscribe("locksTable.refresh")
+    public void onLocksRefresh(Action.ActionPerformedEvent event) {
+        refresh();
     }
 }
