@@ -28,6 +28,8 @@ import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.component.ListDataComponent;
 import io.jmix.flowui.component.LookupComponent.MultiSelectLookupComponent;
 import io.jmix.flowui.component.delegate.GridDelegate;
+import io.jmix.flowui.component.grid.editor.DataGridEditor;
+import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
 import io.jmix.flowui.data.DataUnit;
 import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.kit.component.grid.GridActionsSupport;
@@ -46,6 +48,8 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     protected ApplicationContext applicationContext;
 
     protected GridDelegate<E, DataGridItems<E>> gridDelegate;
+
+    protected boolean editorCreated = false;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -165,6 +169,29 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
         Preconditions.checkNotNullArgument(key);
 
         return gridDelegate.addColumn(key, metaPropertyPath);
+    }
+
+    @Override
+    protected void onDataProviderChange() {
+        super.onDataProviderChange();
+
+        if (editorCreated) {
+            DataGridEditor<E> editor = getEditor();
+            if (editor instanceof DataGridDataProviderChangeObserver) {
+                ((DataGridDataProviderChangeObserver) editor).dataProviderChanged();
+            }
+        }
+    }
+
+    @Override
+    public DataGridEditor<E> getEditor() {
+        return ((DataGridEditor<E>) super.getEditor());
+    }
+
+    @Override
+    protected DataGridEditor<E> createEditor() {
+        editorCreated = true;
+        return new DataGridEditorImpl<>(this, applicationContext);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

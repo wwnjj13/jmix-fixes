@@ -852,7 +852,9 @@ public interface StudioComponents {
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
-                    @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%")
+                    @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%"),
+                    @StudioProperty(xmlAttribute = "editorBuffered", type = StudioPropertyType.BOOLEAN,
+                            defaultValue = "false")
             },
             propertiesBindings = {
                     @StudioPropertiesBinding(
@@ -914,7 +916,9 @@ public interface StudioComponents {
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
-                    @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%")
+                    @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%"),
+                    @StudioProperty(xmlAttribute = "editorBuffered", type = StudioPropertyType.BOOLEAN,
+                            defaultValue = "false")
             },
             propertiesBindings = {
                     @StudioPropertiesBinding(

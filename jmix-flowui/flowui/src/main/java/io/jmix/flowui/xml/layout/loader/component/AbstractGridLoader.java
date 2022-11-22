@@ -23,6 +23,7 @@ import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.NestedNullBehavior;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.dnd.GridDropMode;
+import com.vaadin.flow.component.grid.editor.Editor;
 import io.jmix.core.FetchPlan;
 import io.jmix.core.FetchPlanProperty;
 import io.jmix.core.Metadata;
@@ -33,6 +34,7 @@ import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.MetadataObject;
 import io.jmix.flowui.component.grid.EnhancedDataGrid;
+import io.jmix.flowui.component.grid.editor.DataGridEditor;
 import io.jmix.flowui.exception.GuiDevelopmentException;
 import io.jmix.flowui.kit.component.HasActions;
 import io.jmix.flowui.model.*;
@@ -70,6 +72,8 @@ public abstract class AbstractGridLoader<T extends Grid<?> & EnhancedDataGrid<?>
         loadBoolean(element, "columnReorderingAllowed", resultComponent::setColumnReorderingAllowed);
         loadBoolean(element, "verticalScrollingEnabled", resultComponent::setVerticalScrollingEnabled);
         loadEnum(element, NestedNullBehavior.class, "nestedNullBehavior", resultComponent::setNestedNullBehavior);
+        loadBoolean(element, "editorBuffered", editorBuffered ->
+                resultComponent.getEditor().setBuffered(editorBuffered));
 
         componentLoader().loadEnabled(resultComponent, element);
         componentLoader().loadThemeNames(resultComponent, element);
@@ -175,7 +179,7 @@ public abstract class AbstractGridLoader<T extends Grid<?> & EnhancedDataGrid<?>
         String key = loadString(element, "key")
                 .orElseGet(() -> metaPropertyPath.getMetaProperty().getName());
 
-        Column column = resultComponent.addColumn(key, metaPropertyPath);
+        Column<?> column = resultComponent.addColumn(key, metaPropertyPath);
         loadString(element, "width", column::setWidth);
         loadString(element, "header", column::setHeader);
         loadString(element, "footer", column::setFooter);
@@ -186,6 +190,24 @@ public abstract class AbstractGridLoader<T extends Grid<?> & EnhancedDataGrid<?>
         loadBoolean(element, "autoWidth", column::setAutoWidth);
         loadBoolean(element, "visible", column::setVisible);
         loadEnum(element, ColumnTextAlign.class, "textAlign", column::setTextAlign);
+
+        loadColumnEditable(element, column, property);
+    }
+
+    protected void loadColumnEditable(Element element, Column<?> column, String property) {
+        loadBoolean(element, "editable", editable -> {
+            if (Boolean.TRUE.equals(editable)) {
+                setDefaultEditComponent(column, property);
+            }
+        });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void setDefaultEditComponent(Column<?> column, String property) {
+        Editor<?> editor = resultComponent.getEditor();
+        if (editor instanceof DataGridEditor) {
+            ((DataGridEditor) editor).setColumnEditorComponent(column, property);
+        }
     }
 
     protected Collection<String> getAppliedProperties(Element columnsElement, @Nullable FetchPlan fetchPlan, MetaClass metaClass) {

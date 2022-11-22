@@ -21,6 +21,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridNoneSelectionModel;
 import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.data.event.SortEvent;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -37,7 +38,10 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.component.ListDataComponent;
-import io.jmix.flowui.data.*;
+import io.jmix.flowui.data.BindingState;
+import io.jmix.flowui.data.ContainerDataUnit;
+import io.jmix.flowui.data.EmptyDataUnit;
+import io.jmix.flowui.data.EntityDataUnit;
 import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.data.provider.StringPresentationValueProvider;
 import io.jmix.flowui.kit.component.HasActions;
@@ -65,6 +69,9 @@ public abstract class AbstractGridDelegate<C extends Grid<E> & ListDataComponent
     protected ITEMS dataGridItems;
 
     protected Registration selectionListenerRegistration;
+    protected Registration itemSetChangeRegistration;
+    protected Registration valueChangeRegistration;
+
     protected Set<SelectionListener<Grid<E>, E>> selectionListeners = new HashSet<>();
 
     public AbstractGridDelegate(C component) {
@@ -113,7 +120,8 @@ public abstract class AbstractGridDelegate<C extends Grid<E> & ListDataComponent
     }
 
     protected void bind(DataGridItems<E> dataGridItems) {
-        // do nothing
+        itemSetChangeRegistration = dataGridItems.addItemSetChangeListener(this::itemsItemSetChanged);
+        valueChangeRegistration = dataGridItems.addValueChangeListener(this::itemsValueChanged);
     }
 
     protected void unbind() {
@@ -121,7 +129,33 @@ public abstract class AbstractGridDelegate<C extends Grid<E> & ListDataComponent
             dataGridItems = null;
             setupEmptyDataProvider();
         }
+
+        if (itemSetChangeRegistration != null) {
+            itemSetChangeRegistration.remove();
+            itemSetChangeRegistration = null;
+        }
+
+        if (valueChangeRegistration != null) {
+            valueChangeRegistration.remove();
+            valueChangeRegistration = null;
+        }
     }
+
+    protected void itemsItemSetChanged(DataGridItems.ItemSetChangeEvent<E> event) {
+        component.getDataCommunicator().reset();
+    }
+
+    protected void itemsValueChanged(DataGridItems.ValueChangeEvent<E> event) {
+        if (!itemIsBeingEdited(event.getItem())) {
+            component.getDataCommunicator().refresh(event.getItem());
+        }
+    }
+
+    protected boolean itemIsBeingEdited(E item) {
+        Editor<E> editor = getComponent().getEditor();
+        return editor.isOpen() && Objects.equals(item, editor.getItem());
+    }
+
 
     @Nullable
     public E getSingleSelectedItem() {

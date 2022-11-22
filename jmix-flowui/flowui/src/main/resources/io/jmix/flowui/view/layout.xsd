@@ -2049,6 +2049,7 @@
         <xs:attribute name="resizable" type="xs:boolean"/>
         <xs:attribute name="autoWidth" type="xs:boolean"/>
         <xs:attribute name="textAlign" type="gridColumnTextAlignEnum"/>
+        <xs:attribute name="editable" type="xs:boolean"/>
     </xs:complexType>
 
 
@@ -2084,6 +2085,7 @@
                 <xs:attribute name="themeNames" type="gridThemeNames"/>
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="allRowsVisible" type="xs:boolean"/>
+                <xs:attribute name="editorBuffered" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="gridSelectionMode"/>
                 <xs:attribute name="detailsVisibleOnClick" type="xs:boolean"/>
                 <xs:attribute name="columnReorderingAllowed" type="xs:boolean"/>
