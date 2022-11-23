@@ -20,6 +20,8 @@
               title="msg://io.jmix.securityflowui.view.resourcerole/resourceRoleModelListView.menu"/>
         <item view="sec_RowLevelRoleModel.list"
               title="msg://io.jmix.securityflowui.view.rowlevelrole/rowLevelRoleModelListView.menu"/>
+    </menu>
+    <menu id="system">
         <item view="sec_Lock.list"
               title="msg://io.jmix.securityflowui.view.pesimisticlocking/menu.sec_LockList.menu"/>
     </menu>
