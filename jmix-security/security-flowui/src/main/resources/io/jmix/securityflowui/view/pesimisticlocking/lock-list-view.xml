@@ -34,9 +34,9 @@
                         icon="UNLOCK"/>
             </actions>
             <columns>
-                <column property="objectId" key="objectIdColumn" header="msg://LockInfo.objectId"/>
-                <column property="username" key="usernameColumn" header="msg://LockInfo.username"/>
-                <column property="since" key="sinceColumn" header="msg://LockInfo.since"/>
+                <column property="objectId" key="objectIdColumn" header="msg://lockListView.objectId"/>
+                <column property="username" key="usernameColumn" header="msg://lockListView.username"/>
+                <column property="since" key="sinceColumn" header="msg://lockListView.since"/>
             </columns>
         </dataGrid>
     </layout>

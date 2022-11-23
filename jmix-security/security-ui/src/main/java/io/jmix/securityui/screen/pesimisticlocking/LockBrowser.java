@@ -33,10 +33,7 @@
 package io.jmix.securityui.screen.pesimisticlocking;
 
 
-import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
-import io.jmix.core.Metadata;
-import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.pessimisticlocking.LockInfo;
 import io.jmix.core.pessimisticlocking.LockManager;
 import io.jmix.ui.Notifications;

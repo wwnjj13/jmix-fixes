@@ -55,12 +55,11 @@ import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@Route(value = "sec/locks", layout = DefaultMainViewParent.class)
+@Route(value = "system/locks", layout = DefaultMainViewParent.class)
 @ViewController("sec_Lock.list")
 @ViewDescriptor("lock-list-view.xml")
 @EditedEntityContainer("roleModelDc")
@@ -92,7 +91,7 @@ public class LockListView extends StandardView {
     public void onInit(InitEvent event) {
         locksTable.addColumn(this::lockNameFormatter)
                 .setKey("objectTypeColumn")
-                .setHeader(messages.getMessage(this.getClass(), "LockInfo.objectType"))
+                .setHeader(messages.getMessage(this.getClass(), "lockListView.objectType"))
                 .setSortable(true);
         List<Grid.Column<LockInfo>> columnsOrder = Arrays.asList(
                 locksTable.getColumnByKey("objectTypeColumn"),
