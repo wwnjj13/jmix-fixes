@@ -132,18 +132,18 @@ public class AppSettingsGridLayoutBuilder {
         Label currentValueLabel = uiComponents.create(Label.class);
         currentValueLabel.setValue(messages.getMessage(this.getClass(), "currentValueLabel"));
         currentValueLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
-        gridLayout.add(currentValueLabel, 1, 0);
+        formLayout.add(currentValueLabel, 1, 0);
 
         Label defaultValueLabel = uiComponents.create(Label.class);
         defaultValueLabel.setValue(messages.getMessage(this.getClass(), "defaultValueLabel"));
         currentValueLabel.setAlignment(MIDDLE_LEFT);
-        gridLayout.add(defaultValueLabel, 2, 0);
+        formLayout.add(defaultValueLabel, 2, 0);
 
         for (int i = 0; i < metaProperties.size(); i++) {
             addRowToGrid(container, gridLayout, i, metaProperties.get(i));
         }
 
-        return gridLayout;
+        return formLayout;
     }
 
     protected List<MetaProperty> collectMetaProperties(MetaClass metaClass, Object item) {
