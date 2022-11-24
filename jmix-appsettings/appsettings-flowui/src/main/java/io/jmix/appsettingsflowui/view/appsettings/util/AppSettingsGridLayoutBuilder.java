@@ -16,6 +16,9 @@
 
 package io.jmix.appsettingsflowui.view.appsettings.util;
 
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.textfield.PasswordField;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.core.AccessManager;
@@ -99,13 +102,13 @@ public class AppSettingsGridLayoutBuilder {
         return this;
     }
 
-    public GridLayout build() {
+    public FormLayout build() {
         MetaClass metaClass = container.getEntityMetaClass();
         List<MetaProperty> metaProperties = collectMetaProperties(metaClass, container.getItem()).stream()
                 .sorted(Comparator.comparing(MetadataObject::getName))
                 .collect(Collectors.toList());
 
-        GridLayout gridLayout = uiComponents.create(GridLayout.class);
+        FormLayout gridLayout = uiComponents.create(FormLayout.class);
         gridLayout.setSpacing(true);
         gridLayout.setMargin(false, true, false, false);
         gridLayout.setColumns(3);

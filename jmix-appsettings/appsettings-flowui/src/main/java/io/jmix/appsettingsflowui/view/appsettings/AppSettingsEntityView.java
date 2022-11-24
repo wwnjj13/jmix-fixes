@@ -16,6 +16,11 @@
 
 package io.jmix.appsettingsflowui.view.appsettings;
 
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.Route;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.entity.AppSettingsEntity;
@@ -24,18 +29,17 @@ import io.jmix.core.*;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.data.PersistenceHints;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.accesscontext.FlowuiEntityContext;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.model.DataComponents;
 import io.jmix.flowui.model.DataContext;
+import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.util.OperationResult;
-import io.jmix.flowui.view.DefaultMainViewParent;
-import io.jmix.flowui.view.DialogMode;
-import io.jmix.flowui.view.LookupComponent;
-import io.jmix.flowui.view.StandardView;
-import io.jmix.flowui.view.ViewController;
-import io.jmix.flowui.view.ViewDescriptor;
+import io.jmix.flowui.util.UnknownOperationResult;
+import io.jmix.flowui.view.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -46,7 +50,7 @@ import java.util.stream.Collectors;
 @ViewDescriptor("app-settings-view.xml")
 @LookupComponent("sessionsTable")
 @DialogMode(width = "50em", height = "37.5em")
-public class AppSettingsEntityScreen extends StandardView {
+public class AppSettingsEntityView extends StandardView {
 
     private static final String SELECT_APP_SETTINGS_ENTITY_QUERY = "select e from %s e where e.id = 1";
 
@@ -69,7 +73,7 @@ public class AppSettingsEntityScreen extends StandardView {
     protected DataComponents dataComponents;
 
     @Autowired
-    protected ScreenValidation screenValidation;
+    protected ViewValidation viewValidation;
 
     @Autowired
     protected Messages messages;
@@ -87,11 +91,11 @@ public class AppSettingsEntityScreen extends StandardView {
     protected ComboBox<MetaClass> entitiesLookup;
 
     @Autowired
-    protected GroupBoxLayout entityGroupBoxId;
+    protected HorizontalLayout entityGroupBoxId;
     @Autowired
-    protected ScrollBoxLayout fieldsScrollBox;
+    protected Scroller fieldsScrollBox;
     @Autowired
-    protected HBoxLayout actionsBox;
+    protected HorizontalLayout actionsBox;
 
     private DataContext dataContext;
     private MetaClass currentMetaClass;
@@ -102,8 +106,14 @@ public class AppSettingsEntityScreen extends StandardView {
 
     @Subscribe
     public void onInit(InitEvent event) {
-        entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
+
+        entitiesLookup
+                .setItemLabelGenerator((ItemLabelGenerator<MetaClass>) item -> messageTools.getEntityCaption(item) + " (" + item.getName() + ")");
+        entitiesLookup.setItems(getEntitiesLookupFieldOptions());
+
+//        entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
         entitiesLookup.addValueChangeListener(e -> {
+
             entityGroupBoxId.setVisible(e.getValue() != null);
 
             if (isEntityChangePrevented) {
@@ -111,7 +121,7 @@ public class AppSettingsEntityScreen extends StandardView {
                 return;
             }
 
-            prevMetaClass = e.getPrevValue();
+            prevMetaClass = e.getOldValue();
             currentMetaClass = e.getValue();
 
             if (dataContext != null && hasUnsavedChanges()) {
@@ -125,7 +135,8 @@ public class AppSettingsEntityScreen extends StandardView {
 
     protected void initEntityPropertiesGridLayout() {
         dataContext = dataComponents.createDataContext();
-        getScreenData().setDataContext(dataContext);
+        getViewData().setDataContext(dataContext);
+//        getScreenData().setDataContext(dataContext);
         showEntityPropertiesGridLayout();
         dataContext.addChangeListener(changeEvent -> {
             if (entityStates.isNew(changeEvent.getEntity())) {
@@ -134,36 +145,29 @@ public class AppSettingsEntityScreen extends StandardView {
         });
     }
 
-    protected Map<String, MetaClass> getEntitiesLookupFieldOptions() {
+    protected List<MetaClass> getEntitiesLookupFieldOptions() {
         return metadataTools.getAllJpaEntityMetaClasses().stream()
                 .filter(this::isApplicationSettingsEntity)
                 .filter(metaClass -> !metadataTools.isSystemLevel(metaClass))
                 .filter(this::readPermitted)
-                .collect(Collectors.toMap(
-                        metaClass -> messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")",
-                        Function.identity(),
-                        (u, v) -> {
-                            throw new IllegalStateException(String.format("Duplicate key %s", u));
-                        },
-                        TreeMap::new
-                ));
+                .collect(Collectors.toList());
     }
 
     protected boolean readPermitted(MetaClass metaClass) {
-        UiEntityContext entityContext = new UiEntityContext(metaClass);
+        FlowuiEntityContext entityContext = new FlowuiEntityContext(metaClass);
         accessManager.applyRegisteredConstraints(entityContext);
         return entityContext.isViewPermitted();
     }
 
     @SuppressWarnings("rawtypes")
     protected void showEntityPropertiesGridLayout() {
-        fieldsScrollBox.removeAll();
+        fieldsScrollBox.setContent(null);
         if (currentMetaClass != null) {
             InstanceContainer container = initInstanceContainerWithDbEntity();
-            GridLayout gridLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
+            FormLayout gridLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
                     .withOwnerComponent(fieldsScrollBox)
                     .build();
-            fieldsScrollBox.add(gridLayout);
+            fieldsScrollBox.setContent(gridLayout);
 
             actionsBox.setVisible(true);
         }
@@ -219,7 +223,7 @@ public class AppSettingsEntityScreen extends StandardView {
 
     protected void handleCloseBtnClickWithUnsavedChanges() {
         UnknownOperationResult result = new UnknownOperationResult();
-        screenValidation.showSaveConfirmationDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
+        viewValidation.showSaveConfirmationDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
                 .onCommit(() -> result.resume(commitChanges().compose(() -> close(WINDOW_COMMIT_AND_CLOSE_ACTION))))
                 .onDiscard(() -> result.resume(close(WINDOW_DISCARD_AND_CLOSE_ACTION)))
                 .onCancel(result::fail);
@@ -227,15 +231,15 @@ public class AppSettingsEntityScreen extends StandardView {
 
     protected void handleEntityLookupChangeWithUnsavedChanges() {
         UnknownOperationResult result = new UnknownOperationResult();
-        screenValidation.showUnsavedChangesDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
+        viewValidation.showUnsavedChangesDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
                 .onDiscard(() -> result.resume(updateEntityLookupValue(false)))
                 .onCancel(() -> result.resume(updateEntityLookupValue(true)));
     }
 
     protected OperationResult commitChanges() {
-        ValidationErrors validationErrors = screenValidation.validateUiComponents(getWindow());
+        ValidationErrors validationErrors = viewValidation.validateUiComponents(getWindow());
         if (!validationErrors.isEmpty()) {
-            screenValidation.showValidationErrors(this, validationErrors);
+            viewValidation.showValidationErrors(this, validationErrors);
             return OperationResult.fail();
         }
 
