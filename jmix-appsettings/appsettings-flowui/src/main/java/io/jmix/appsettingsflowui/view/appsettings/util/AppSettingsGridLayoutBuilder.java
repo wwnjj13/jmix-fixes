@@ -32,9 +32,19 @@ import io.jmix.core.metamodel.model.MetadataObject;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.flowui.Actions;
 import io.jmix.flowui.UiComponents;
+import io.jmix.flowui.accesscontext.FlowuiEntityAttributeContext;
+import io.jmix.flowui.accesscontext.FlowuiEntityContext;
+import io.jmix.flowui.action.entitypicker.EntityClearAction;
+import io.jmix.flowui.action.entitypicker.EntityLookupAction;
+import io.jmix.flowui.component.ComponentContainer;
+import io.jmix.flowui.component.ComponentGenerationContext;
 import io.jmix.flowui.component.UiComponentsGenerator;
+import io.jmix.flowui.component.valuepicker.EntityPicker;
+import io.jmix.flowui.data.ValueSource;
+import io.jmix.flowui.data.value.ContainerValueSource;
 import io.jmix.flowui.model.DataComponents;
 import io.jmix.flowui.model.InstanceContainer;
+import io.jmix.flowui.view.OpenMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -87,7 +97,7 @@ public class AppSettingsGridLayoutBuilder {
     protected AccessManager accessManager;
 
     private final InstanceContainer container;
-    private io.jmix.ui.component.Component ownerComponent;
+    private com.vaadin.flow.component.Component ownerComponent;
 
     public static AppSettingsGridLayoutBuilder of(ApplicationContext applicationContext, InstanceContainer container) {
         return applicationContext.getBean(AppSettingsGridLayoutBuilder.class, container);
@@ -97,7 +107,7 @@ public class AppSettingsGridLayoutBuilder {
         this.container = container;
     }
 
-    public AppSettingsGridLayoutBuilder withOwnerComponent(io.jmix.ui.component.Component component) {
+    public AppSettingsGridLayoutBuilder withOwnerComponent(com.vaadin.flow.component.Component component) {
         this.ownerComponent = component;
         return this;
     }
@@ -108,11 +118,12 @@ public class AppSettingsGridLayoutBuilder {
                 .sorted(Comparator.comparing(MetadataObject::getName))
                 .collect(Collectors.toList());
 
-        FormLayout gridLayout = uiComponents.create(FormLayout.class);
-        gridLayout.setSpacing(true);
-        gridLayout.setMargin(false, true, false, false);
-        gridLayout.setColumns(3);
-        gridLayout.setRows(metaProperties.size() + 1);
+        FormLayout formLayout = uiComponents.create(FormLayout.class);
+//        formLayout.setSpacing(true);
+//        formLayout.setMargin(false, true, false, false);
+        formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 3));
+        //setColumns(3);
+//        formLayout.setRows(metaProperties.size() + 1);
 
         if (ownerComponent != null) {
             ((ComponentContainer) ownerComponent).add(gridLayout);
@@ -125,7 +136,7 @@ public class AppSettingsGridLayoutBuilder {
 
         Label defaultValueLabel = uiComponents.create(Label.class);
         defaultValueLabel.setValue(messages.getMessage(this.getClass(), "defaultValueLabel"));
-        currentValueLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
+        currentValueLabel.setAlignment(MIDDLE_LEFT);
         gridLayout.add(defaultValueLabel, 2, 0);
 
         for (int i = 0; i < metaProperties.size(); i++) {
@@ -168,18 +179,18 @@ public class AppSettingsGridLayoutBuilder {
         return result;
     }
 
-    protected void addRowToGrid(InstanceContainer container, GridLayout gridLayout, int currentRow, MetaProperty metaProperty) {
+    protected void addRowToGrid(InstanceContainer container, FormLayout formLayout, int currentRow, MetaProperty metaProperty) {
         MetaClass metaClass = container.getEntityMetaClass();
         Range range = metaProperty.getRange();
 
-        UiEntityAttributeContext attributeContext = new UiEntityAttributeContext(metaClass, metaProperty.getName());
+        FlowuiEntityAttributeContext attributeContext = new FlowuiEntityAttributeContext(metaClass, metaProperty.getName());
         accessManager.applyRegisteredConstraints(attributeContext);
         if (!attributeContext.canView()) {
             return;
         }
 
         if (range.isClass()) {
-            UiEntityContext entityContext = new UiEntityContext(range.asClass());
+            FlowuiEntityContext entityContext = new FlowuiEntityContext(range.asClass());
             accessManager.applyRegisteredConstraints(entityContext);
             if (!entityContext.isViewPermitted()) {
                 return;
@@ -190,13 +201,13 @@ public class AppSettingsGridLayoutBuilder {
         Label fieldLabel = uiComponents.create(Label.class);
         fieldLabel.setValue(getPropertyCaption(metaClass, metaProperty));
         fieldLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
-        gridLayout.add(fieldLabel, 0, currentRow + 1);
+        formLayout.add(fieldLabel, 0, currentRow + 1);
 
         //current field
         ValueSource valueSource = new ContainerValueSource<>(container, metaProperty.getName());
         ComponentGenerationContext componentContext = new ComponentGenerationContext(metaClass, metaProperty.getName());
         componentContext.setValueSource(valueSource);
-        gridLayout.add(createField(metaProperty, range, componentContext), 1, currentRow + 1);
+        formLayout.add(createField(metaProperty, range, componentContext), 1, currentRow + 1);
 
         //default value
         ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
@@ -205,7 +216,7 @@ public class AppSettingsGridLayoutBuilder {
         Field defaultValueField = createField(metaProperty, range, componentContextForDefaultField);
         defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
         defaultValueField.setEditable(false);
-        gridLayout.add(defaultValueField, 2, currentRow + 1);
+        formLayout.add(defaultValueField, 2, currentRow + 1);
     }
 
     protected Field createField(MetaProperty metaProperty, Range range, ComponentGenerationContext componentContext) {
@@ -235,7 +246,7 @@ public class AppSettingsGridLayoutBuilder {
     protected EntityPicker createEntityPickerField() {
         EntityPicker pickerField = uiComponents.create(EntityPicker.class);
         EntityLookupAction lookupAction = actions.create(EntityLookupAction.class);
-        lookupAction.setOpenMode(OpenMode.THIS_TAB);
+        lookupAction.setOpenMode(OpenMode.DIALOG);
         pickerField.addAction(lookupAction);
         pickerField.addAction(actions.create(EntityClearAction.class));
         return pickerField;

@@ -16,7 +16,9 @@
 
 package io.jmix.appsettingsflowui.view.appsettings;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -44,6 +46,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static io.jmix.flowui.view.StandardOutcome.*;
 
 @Route(value = "app-settings", layout = DefaultMainViewParent.class)
 @ViewController("appSettings.view")
@@ -198,16 +202,16 @@ public class AppSettingsEntityView extends StandardView {
     }
 
     @Subscribe("saveButtonId")
-    public void onSaveButtonClick(Button.ClickEvent event) {
+    public void onSaveButtonClick(ClickEvent<Button> event) {
         commitChanges();
     }
 
     @Subscribe("closeButtonId")
-    public void onCloseButtonClick(Button.ClickEvent event) {
+    public void onCloseButtonClick(ClickEvent<Button> event) {
         if (dataContext != null && hasUnsavedChanges()) {
             handleCloseBtnClickWithUnsavedChanges();
         } else {
-            close(WINDOW_CLOSE_ACTION);
+            close(CLOSE);
         }
     }
 
@@ -223,23 +227,23 @@ public class AppSettingsEntityView extends StandardView {
 
     protected void handleCloseBtnClickWithUnsavedChanges() {
         UnknownOperationResult result = new UnknownOperationResult();
-        viewValidation.showSaveConfirmationDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
-                .onCommit(() -> result.resume(commitChanges().compose(() -> close(WINDOW_COMMIT_AND_CLOSE_ACTION))))
-                .onDiscard(() -> result.resume(close(WINDOW_DISCARD_AND_CLOSE_ACTION)))
+        viewValidation.showSaveConfirmationDialog(this)
+                .onSave(() -> result.resume(commitChanges().compose(() -> close(SAVE))))
+                .onDiscard(() -> result.resume(close(DISCARD)))
                 .onCancel(result::fail);
     }
 
     protected void handleEntityLookupChangeWithUnsavedChanges() {
         UnknownOperationResult result = new UnknownOperationResult();
-        viewValidation.showUnsavedChangesDialog(this, new StandardCloseAction(Window.CLOSE_ACTION_ID))
+        viewValidation.showUnsavedChangesDialog(this)
                 .onDiscard(() -> result.resume(updateEntityLookupValue(false)))
                 .onCancel(() -> result.resume(updateEntityLookupValue(true)));
     }
 
     protected OperationResult commitChanges() {
-        ValidationErrors validationErrors = viewValidation.validateUiComponents(getWindow());
+        ValidationErrors validationErrors = viewValidation.validateUiComponents(this.getContent());
         if (!validationErrors.isEmpty()) {
-            viewValidation.showValidationErrors(this, validationErrors);
+            viewValidation.showValidationErrors(validationErrors);
             return OperationResult.fail();
         }
 
@@ -265,8 +269,8 @@ public class AppSettingsEntityView extends StandardView {
 
     protected void showSaveNotification() {
         String caption = messages.formatMessage(this.getClass(), "entitySaved", messageTools.getEntityCaption(currentMetaClass));
-        notifications.create(Notifications.NotificationType.TRAY)
-                .withCaption(caption)
+        notifications.create(caption)
+                .withType(Notifications.Type.DEFAULT)
                 .show();
     }
 
