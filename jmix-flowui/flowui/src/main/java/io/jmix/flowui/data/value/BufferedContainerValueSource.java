@@ -47,6 +47,13 @@ public class BufferedContainerValueSource<E, V> extends ContainerValueSource<E, 
     }
 
     @Override
+    protected void containerItemPropertyChanged(InstanceContainer.ItemPropertyChangeEvent<E> e) {
+        if (!isBuffered()) {
+            super.containerItemPropertyChanged(e);
+        }
+    }
+
+    @Override
     protected void setState(BindingState state) {
         super.setState(state);
 

@@ -2035,7 +2035,36 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <!-- GridColumn-->
+    <xs:complexType name="gridEditorButtonType">
+        <xs:attributeGroup ref="hasText"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasTitle"/>
+        <xs:attributeGroup ref="hasClassNames"/>
+
+        <xs:attribute name="themeNames" type="buttonThemeNames"/>
+        <xs:attribute name="iconAfterText" type="xs:boolean"/>
+    </xs:complexType>
+
+    <!--Grid.EditorActionsColumn-->
+    <xs:complexType name="dataGridEditorActionsColumn">
+        <xs:sequence>
+            <xs:element name="editButton" minOccurs="1" type="gridEditorButtonType"/>
+            <xs:element name="saveButton" minOccurs="0" type="gridEditorButtonType"/>
+            <xs:element name="closeButton" minOccurs="0" type="gridEditorButtonType"/>
+            <xs:element name="cancelButton" minOccurs="0" type="gridEditorButtonType"/>
+        </xs:sequence>
+
+        <xs:attribute name="key" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="autoWidth" type="xs:boolean"/>
+        <xs:attribute name="resizable" type="xs:boolean"/>
+        <xs:attribute name="flexGrow" type="xs:integer"/>
+        <xs:attribute name="header" type="resourceString"/>
+        <xs:attribute name="footer" type="resourceString"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+    </xs:complexType>
+
+    <!-- Grid.Column-->
     <xs:complexType name="dataGridColumnComponent">
         <xs:attribute name="key" type="xs:string"/>
         <xs:attribute name="visible" type="xs:boolean"/>
@@ -2051,7 +2080,6 @@
         <xs:attribute name="textAlign" type="gridColumnTextAlignEnum"/>
         <xs:attribute name="editable" type="xs:boolean"/>
     </xs:complexType>
-
 
     <!-- DataGrid -->
     <xs:complexType name="dataGridComponent">
@@ -2071,6 +2099,7 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="column" maxOccurs="unbounded" type="dataGridColumnComponent"/>
+                                <xs:element name="editorActionsColumn" type="dataGridEditorActionsColumn"/>
                             </xs:sequence>
                             <xs:attributeGroup ref="columnsLoadType"/>
                         </xs:complexType>

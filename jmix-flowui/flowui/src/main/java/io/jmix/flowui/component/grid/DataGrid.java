@@ -172,10 +172,15 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @Override
+    public boolean isEditorCreated() {
+        return editorCreated;
+    }
+
+    @Override
     protected void onDataProviderChange() {
         super.onDataProviderChange();
 
-        if (editorCreated) {
+        if (isEditorCreated()) {
             DataGridEditor<E> editor = getEditor();
             if (editor instanceof DataGridDataProviderChangeObserver) {
                 ((DataGridDataProviderChangeObserver) editor).dataProviderChanged();

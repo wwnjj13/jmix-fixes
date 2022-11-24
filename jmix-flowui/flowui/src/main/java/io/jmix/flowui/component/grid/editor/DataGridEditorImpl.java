@@ -69,6 +69,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
 
     protected T edited;
     protected boolean buffered;
+    protected boolean saving;
 
     protected Map<T, DataGridEditorValueSourceProvider<T>> itemValueSourceProviders;
     protected Map<Grid.Column<T>, Component> columnEditorComponents;
@@ -132,6 +133,11 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     }
 
     @Override
+    public boolean isSaving() {
+        return saving;
+    }
+
+    @Override
     public boolean isOpen() {
         return edited != null;
     }
@@ -189,7 +195,11 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
 
         log.debug("Writing edit component values to item: " + edited);
 
+        saving = true;
+
         columnEditorComponents.values().forEach(this::writeComponent);
+
+        saving = false;
     }
 
     protected void writeComponent(Component component) {
@@ -279,7 +289,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
 
             refresh(oldEdited);
             clearItemValueSourceProviders(oldEdited);
-            clearEditComponents();
+            clearEditorComponents();
             fireCloseEvent(new EditorCloseEvent<>(this, oldEdited));
         }
     }
@@ -314,6 +324,8 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
             return valueSourceProvider;
         }
 
+        log.debug("Creating a new item value source provider for: " + item);
+
         InstanceContainer<T> instanceContainer = createInstanceContainer(item);
         valueSourceProvider = new DataGridEditorValueSourceProvider<>(this, instanceContainer);
 
@@ -344,11 +356,15 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         }
 
         if (item != null) {
+            log.debug("Clearing item value source provider for: " + item);
+
             DataGridEditorValueSourceProvider<T> removed = itemValueSourceProviders.remove(item);
             if (removed != null) {
                 detachItemContainer(removed);
             }
         } else {
+            log.debug("Clearing all item value source providers");
+
             // detach instance containers from entities explicitly
             itemValueSourceProviders.values().forEach(this::detachItemContainer);
             itemValueSourceProviders.clear();
@@ -359,8 +375,10 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         valueSourceProvider.getContainer().setItem(null);
     }
 
-    protected void clearEditComponents() {
+    protected void clearEditorComponents() {
         if (MapUtils.isNotEmpty(columnEditorComponents)) {
+            log.debug("Clearing editor components");
+
             columnEditorComponents.clear();
         }
     }

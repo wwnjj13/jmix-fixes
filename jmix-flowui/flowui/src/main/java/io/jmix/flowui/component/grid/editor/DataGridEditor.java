@@ -43,6 +43,12 @@ public interface DataGridEditor<T> extends Editor<T> {
     T getItem();
 
     /**
+     * @return {@code true} if this editor is buffered and is in a
+     * process of writing data to an item, {@code false} otherwise
+     */
+    boolean isSaving();
+
+    /**
      * Sets the default function that returns the column editor component
      * that is bound to the passed entity's property. To find the column
      * it's assumed that the column key is equal to the property.

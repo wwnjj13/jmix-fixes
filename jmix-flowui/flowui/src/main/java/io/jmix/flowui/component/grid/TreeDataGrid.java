@@ -171,10 +171,15 @@ public class TreeDataGrid<E> extends JmixTreeGrid<E> implements ListDataComponen
     }
 
     @Override
+    public boolean isEditorCreated() {
+        return editorCreated;
+    }
+
+    @Override
     protected void onDataProviderChange() {
         super.onDataProviderChange();
 
-        if (editorCreated) {
+        if (isEditorCreated()) {
             DataGridEditor<E> editor = getEditor();
             if (editor instanceof DataGridDataProviderChangeObserver) {
                 ((DataGridDataProviderChangeObserver) editor).dataProviderChanged();

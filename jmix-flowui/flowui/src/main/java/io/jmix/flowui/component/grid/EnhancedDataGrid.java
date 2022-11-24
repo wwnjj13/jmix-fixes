@@ -18,10 +18,13 @@ package io.jmix.flowui.component.grid;
 
 import com.vaadin.flow.component.grid.Grid;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
+import io.jmix.flowui.component.grid.editor.DataGridEditor;
 
 public interface EnhancedDataGrid<T> {
 
     Grid.Column<T> addColumn(MetaPropertyPath metaPropertyPath);
 
     Grid.Column<T> addColumn(String key, MetaPropertyPath metaPropertyPath);
+
+    boolean isEditorCreated();
 }
