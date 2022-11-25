@@ -51,8 +51,8 @@ import static io.jmix.flowui.view.StandardOutcome.*;
 
 @Route(value = "app-settings", layout = DefaultMainViewParent.class)
 @ViewController("appSettings.view")
-@ViewDescriptor("app-settings-view.xml")
-@LookupComponent("sessionsTable")
+@ViewDescriptor("app-settings-entity-view.xml")
+//@LookupComponent("sessionsTable")
 @DialogMode(width = "50em", height = "37.5em")
 public class AppSettingsEntityView extends StandardView {
 
@@ -91,14 +91,14 @@ public class AppSettingsEntityView extends StandardView {
     @Autowired
     protected FetchPlans fetchPlans;
 
-    @Autowired
+    @ViewComponent
     protected ComboBox<MetaClass> entitiesLookup;
 
-    @Autowired
+    @ViewComponent
     protected HorizontalLayout entityGroupBoxId;
-    @Autowired
+    @ViewComponent
     protected Scroller fieldsScrollBox;
-    @Autowired
+    @ViewComponent
     protected HorizontalLayout actionsBox;
 
     private DataContext dataContext;

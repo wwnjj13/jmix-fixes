@@ -16,9 +16,16 @@
 
 package io.jmix.appsettingsflowui.view.appsettings.util;
 
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.core.AccessManager;
@@ -38,8 +45,11 @@ import io.jmix.flowui.action.entitypicker.EntityClearAction;
 import io.jmix.flowui.action.entitypicker.EntityLookupAction;
 import io.jmix.flowui.component.ComponentContainer;
 import io.jmix.flowui.component.ComponentGenerationContext;
+import io.jmix.flowui.component.SupportsTypedValue;
 import io.jmix.flowui.component.UiComponentsGenerator;
+import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.component.valuepicker.EntityPicker;
+import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.data.value.ContainerValueSource;
 import io.jmix.flowui.model.DataComponents;
@@ -121,26 +131,30 @@ public class AppSettingsGridLayoutBuilder {
         FormLayout formLayout = uiComponents.create(FormLayout.class);
 //        formLayout.setSpacing(true);
 //        formLayout.setMargin(false, true, false, false);
-        formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 3));
+        formLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 2),
+                new FormLayout.ResponsiveStep("40em", 3));
         //setColumns(3);
 //        formLayout.setRows(metaProperties.size() + 1);
 
         if (ownerComponent != null) {
-            ((ComponentContainer) ownerComponent).add(gridLayout);
+            ownerComponent.getElement().appendChild(formLayout.getElement());
+//            ((ComponentContainer) ownerComponent)..getComponents().add(formLayout);
         }
+        formLayout.add(uiComponents.create(Div.class));
 
-        Label currentValueLabel = uiComponents.create(Label.class);
-        currentValueLabel.setValue(messages.getMessage(this.getClass(), "currentValueLabel"));
-        currentValueLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
-        formLayout.add(currentValueLabel, 1, 0);
+        Span currentValueLabel = uiComponents.create(Span.class);
+        currentValueLabel.setText(messages.getMessage(this.getClass(), "currentValueLabel"));
+//        currentValueLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
+        formLayout.add(currentValueLabel);
 
-        Label defaultValueLabel = uiComponents.create(Label.class);
-        defaultValueLabel.setValue(messages.getMessage(this.getClass(), "defaultValueLabel"));
-        currentValueLabel.setAlignment(MIDDLE_LEFT);
-        formLayout.add(defaultValueLabel, 2, 0);
+        Span defaultValueLabel = uiComponents.create(Span.class);
+        defaultValueLabel.setText(messages.getMessage(this.getClass(), "defaultValueLabel"));
+//        currentValueLabel.setAlignment(MIDDLE_LEFT);
+        formLayout.add(defaultValueLabel);
 
         for (int i = 0; i < metaProperties.size(); i++) {
-            addRowToGrid(container, gridLayout, i, metaProperties.get(i));
+            addRowToGrid(container, formLayout, i, metaProperties.get(i));
         }
 
         return formLayout;
@@ -198,32 +212,39 @@ public class AppSettingsGridLayoutBuilder {
         }
 
         //add label
-        Label fieldLabel = uiComponents.create(Label.class);
-        fieldLabel.setValue(getPropertyCaption(metaClass, metaProperty));
-        fieldLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
-        formLayout.add(fieldLabel, 0, currentRow + 1);
+        Span fieldLabel = uiComponents.create(Span.class);
+        fieldLabel.setText(getPropertyCaption(metaClass, metaProperty));
+
+//        fieldLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
+
+        formLayout.add(fieldLabel);
 
         //current field
         ValueSource valueSource = new ContainerValueSource<>(container, metaProperty.getName());
         ComponentGenerationContext componentContext = new ComponentGenerationContext(metaClass, metaProperty.getName());
         componentContext.setValueSource(valueSource);
-        formLayout.add(createField(metaProperty, range, componentContext), 1, currentRow + 1);
+        formLayout.add(createField(metaProperty, range, componentContext));
 
         //default value
         ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
         ValueSource valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
         componentContextForDefaultField.setValueSource(valueSourceForDefaultField);
-        Field defaultValueField = createField(metaProperty, range, componentContextForDefaultField);
-        defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
-        defaultValueField.setEditable(false);
-        formLayout.add(defaultValueField, 2, currentRow + 1);
+        AbstractField defaultValueField = createField(metaProperty, range, componentContextForDefaultField);
+        if (defaultValueField instanceof SupportsTypedValue) {
+            ((SupportsTypedValue<?, ?, Object, ?>) defaultValueField)
+                    .setTypedValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+        } else {
+            defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+        }
+        defaultValueField.setEnabled(false);
+        formLayout.add(defaultValueField);
     }
 
-    protected Field createField(MetaProperty metaProperty, Range range, ComponentGenerationContext componentContext) {
-        Field field = (Field) uiComponentsGenerator.generate(componentContext);
+    protected AbstractField createField(MetaProperty metaProperty, Range range, ComponentGenerationContext componentContext) {
+        AbstractField field = (AbstractField) uiComponentsGenerator.generate(componentContext);
 
         if (EntityUtils.requireTextArea(metaProperty, this.container.getItem(), MAX_TEXT_FIELD_STRING_LENGTH)) {
-            field = uiComponents.create(TextArea.NAME);
+            field = uiComponents.create(TypedTextField.class);
         }
 
         if (EntityUtils.isBoolean(metaProperty)) {
@@ -238,8 +259,8 @@ public class AppSettingsGridLayoutBuilder {
             field = createEntityPickerField();
         }
 
-        field.setValueSource(componentContext.getValueSource());
-        field.setWidth(FIELD_WIDTH);
+        ((SupportsValueSource) field).setValueSource(componentContext.getValueSource());
+//        field.setWidth(FIELD_WIDTH);
         return field;
     }
 
@@ -252,17 +273,24 @@ public class AppSettingsGridLayoutBuilder {
         return pickerField;
     }
 
-    protected Field createBooleanField() {
-        ComboBox field = uiComponents.create(ComboBox.NAME);
-        field.setOptionsMap(ParamsMap.of(
-                messages.getMessage("trueString"), Boolean.TRUE,
-                messages.getMessage("falseString"), Boolean.FALSE));
-        field.setTextInputAllowed(false);
+    protected AbstractField createBooleanField() {
+        ComboBox field = uiComponents.create(ComboBox.class);
+        field.setItems(List.of(Boolean.TRUE, Boolean.FALSE));
+        field.setItemLabelGenerator((ItemLabelGenerator) item -> {
+            if (item == Boolean.TRUE) {
+                return messages.getMessage("trueString");
+            }
+            if (item == Boolean.FALSE) {
+                return messages.getMessage("falseString");
+            }
+            return null;
+        });
+        field.setAllowCustomValue(false);
         return field;
     }
 
-    protected Field createPasswordField() {
-        return uiComponents.<PasswordField>create(PasswordField.NAME);
+    protected AbstractField createPasswordField() {
+        return uiComponents.create(PasswordField.class);
     }
 
     protected String getPropertyCaption(MetaClass metaClass, MetaProperty metaProperty) {

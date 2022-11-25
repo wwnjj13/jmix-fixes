@@ -14,25 +14,26 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://jmix.io/schema/ui/window"
-        caption="msg://screenCaption">
+<view xmlns="http://jmix.io/schema/flowui/view"
+        title="msg://screenCaption">
 
-    <dialogMode height="600"
-                width="800"
-                resizable="true"/>
+<!--    <dialogMode height="600"-->
+<!--                width="800"-->
+<!--                resizable="true"/>-->
 
     <layout expand="entityGroupBoxId" spacing="true">
-        <form width="100%">
-            <column>
-                <comboBox id="entitiesLookup" caption="msg://selectEntityLabel" nullOptionVisible="false"/>
-            </column>
-        </form>
-        <groupBox id="entityGroupBoxId" spacing="true" caption="" visible="false">
-            <scrollBox margin="true" id="fieldsScrollBox" height="100%" width="100%" spacing="true"/>
-        </groupBox>
+<!--        <form width="100%">-->
+<!--            <column>-->
+        <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"
+                  allowCustomValue="false"/>
+<!--            </column>-->
+<!--        </form>-->
+        <hbox id="entityGroupBoxId" visible="false">
+            <scroller id="fieldsScrollBox" height="100%" width="100%"/>
+        </hbox>
         <hbox id="actionsBox" spacing="true" visible="false">
-            <button id="saveButtonId" caption="msg://saveApplicationSettings" primary="true"/>
-            <button id="closeButtonId" caption="msg://close"/>
+            <button id="saveButtonId" text="msg://saveApplicationSettings"/>
+            <button id="closeButtonId" text="msg://close"/>
         </hbox>
     </layout>
-</window>
+</view>
