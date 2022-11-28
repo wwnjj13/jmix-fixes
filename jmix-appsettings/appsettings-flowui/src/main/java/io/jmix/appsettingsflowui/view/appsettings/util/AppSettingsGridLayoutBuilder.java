@@ -17,22 +17,18 @@
 package io.jmix.appsettingsflowui.view.appsettings.util;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.ItemLabelGenerator;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.core.AccessManager;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
 import io.jmix.core.MetadataTools;
-import io.jmix.core.common.util.ParamsMap;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetadataObject;
@@ -43,7 +39,6 @@ import io.jmix.flowui.accesscontext.FlowuiEntityAttributeContext;
 import io.jmix.flowui.accesscontext.FlowuiEntityContext;
 import io.jmix.flowui.action.entitypicker.EntityClearAction;
 import io.jmix.flowui.action.entitypicker.EntityLookupAction;
-import io.jmix.flowui.component.ComponentContainer;
 import io.jmix.flowui.component.ComponentGenerationContext;
 import io.jmix.flowui.component.SupportsTypedValue;
 import io.jmix.flowui.component.UiComponentsGenerator;
@@ -74,7 +69,6 @@ public class AppSettingsGridLayoutBuilder {
 
     private static final int MAX_TEXT_FIELD_STRING_LENGTH = 255;
     private static final Integer MAX_CAPTION_LENGTH = 50;
-    private static final String FIELD_WIDTH = "350px";
 
     @Autowired
     protected UiComponents uiComponents;
@@ -129,29 +123,15 @@ public class AppSettingsGridLayoutBuilder {
                 .collect(Collectors.toList());
 
         FormLayout formLayout = uiComponents.create(FormLayout.class);
-//        formLayout.setSpacing(true);
-//        formLayout.setMargin(false, true, false, false);
+
+
         formLayout.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 2),
+                new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("40em", 3));
-        //setColumns(3);
-//        formLayout.setRows(metaProperties.size() + 1);
 
         if (ownerComponent != null) {
             ownerComponent.getElement().appendChild(formLayout.getElement());
-//            ((ComponentContainer) ownerComponent)..getComponents().add(formLayout);
         }
-        formLayout.add(uiComponents.create(Div.class));
-
-        Span currentValueLabel = uiComponents.create(Span.class);
-        currentValueLabel.setText(messages.getMessage(this.getClass(), "currentValueLabel"));
-//        currentValueLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
-        formLayout.add(currentValueLabel);
-
-        Span defaultValueLabel = uiComponents.create(Span.class);
-        defaultValueLabel.setText(messages.getMessage(this.getClass(), "defaultValueLabel"));
-//        currentValueLabel.setAlignment(MIDDLE_LEFT);
-        formLayout.add(defaultValueLabel);
 
         for (int i = 0; i < metaProperties.size(); i++) {
             addRowToGrid(container, formLayout, i, metaProperties.get(i));
@@ -212,10 +192,10 @@ public class AppSettingsGridLayoutBuilder {
         }
 
         //add label
-        Span fieldLabel = uiComponents.create(Span.class);
+
+        Label fieldLabel = uiComponents.create(Label.class);
         fieldLabel.setText(getPropertyCaption(metaClass, metaProperty));
 
-//        fieldLabel.setAlignment(io.jmix.ui.component.Component.Alignment.MIDDLE_LEFT);
 
         formLayout.add(fieldLabel);
 
@@ -223,13 +203,16 @@ public class AppSettingsGridLayoutBuilder {
         ValueSource valueSource = new ContainerValueSource<>(container, metaProperty.getName());
         ComponentGenerationContext componentContext = new ComponentGenerationContext(metaClass, metaProperty.getName());
         componentContext.setValueSource(valueSource);
-        formLayout.add(createField(metaProperty, range, componentContext));
+        AbstractField currentField = createField(metaProperty, range, componentContext);
+        ((HasLabel) currentField).setLabel(messages.getMessage(this.getClass(), "currentValueLabel"));
+        formLayout.add(currentField);
 
         //default value
         ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
         ValueSource valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
         componentContextForDefaultField.setValueSource(valueSourceForDefaultField);
         AbstractField defaultValueField = createField(metaProperty, range, componentContextForDefaultField);
+        ((HasLabel) defaultValueField).setLabel(messages.getMessage(this.getClass(), "defaultValueLabel"));
         if (defaultValueField instanceof SupportsTypedValue) {
             ((SupportsTypedValue<?, ?, Object, ?>) defaultValueField)
                     .setTypedValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
@@ -260,7 +243,6 @@ public class AppSettingsGridLayoutBuilder {
         }
 
         ((SupportsValueSource) field).setValueSource(componentContext.getValueSource());
-//        field.setWidth(FIELD_WIDTH);
         return field;
     }
 

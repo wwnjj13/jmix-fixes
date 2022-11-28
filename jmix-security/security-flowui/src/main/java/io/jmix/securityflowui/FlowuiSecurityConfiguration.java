@@ -164,7 +164,6 @@ public class FlowuiSecurityConfiguration {
         urlRegistry.requestMatchers(requestUtil::isAnonymousRoute).permitAll();
         urlRegistry.requestMatchers(
                 getDefaultHttpSecurityPermitMatcher(getUrlMapping())).permitAll();
-
         // all other requests require authentication
         urlRegistry.anyRequest().authenticated();
 

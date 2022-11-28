@@ -16,7 +16,7 @@
   -->
 
 <menu-config xmlns="http://jmix.io/schema/flowui/menu" order="300">
-    <menu id="administration">
+    <menu id="appsettings" title="msg://menu-config.appSettings.view">
         <item view="appSettings.view" title="msg://menu-config.appSettings.view"/>
     </menu>
 </menu-config>

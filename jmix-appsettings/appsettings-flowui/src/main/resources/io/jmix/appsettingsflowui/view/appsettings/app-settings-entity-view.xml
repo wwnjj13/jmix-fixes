@@ -17,17 +17,9 @@
 <view xmlns="http://jmix.io/schema/flowui/view"
         title="msg://screenCaption">
 
-<!--    <dialogMode height="600"-->
-<!--                width="800"-->
-<!--                resizable="true"/>-->
-
     <layout expand="entityGroupBoxId" spacing="true">
-<!--        <form width="100%">-->
-<!--            <column>-->
         <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"
                   allowCustomValue="false"/>
-<!--            </column>-->
-<!--        </form>-->
         <hbox id="entityGroupBoxId" visible="false">
             <scroller id="fieldsScrollBox" height="100%" width="100%"/>
         </hbox>

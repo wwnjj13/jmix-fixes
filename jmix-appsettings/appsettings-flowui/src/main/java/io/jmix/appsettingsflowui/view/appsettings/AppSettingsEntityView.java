@@ -27,7 +27,14 @@ import com.vaadin.flow.router.Route;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.entity.AppSettingsEntity;
 import io.jmix.appsettingsflowui.view.appsettings.util.AppSettingsGridLayoutBuilder;
-import io.jmix.core.*;
+import io.jmix.core.AccessManager;
+import io.jmix.core.EntityStates;
+import io.jmix.core.FetchPlan;
+import io.jmix.core.FetchPlans;
+import io.jmix.core.MessageTools;
+import io.jmix.core.Messages;
+import io.jmix.core.MetadataTools;
+import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.data.PersistenceHints;
 import io.jmix.flowui.Notifications;
@@ -38,21 +45,26 @@ import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.util.OperationResult;
 import io.jmix.flowui.util.UnknownOperationResult;
-import io.jmix.flowui.view.*;
+import io.jmix.flowui.view.DefaultMainViewParent;
+import io.jmix.flowui.view.DialogMode;
+import io.jmix.flowui.view.StandardView;
+import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.ViewComponent;
+import io.jmix.flowui.view.ViewController;
+import io.jmix.flowui.view.ViewDescriptor;
+import io.jmix.flowui.view.ViewValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static io.jmix.flowui.view.StandardOutcome.*;
+import static io.jmix.flowui.view.StandardOutcome.CLOSE;
+import static io.jmix.flowui.view.StandardOutcome.DISCARD;
+import static io.jmix.flowui.view.StandardOutcome.SAVE;
 
 @Route(value = "app-settings", layout = DefaultMainViewParent.class)
 @ViewController("appSettings.view")
 @ViewDescriptor("app-settings-entity-view.xml")
-//@LookupComponent("sessionsTable")
 @DialogMode(width = "50em", height = "37.5em")
 public class AppSettingsEntityView extends StandardView {
 
@@ -115,7 +127,6 @@ public class AppSettingsEntityView extends StandardView {
                 .setItemLabelGenerator((ItemLabelGenerator<MetaClass>) item -> messageTools.getEntityCaption(item) + " (" + item.getName() + ")");
         entitiesLookup.setItems(getEntitiesLookupFieldOptions());
 
-//        entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
         entitiesLookup.addValueChangeListener(e -> {
 
             entityGroupBoxId.setVisible(e.getValue() != null);
@@ -140,7 +151,6 @@ public class AppSettingsEntityView extends StandardView {
     protected void initEntityPropertiesGridLayout() {
         dataContext = dataComponents.createDataContext();
         getViewData().setDataContext(dataContext);
-//        getScreenData().setDataContext(dataContext);
         showEntityPropertiesGridLayout();
         dataContext.addChangeListener(changeEvent -> {
             if (entityStates.isNew(changeEvent.getEntity())) {
