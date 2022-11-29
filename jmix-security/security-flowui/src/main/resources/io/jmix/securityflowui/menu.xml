@@ -22,7 +22,7 @@
               title="msg://io.jmix.securityflowui.view.rowlevelrole/rowLevelRoleModelListView.menu"/>
     </menu>
     <menu id="system">
-        <item view="sec_Lock.list"
+        <item view="sec_LockInfo.list"
               title="msg://io.jmix.securityflowui.view.pesimisticlocking/menu.sec_LockList.menu"/>
     </menu>
 </menu-config>

@@ -14,11 +14,12 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://jmix.io/schema/ui/window" caption="msg://LockBrowser.caption"
+<window xmlns="http://jmix.io/schema/ui/window"
+        caption="msg://LockBrowser.caption"
         focusComponent="locksTable">
 
     <data>
-        <collection id="locksDs" class="io.jmix.core.pessimisticlocking.LockInfo"/>
+        <collection id="locksDc" class="io.jmix.core.pessimisticlocking.LockInfo"/>
     </data>
 
     <dialogMode resizable="true"
@@ -26,10 +27,10 @@
                 height="600px"/>
 
     <layout spacing="true">
-        <table id="locksTable" editable="false" width="100%" height="100%" dataContainer="locksDs">
+        <table id="locksTable" width="100%" height="100%" dataContainer="locksDc">
             <actions>
-                <action id="refresh" caption="msg://LockBrowser.refresh" icon="REFRESH_ACTION"/>
-                <action id="unlock" trackSelection="true" caption="msg://LockBrowser.unlock"
+                <action id="refresh" type="refresh"/>
+                <action id="unlock" type="itemTracking" caption="msg://LockBrowser.unlock"
                         icon="UNLOCK_ACTION"/>
             </actions>
             <buttonsPanel>
@@ -37,11 +38,7 @@
                 <button action="locksTable.unlock"/>
             </buttonsPanel>
             <columns>
-                <column id="objectType" caption="msg://LockBrowser.entityName">
-                    <formatter>
-                        <custom bean="sec_LockNameFormatter"/>
-                    </formatter>
-                </column>
+                <column id="objectType" caption="msg://LockBrowser.entityName"/>
                 <column id="objectId" caption="msg://LockBrowser.entityId"/>
                 <column id="username" caption="msg://LockBrowser.user"/>
                 <column id="since" caption="msg://LockBrowser.since"/>

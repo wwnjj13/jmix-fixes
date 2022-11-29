@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * Copyright (c) 2008-2016 Haulmont.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 package io.jmix.securityflowui.view.pesimisticlocking;
 
 
@@ -47,7 +31,6 @@ import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.view.DefaultMainViewParent;
 import io.jmix.flowui.view.DialogMode;
-import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.StandardView;
 import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewComponent;
@@ -59,15 +42,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@Route(value = "system/locks", layout = DefaultMainViewParent.class)
-@ViewController("sec_Lock.list")
+@Route(value = "system/pessimistic-locks", layout = DefaultMainViewParent.class)
+@ViewController("sec_LockInfo.list")
 @ViewDescriptor("lock-list-view.xml")
-@EditedEntityContainer("roleModelDc")
 @DialogMode(width = "50em", height = "37.5em")
-public class LockListView extends StandardView {
+public class PessimisticLockListView extends StandardView {
 
     @ViewComponent
-    protected CollectionContainer<LockInfo> locksDs;
+    protected CollectionContainer<LockInfo> locksDc;
 
     @ViewComponent
     protected DataGrid<LockInfo> locksTable;
@@ -89,7 +71,7 @@ public class LockListView extends StandardView {
 
     @Subscribe
     public void onInit(InitEvent event) {
-        locksTable.addColumn(this::lockNameFormatter)
+        locksTable.addColumn(this::lockNameValueProvider)
                 .setKey("objectTypeColumn")
                 .setHeader(messages.getMessage(this.getClass(), "lockListView.objectType"))
                 .setSortable(true);
@@ -111,23 +93,23 @@ public class LockListView extends StandardView {
             refresh();
             if (lockInfo.getObjectId() != null) {
                 notifications
-                        .create(messages.formatMessage(LockListView.class,
+                        .create(messages.formatMessage(PessimisticLockListView.class,
                                 "hasBeenUnlockedWithId",
                                 lockInfo.getObjectType(),
                                 lockInfo.getId()))
-                        .withType(Notifications.Type.DEFAULT)
+                        .withType(Notifications.Type.SUCCESS)
                         .show();
             } else {
-                notifications.create(messages.formatMessage(LockListView.class,
+                notifications.create(messages.formatMessage(PessimisticLockListView.class,
                                 "hasBeenUnlockedWithoutId",
                                 lockInfo.getObjectType()))
-                        .withType(Notifications.Type.DEFAULT)
+                        .withType(Notifications.Type.SUCCESS)
                         .show();
             }
         }
     }
 
-    public Object lockNameFormatter(LockInfo value) {
+    public String lockNameValueProvider(LockInfo value) {
         MetaClass metaClass = metadata.getSession().getClass(value.getObjectType());
         if (metaClass != null) {
             return messageTools.getEntityCaption(metaClass);
@@ -137,9 +119,9 @@ public class LockListView extends StandardView {
     }
 
     protected void refresh() {
-        locksDs.getMutableItems().clear();
+        locksDc.setItems(null);
         Collection<LockInfo> locks = service.getCurrentLocks();
-        locksDs.getMutableItems().addAll(locks);
+        locksDc.setItems(locks);
     }
 
     @Subscribe("locksTable.refresh")
