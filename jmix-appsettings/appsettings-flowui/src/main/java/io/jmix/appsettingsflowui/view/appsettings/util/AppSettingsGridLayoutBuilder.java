@@ -21,6 +21,7 @@ import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.textfield.PasswordField;
 import io.jmix.appsettings.AppSettings;
@@ -70,6 +71,7 @@ public class AppSettingsGridLayoutBuilder {
     private static final int MAX_TEXT_FIELD_STRING_LENGTH = 255;
     private static final Integer MAX_CAPTION_LENGTH = 50;
 
+    private static final Integer AMOUNT_COLUMNS = 3;
     @Autowired
     protected UiComponents uiComponents;
 
@@ -127,7 +129,7 @@ public class AppSettingsGridLayoutBuilder {
 
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("40em", 3));
+                new FormLayout.ResponsiveStep("40em", AMOUNT_COLUMNS));
 
         if (ownerComponent != null) {
             ownerComponent.getElement().appendChild(formLayout.getElement());
@@ -221,6 +223,10 @@ public class AppSettingsGridLayoutBuilder {
         }
         defaultValueField.setEnabled(false);
         formLayout.add(defaultValueField);
+
+        Hr hr = uiComponents.create(Hr.class);
+        formLayout.add(hr);
+        formLayout.setColspan(hr, AMOUNT_COLUMNS);
     }
 
     protected AbstractField createField(MetaProperty metaProperty, Range range, ComponentGenerationContext componentContext) {
