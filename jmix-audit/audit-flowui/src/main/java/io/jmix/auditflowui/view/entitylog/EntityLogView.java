@@ -215,7 +215,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
     protected LocalDateTime getTillDateTime() {
         LocalDateTime tillDateTime = null;
-        if (tillDateField.getTypedValue() != null || tillTimeField.getTypedValue()!=null) {
+        if (tillDateField.getTypedValue() != null || tillTimeField.getTypedValue() != null) {
 
             LocalDate afterDate = tillDateField.getTypedValue() != null ? tillDateField.getTypedValue() :
                     LocalDate.now();
@@ -228,7 +228,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
     protected LocalDateTime getFromDateTime() {
         LocalDateTime fromDateTime = null;
-        if (fromDateField.getTypedValue() != null || fromTimeField.getTypedValue()!=null) {
+        if (fromDateField.getTypedValue() != null || fromTimeField.getTypedValue() != null) {
             LocalDate fromDate = fromDateField.getTypedValue() != null ? fromDateField.getTypedValue() :
                     LocalDate.now();
             LocalTime fromTime = fromTimeField.getTypedValue() != null ? fromTimeField.getTypedValue() :
@@ -257,7 +257,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                 .map(UserDetails::getUsername)
                 .collect(Collectors.toList()));
         filterEntityNameField.setItems(entityMetaClassesMap.values());
-        instancePicker.setFormatter(value -> value!=null ? metadataTools.getInstanceName(value): null);
+        instancePicker.setFormatter(value -> value != null ? metadataTools.getInstanceName(value) : null);
 
         disableControls();
         setDateFieldTime();
@@ -382,7 +382,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         return null;
     }
 
-    protected void onLoggedEntityTableSelectEvent(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event){
+    protected void onLoggedEntityTableSelectEvent(SelectionEvent<Grid<LoggedEntity>, LoggedEntity> event) {
         LoggedEntity entity = event.getFirstSelectedItem().orElse(null);
         if (entity != null) {
             loggedAttrDl.setParameter("entityId", entity.getId());
@@ -407,9 +407,9 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
         instancePicker.clear();
     }
 
-    protected void onEntityLogTableSelect (SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
+    protected void onEntityLogTableSelect(SelectionEvent<Grid<EntityLogItem>, EntityLogItem> event1) {
         EntityLogItem entity = event1.getFirstSelectedItem().orElse(null);
-        if (entity!=null) {
+        if (entity != null) {
             entityLogAttrDc.setItems(entity.getAttributes());
         } else {
             entityLogAttrDc.setItems(null);
@@ -417,7 +417,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("attributesCheckboxGroup")
-    protected void onAttributesCheckboxGroupValueChange (AbstractField.ComponentValueChangeEvent<CheckboxGroup<String>,
+    protected void onAttributesCheckboxGroupValueChange(AbstractField.ComponentValueChangeEvent<CheckboxGroup<String>,
             Set<String>> event) {
         if (event.getValue().size() == event.getSource()
                 .getListDataView().getItems().toArray().length) {
@@ -433,7 +433,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("selectAllCheckBox")
-    protected void onSelectAllCheckBoxChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event){
+    protected void onSelectAllCheckBoxChange(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
         if (selectAllCheckBox.getValue()) {
             attributesCheckboxGroup.setValue(new HashSet<>(attributesCheckboxGroup.getListDataView()
                     .getItems().collect(Collectors.toList())));
@@ -505,14 +505,14 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                             if (allowLogProperty(embeddedProperty)) {
                                 String name = String.format("%s.%s", property.getName(), embeddedProperty.getName());
                                 items.add(name);
-                                if (attributeIsSelected(enabledAttr, name, metaClass)){
+                                if (attributeIsSelected(enabledAttr, name, metaClass)) {
                                     selectedItems.add(name);
                                 }
                             }
                         }
                     } else {
                         items.add(property.getName());
-                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
+                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)) {
                             selectedItems.add(property.getName());
                         }
                     }
@@ -525,7 +525,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
                     if (allowLogProperty(property)) {
 
                         items.add(property.getName());
-                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)){
+                        if (attributeIsSelected(enabledAttr, property.getName(), metaClass)) {
                             selectedItems.add(property.getName());
                         }
                     }
@@ -592,7 +592,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     }
 
     @Subscribe("instancePicker.selectAction")
-    protected void onSelectAction(ActionPerformedEvent event){
+    protected void onSelectAction(ActionPerformedEvent event) {
         if (instancePicker.isEnabled()) {
             final MetaClass metaClass = metadata.getSession().getClass(filterEntityNameField.getValue());
             if (metaClass == null) {
@@ -606,7 +606,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
             }
             try {
                 DialogWindow lookup = dialogBuilders.lookup(this, metaClass.getJavaClass())
-                        .withSelectHandler(items->{
+                        .withSelectHandler(items -> {
                             if (!items.isEmpty()) {
                                 Object item = items.iterator().next();
                                 selectedEntity = item;
@@ -739,7 +739,8 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
     protected void onSaveBtnClick(ClickEvent<Button> event) {
         LoggedEntity selectedEntity = loggedEntityDc.getItem();
         final LoggedEntity selected = selectedEntity;
-        if(loggedEntityDc.getItems().stream().anyMatch(e->!(selected==e) && e.getName().equals(selected.getName()))){
+        if (loggedEntityDc.getItems().stream()
+                .anyMatch(e -> !(selected == e) && e.getName().equals(selected.getName()))) {
             notifications.create(messages.getMessage(EntityLogView.class, "settingAlreadyExist"))
                     .withType(Notifications.Type.ERROR)
                     .show();
@@ -748,7 +749,7 @@ public class EntityLogView extends StandardListView<EntityLogItem> {
 
         DataContext dataContext = loggedEntityDl.getDataContext();
         selectedEntity = dataContext.merge(selectedEntity);
-        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes()!=null ?
+        Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes() != null ?
                 selectedEntity.getAttributes() : new HashSet<>();
         Set<String> selectedItems = attributesCheckboxGroup.getSelectedItems();
         for (Object c : attributesCheckboxGroup.getListDataView().getItems().toArray()) {

@@ -139,7 +139,7 @@
                 </responsiveSteps>
                 <dataGrid id="entityLogTable" dataContainer="entityLogDc">
                     <columns>
-                        <column property="eventTs" key="eventTs" resizable="true"/>
+                        <column property="eventTs" resizable="true"/>
                         <column property="username" resizable="true"/>
                         <column property="type" resizable="true"/>
                         <column property="entityInstanceName" resizable="true"/>
@@ -183,7 +183,7 @@
                     </columns>
                 </dataGrid>
             </vbox>
-            <vbox id="loggedEntityMiscBox" maxWidth="32em" padding="false" expand="attributesBox">
+            <vbox id="loggedEntityMiscBox" padding="false" expand="attributesBox">
                 <comboBox id="entityNameField" label="msg://name" width="100%" dataContainer="loggedEntityDc"
                           property="name"/>
                 <hbox id="checkersBox" padding="false" width="100%">
