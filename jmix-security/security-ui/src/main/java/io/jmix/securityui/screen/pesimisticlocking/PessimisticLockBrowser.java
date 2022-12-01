@@ -36,9 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 
-@UiController("sec_LockBrowser.browse")
-@UiDescriptor("lock-browser.xml")
-@Route("lockbrowser")
+@UiController("sys_LockInfo.browse")
+@UiDescriptor("pessimistic-lock-browser.xml")
+@Route("pessimisticlocks")
 public class PessimisticLockBrowser extends Screen {
 
     @Autowired

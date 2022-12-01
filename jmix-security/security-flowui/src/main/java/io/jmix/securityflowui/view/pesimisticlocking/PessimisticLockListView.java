@@ -44,7 +44,7 @@ import java.util.List;
 
 @Route(value = "system/pessimistic-locks", layout = DefaultMainViewParent.class)
 @ViewController("sec_LockInfo.list")
-@ViewDescriptor("lock-list-view.xml")
+@ViewDescriptor("pessimistic-lock-list-view.xml")
 @DialogMode(width = "50em", height = "37.5em")
 public class PessimisticLockListView extends StandardView {
 
@@ -92,8 +92,7 @@ public class PessimisticLockListView extends StandardView {
             service.unlock(lockInfo.getObjectType(), lockInfo.getObjectId());
             refresh();
             if (lockInfo.getObjectId() != null) {
-                notifications
-                        .create(messages.formatMessage(PessimisticLockListView.class,
+                notifications.create(messages.formatMessage(PessimisticLockListView.class,
                                 "hasBeenUnlockedWithId",
                                 lockInfo.getObjectType(),
                                 lockInfo.getId()))

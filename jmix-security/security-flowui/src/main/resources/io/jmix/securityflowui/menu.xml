@@ -23,6 +23,6 @@
     </menu>
     <menu id="system">
         <item view="sec_LockInfo.list"
-              title="msg://io.jmix.securityflowui.view.pesimisticlocking/menu.sec_LockList.menu"/>
+              title="msg://io.jmix.securityflowui.view.pesimisticlocking/menu.sys_LockInfo.menu"/>
     </menu>
 </menu-config>
