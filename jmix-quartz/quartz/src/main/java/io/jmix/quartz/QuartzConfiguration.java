@@ -18,16 +18,6 @@ import java.util.Collections;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {CoreConfiguration.class, DataConfiguration.class, UiConfiguration.class})
-@PropertySource(name = "io.jmix.quartz", value = "classpath:/io/jmix/quartz/module.properties")
+@JmixModule(dependsOn = {CoreConfiguration.class, DataConfiguration.class})
 public class QuartzConfiguration {
-
-    @Bean("quartz_QuartzUiControllers")
-    public UiControllersConfiguration screens(ApplicationContext applicationContext,
-                                              AnnotationScanMetadataReaderFactory metadataReaderFactory) {
-        UiControllersConfiguration uiControllers
-                = new UiControllersConfiguration(applicationContext, metadataReaderFactory);
-        uiControllers.setBasePackages(Collections.singletonList("io.jmix.quartz"));
-        return uiControllers;
-    }
 }
