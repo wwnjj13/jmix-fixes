@@ -18,6 +18,7 @@ package io.jmix.securityflowui.view.pesimisticlocking;
 
 
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
@@ -96,12 +97,14 @@ public class PessimisticLockListView extends StandardView {
                                 "hasBeenUnlockedWithId",
                                 lockInfo.getObjectType(),
                                 lockInfo.getId()))
+                        .withPosition(Notification.Position.TOP_END)
                         .withType(Notifications.Type.SUCCESS)
                         .show();
             } else {
                 notifications.create(messages.formatMessage(PessimisticLockListView.class,
                                 "hasBeenUnlockedWithoutId",
                                 lockInfo.getObjectType()))
+                        .withPosition(Notification.Position.TOP_END)
                         .withType(Notifications.Type.SUCCESS)
                         .show();
             }
