@@ -34,7 +34,7 @@ import java.util.Collections;
 @ComponentScan
 @ConfigurationPropertiesScan
 @JmixModule(dependsOn = {QuartzConfiguration.class, UiConfiguration.class})
-@PropertySource(name = "io.jmix.quartz", value = "classpath:/io/jmix/quartz/module.properties")
+@PropertySource(name = "io.jmix.quartzui", value = "classpath:/io/jmix/quartz/module.properties")
 public class QuartzUiConfiguration {
 
     @Bean("quartz_QuartzUiControllers")
