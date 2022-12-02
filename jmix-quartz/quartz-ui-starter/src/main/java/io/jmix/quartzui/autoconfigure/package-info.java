@@ -15,6 +15,6 @@
  */
 
 @Internal
-package io.jmix.autoconfigure.quartzui;
+package io.jmix.quartzui.autoconfigure;
 
 import io.jmix.core.annotation.Internal;

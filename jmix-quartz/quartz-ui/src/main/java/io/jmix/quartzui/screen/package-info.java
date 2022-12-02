@@ -15,6 +15,6 @@
  */
 
 @Internal
-package io.jmix.auditui.screen;
+package io.jmix.quartzui.screen;
 
 import io.jmix.core.annotation.Internal;

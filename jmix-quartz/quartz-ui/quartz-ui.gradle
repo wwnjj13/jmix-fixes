@@ -22,6 +22,5 @@ archivesBaseName = 'jmix-quartz-ui'
 
 dependencies {
     api project(':quartz')
-
     api project(':ui')
 }

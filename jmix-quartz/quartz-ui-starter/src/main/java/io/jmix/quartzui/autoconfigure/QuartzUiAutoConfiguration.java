@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.autoconfigure.quartzui;
+package io.jmix.quartzui.autoconfigure;
 
 import io.jmix.quartzui.QuartzUiConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
