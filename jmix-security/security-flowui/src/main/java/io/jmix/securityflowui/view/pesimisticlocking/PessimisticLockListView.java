@@ -44,7 +44,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Route(value = "system/pessimistic-locks", layout = DefaultMainViewParent.class)
-@ViewController("sec_LockInfo.list")
+@ViewController("sys_LockInfo.list")
 @ViewDescriptor("pessimistic-lock-list-view.xml")
 @DialogMode(width = "50em", height = "37.5em")
 public class PessimisticLockListView extends StandardView {

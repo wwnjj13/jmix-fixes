@@ -93,7 +93,6 @@ public class PessimisticLockBrowser extends Screen {
     }
 
     protected void refresh() {
-        locksDc.setItems(null);
         Collection<LockInfo> locks = service.getCurrentLocks();
         locksDc.setItems(locks);
     }
