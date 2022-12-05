@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.securityflowui.view.pesimisticlocking;
+package io.jmix.flowui.app.pesimisticlocking;
 
 
 import com.vaadin.flow.component.grid.Grid;

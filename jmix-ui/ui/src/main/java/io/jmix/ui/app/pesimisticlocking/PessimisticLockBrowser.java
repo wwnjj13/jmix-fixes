@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.securityui.screen.pesimisticlocking;
+package io.jmix.ui.app.pesimisticlocking;
 
 
 import io.jmix.core.MessageTools;

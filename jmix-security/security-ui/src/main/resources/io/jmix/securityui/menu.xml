@@ -21,7 +21,5 @@
               caption="msg://io.jmix.securityui/menu.sec_ResourceRoleModel.browse"/>
         <item screen="sec_RowLevelRoleModel.browse"
               caption="msg://io.jmix.securityui/menu.sec_RowLevelRoleModel.browse"/>
-        <item screen="sys_LockInfo.browse"
-              caption="msg://io.jmix.securityui/menu.sec_LockBrowser.browse"/>
     </menu>
 </menu-config>
