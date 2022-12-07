@@ -16,17 +16,23 @@
 
 package io.jmix.appsettingsflowui.view.appsettings;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.Route;
 import io.jmix.appsettings.AppSettings;
+import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.appsettings.entity.AppSettingsEntity;
 import io.jmix.appsettingsflowui.view.appsettings.util.AppSettingsGridLayoutBuilder;
+import io.jmix.appsettingsflowui.view.appsettings.util.EntityUtils;
 import io.jmix.core.AccessManager;
 import io.jmix.core.EntityStates;
 import io.jmix.core.FetchPlan;
@@ -36,10 +42,20 @@ import io.jmix.core.Messages;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.core.metamodel.model.MetaClass;
+import io.jmix.core.metamodel.model.MetaProperty;
+import io.jmix.core.metamodel.model.MetadataObject;
+import io.jmix.core.metamodel.model.Range;
 import io.jmix.data.PersistenceHints;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.UiComponents;
+import io.jmix.flowui.accesscontext.FlowuiEntityAttributeContext;
 import io.jmix.flowui.accesscontext.FlowuiEntityContext;
+import io.jmix.flowui.component.ComponentGenerationContext;
+import io.jmix.flowui.component.SupportsTypedValue;
+import io.jmix.flowui.component.UiComponentsGenerator;
 import io.jmix.flowui.component.validation.ValidationErrors;
+import io.jmix.flowui.data.ValueSource;
+import io.jmix.flowui.data.value.ContainerValueSource;
 import io.jmix.flowui.model.DataComponents;
 import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.model.InstanceContainer;
@@ -55,7 +71,11 @@ import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.flowui.view.ViewValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.Convert;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.jmix.flowui.view.StandardOutcome.CLOSE;
@@ -67,6 +87,11 @@ import static io.jmix.flowui.view.StandardOutcome.SAVE;
 @ViewDescriptor("app-settings-entity-view.xml")
 @DialogMode(width = "50em", height = "37.5em")
 public class AppSettingsEntityView extends StandardView {
+
+    private static final int MAX_TEXT_FIELD_STRING_LENGTH = 255;
+    private static final Integer MAX_CAPTION_LENGTH = 50;
+
+    private static final Integer AMOUNT_COLUMNS = 3;
 
     private static final String SELECT_APP_SETTINGS_ENTITY_QUERY = "select e from %s e where e.id = 1";
 
@@ -95,10 +120,19 @@ public class AppSettingsEntityView extends StandardView {
     protected Messages messages;
 
     @Autowired
+    protected AppSettingsTools appSettingsTools;
+
+    @Autowired
     protected MessageTools messageTools;
 
     @Autowired
     protected Notifications notifications;
+
+    @Autowired
+    protected UiComponentsGenerator uiComponentsGenerator;
+
+    @Autowired
+    protected UiComponents uiComponents;
 
     @Autowired
     protected FetchPlans fetchPlans;
@@ -178,12 +212,134 @@ public class AppSettingsEntityView extends StandardView {
         fieldsScrollBox.setContent(null);
         if (currentMetaClass != null) {
             InstanceContainer container = initInstanceContainerWithDbEntity();
-            FormLayout gridLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
-                    .withOwnerComponent(fieldsScrollBox)
-                    .build();
-            fieldsScrollBox.setContent(gridLayout);
+//            FormLayout gridLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
+//                    .withOwnerComponent(fieldsScrollBox)
+//                    .build();
+            FormLayout formLayout = createFormLayout(container);
+            fieldsScrollBox.setContent(formLayout);
 
             actionsBox.setVisible(true);
+        }
+    }
+
+    public FormLayout createFormLayout(InstanceContainer container) {
+        MetaClass metaClass = container.getEntityMetaClass();
+        List<MetaProperty> metaProperties = collectMetaProperties(metaClass, container.getItem()).stream()
+                .sorted(Comparator.comparing(MetadataObject::getName))
+                .collect(Collectors.toList());
+
+        FormLayout formLayout = uiComponents.create(FormLayout.class);
+
+
+        formLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("40em", AMOUNT_COLUMNS));
+
+//        if (ownerComponent != null) {
+//            ownerComponent.getElement().appendChild(formLayout.getElement());
+//        }
+
+        for (int i = 0; i < metaProperties.size(); i++) {
+            addRowToGrid(container, formLayout, i, metaProperties.get(i));
+        }
+
+        return formLayout;
+    }
+
+    protected List<MetaProperty> collectMetaProperties(MetaClass metaClass, Object item) {
+        List<MetaProperty> result = new ArrayList<>();
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            switch (metaProperty.getType()) {
+                case DATATYPE:
+                case ENUM:
+                    //skip system properties
+                    if (metadataTools.isSystem(metaProperty)) {
+                        continue;
+                    }
+                    if (metaProperty.getType() != MetaProperty.Type.ENUM
+                            && (metaProperty.getRange().asDatatype().getJavaClass().equals(byte[].class) ||
+                            metaProperty.getRange().asDatatype().getJavaClass().equals(UUID.class))) {
+                        continue;
+                    }
+                    if (metadataTools.isAnnotationPresent(item, metaProperty.getName(), Convert.class)) {
+                        continue;
+                    }
+                    result.add(metaProperty);
+                    break;
+                case COMPOSITION:
+                case ASSOCIATION:
+                    if (!EntityUtils.isMany(metaProperty)) {
+                        result.add(metaProperty);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+    protected void addRowToGrid(InstanceContainer container, FormLayout formLayout, int currentRow, MetaProperty metaProperty) {
+        MetaClass metaClass = container.getEntityMetaClass();
+        Range range = metaProperty.getRange();
+
+        FlowuiEntityAttributeContext attributeContext = new FlowuiEntityAttributeContext(metaClass, metaProperty.getName());
+        accessManager.applyRegisteredConstraints(attributeContext);
+        if (!attributeContext.canView()) {
+            return;
+        }
+
+        if (range.isClass()) {
+            FlowuiEntityContext entityContext = new FlowuiEntityContext(range.asClass());
+            accessManager.applyRegisteredConstraints(entityContext);
+            if (!entityContext.isViewPermitted()) {
+                return;
+            }
+        }
+
+        //add label
+        Label fieldLabel = uiComponents.create(Label.class);
+        fieldLabel.setText(getPropertyCaption(metaClass, metaProperty));
+
+
+        formLayout.add(fieldLabel);
+
+        //current field
+        ValueSource valueSource = new ContainerValueSource<>(container, metaProperty.getName());
+        ComponentGenerationContext componentContext = new ComponentGenerationContext(metaClass, metaProperty.getName());
+        componentContext.setValueSource(valueSource);
+
+        AbstractField currentField = (AbstractField) uiComponentsGenerator.generate(componentContext);
+        ((HasLabel) currentField).setLabel(messages.getMessage(this.getClass(), "currentValueLabel"));
+        formLayout.add(currentField);
+
+        //default value
+        ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
+        ValueSource valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
+        componentContextForDefaultField.setValueSource(valueSourceForDefaultField);
+        AbstractField defaultValueField = (AbstractField) uiComponentsGenerator.generate(componentContextForDefaultField);
+        ((HasLabel) defaultValueField).setLabel(messages.getMessage(this.getClass(), "defaultValueLabel"));
+        if (defaultValueField instanceof SupportsTypedValue) {
+            ((SupportsTypedValue<?, ?, Object, ?>) defaultValueField)
+                    .setTypedValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+        } else {
+            defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+        }
+        defaultValueField.setEnabled(false);
+        formLayout.add(defaultValueField);
+
+        Hr hr = uiComponents.create(Hr.class);
+        formLayout.add(hr);
+        formLayout.setColspan(hr, AMOUNT_COLUMNS);
+    }
+
+    protected String getPropertyCaption(MetaClass metaClass, MetaProperty metaProperty) {
+        String caption = messageTools.getPropertyCaption(metaClass, metaProperty.getName());
+        if (caption.length() < MAX_CAPTION_LENGTH) {
+            return caption;
+        } else {
+            return caption.substring(0, MAX_CAPTION_LENGTH);
         }
     }
 
