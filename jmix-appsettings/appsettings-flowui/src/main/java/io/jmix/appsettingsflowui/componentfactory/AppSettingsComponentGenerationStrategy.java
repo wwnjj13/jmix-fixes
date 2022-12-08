@@ -71,13 +71,14 @@ public class AppSettingsComponentGenerationStrategy
     @Nullable
     @Override
     public Component createComponent(ComponentGenerationContext context) {
+//        return null;
         if (AppSettingsEntity.class.equals(context.getMetaClass().getAncestor().getJavaClass())) {
             MetaProperty metaProperty = context.getMetaClass().getProperty(context.getProperty());
             Range range = metaProperty.getRange();
 
             AbstractField field = null;
 
-            if (requireTextArea(metaProperty, ((ContainerValueSource) context.getValueSource()).getContainer().getItem(),
+            if (requireTextArea(metaProperty, ((ContainerValueSource) context.getValueSource()).getContainer().getItemOrNull(),
                     MAX_TEXT_FIELD_STRING_LENGTH)) {
                 field = uiComponents.create(TypedTextField.class);
             }
@@ -165,7 +166,7 @@ public class AppSettingsComponentGenerationStrategy
         Integer textLength = (Integer) metaProperty.getAnnotations().get("length");
         boolean isLong = textLength != null && textLength > maxTextFieldLength;
 
-        Object value = EntityValues.getValue(item, metaProperty.getName());
+        Object value = item != null ? EntityValues.getValue(item, metaProperty.getName()) : null;
         boolean isContainsSeparator = value != null && containsSeparator((String) value);
 
         return isLong || isContainsSeparator;

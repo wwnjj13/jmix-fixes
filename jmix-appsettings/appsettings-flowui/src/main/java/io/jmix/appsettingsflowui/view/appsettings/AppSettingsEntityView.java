@@ -212,7 +212,7 @@ public class AppSettingsEntityView extends StandardView {
         fieldsScrollBox.setContent(null);
         if (currentMetaClass != null) {
             InstanceContainer container = initInstanceContainerWithDbEntity();
-//            FormLayout gridLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
+//            FormLayout formLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
 //                    .withOwnerComponent(fieldsScrollBox)
 //                    .build();
             FormLayout formLayout = createFormLayout(container);
