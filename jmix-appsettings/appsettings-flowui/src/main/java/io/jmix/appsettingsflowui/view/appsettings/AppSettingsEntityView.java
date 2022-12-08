@@ -280,7 +280,7 @@ public class AppSettingsEntityView extends StandardView {
         return result;
     }
 
-    protected void addRowToGrid(InstanceContainer container, FormLayout formLayout, int currentRow, MetaProperty metaProperty) {
+    protected void addRowToGrid(InstanceContainer<?> container, FormLayout formLayout, int currentRow, MetaProperty metaProperty) {
         MetaClass metaClass = container.getEntityMetaClass();
         Range range = metaProperty.getRange();
 
@@ -306,10 +306,9 @@ public class AppSettingsEntityView extends StandardView {
         formLayout.add(fieldLabel);
 
         //current field
-        ValueSource valueSource = new ContainerValueSource<>(container, metaProperty.getName());
+        ValueSource<?> valueSource = new ContainerValueSource<>(container, metaProperty.getName());
         ComponentGenerationContext componentContext = new ComponentGenerationContext(metaClass, metaProperty.getName());
         componentContext.setValueSource(valueSource);
-
         AbstractField currentField = (AbstractField) uiComponentsGenerator.generate(componentContext);
         ((HasLabel) currentField).setLabel(messages.getMessage(this.getClass(), "currentValueLabel"));
         formLayout.add(currentField);

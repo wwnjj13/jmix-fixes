@@ -42,6 +42,7 @@ import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.component.valuepicker.EntityPicker;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.ValueSource;
+import io.jmix.flowui.data.value.ContainerValueSource;
 import io.jmix.flowui.view.OpenMode;
 import org.springframework.core.Ordered;
 
@@ -70,13 +71,14 @@ public class AppSettingsComponentGenerationStrategy
     @Nullable
     @Override
     public Component createComponent(ComponentGenerationContext context) {
-        if (AppSettingsEntity.class.equals( context.getMetaClass().getAncestor().getJavaClass())) {
+        if (AppSettingsEntity.class.equals(context.getMetaClass().getAncestor().getJavaClass())) {
             MetaProperty metaProperty = context.getMetaClass().getProperty(context.getProperty());
             Range range = metaProperty.getRange();
 
             AbstractField field = null;
 
-            if (requireTextArea(metaProperty, context.getValueSource(), MAX_TEXT_FIELD_STRING_LENGTH)) {
+            if (requireTextArea(metaProperty, ((ContainerValueSource) context.getValueSource()).getContainer().getItem(),
+                    MAX_TEXT_FIELD_STRING_LENGTH)) {
                 field = uiComponents.create(TypedTextField.class);
             }
 
@@ -155,7 +157,7 @@ public class AppSettingsComponentGenerationStrategy
                 && metaProperty.getRange().asDatatype().getJavaClass().equals(Boolean.class);
     }
 
-    protected boolean requireTextArea(MetaProperty metaProperty, ValueSource valueSource, int maxTextFieldLength) {
+    protected boolean requireTextArea(MetaProperty metaProperty, Object item, int maxTextFieldLength) {
         if (!String.class.equals(metaProperty.getJavaType())) {
             return false;
         }
@@ -163,7 +165,7 @@ public class AppSettingsComponentGenerationStrategy
         Integer textLength = (Integer) metaProperty.getAnnotations().get("length");
         boolean isLong = textLength != null && textLength > maxTextFieldLength;
 
-        Object value = valueSource!=null ? EntityValues.getValue(valueSource.getValue(), metaProperty.getName()) : null;
+        Object value = EntityValues.getValue(item, metaProperty.getName());
         boolean isContainsSeparator = value != null && containsSeparator((String) value);
 
         return isLong || isContainsSeparator;
