@@ -31,8 +31,6 @@ import com.vaadin.flow.router.Route;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.appsettings.entity.AppSettingsEntity;
-import io.jmix.appsettingsflowui.view.appsettings.util.AppSettingsGridLayoutBuilder;
-import io.jmix.appsettingsflowui.view.appsettings.util.EntityUtils;
 import io.jmix.core.AccessManager;
 import io.jmix.core.EntityStates;
 import io.jmix.core.FetchPlan;
@@ -212,9 +210,6 @@ public class AppSettingsEntityView extends StandardView {
         fieldsScrollBox.setContent(null);
         if (currentMetaClass != null) {
             InstanceContainer container = initInstanceContainerWithDbEntity();
-//            FormLayout formLayout = AppSettingsGridLayoutBuilder.of(getApplicationContext(), container)
-//                    .withOwnerComponent(fieldsScrollBox)
-//                    .build();
             FormLayout formLayout = createFormLayout(container);
             fieldsScrollBox.setContent(formLayout);
 
@@ -222,7 +217,7 @@ public class AppSettingsEntityView extends StandardView {
         }
     }
 
-    public FormLayout createFormLayout(InstanceContainer container) {
+    public FormLayout createFormLayout(InstanceContainer<?> container) {
         MetaClass metaClass = container.getEntityMetaClass();
         List<MetaProperty> metaProperties = collectMetaProperties(metaClass, container.getItem()).stream()
                 .sorted(Comparator.comparing(MetadataObject::getName))
@@ -235,12 +230,9 @@ public class AppSettingsEntityView extends StandardView {
                 new FormLayout.ResponsiveStep("0", 1),
                 new FormLayout.ResponsiveStep("40em", AMOUNT_COLUMNS));
 
-//        if (ownerComponent != null) {
-//            ownerComponent.getElement().appendChild(formLayout.getElement());
-//        }
 
-        for (int i = 0; i < metaProperties.size(); i++) {
-            addRowToGrid(container, formLayout, i, metaProperties.get(i));
+        for (MetaProperty metaProperty : metaProperties) {
+            addRowToGrid(container, formLayout, metaProperty);
         }
 
         return formLayout;
@@ -268,7 +260,7 @@ public class AppSettingsEntityView extends StandardView {
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
-                    if (!EntityUtils.isMany(metaProperty)) {
+                    if (!isMany(metaProperty)) {
                         result.add(metaProperty);
                     }
                     break;
@@ -280,7 +272,11 @@ public class AppSettingsEntityView extends StandardView {
         return result;
     }
 
-    protected void addRowToGrid(InstanceContainer<?> container, FormLayout formLayout, int currentRow, MetaProperty metaProperty) {
+    protected boolean isMany(MetaProperty metaProperty) {
+        return metaProperty.getRange().getCardinality().isMany();
+    }
+
+    protected void addRowToGrid(InstanceContainer<?> container, FormLayout formLayout, MetaProperty metaProperty) {
         MetaClass metaClass = container.getEntityMetaClass();
         Range range = metaProperty.getRange();
 
@@ -315,7 +311,7 @@ public class AppSettingsEntityView extends StandardView {
 
         //default value
         ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
-        ValueSource valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
+        ValueSource<?> valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
         componentContextForDefaultField.setValueSource(valueSourceForDefaultField);
         AbstractField defaultValueField = (AbstractField) uiComponentsGenerator.generate(componentContextForDefaultField);
         ((HasLabel) defaultValueField).setLabel(messages.getMessage(this.getClass(), "defaultValueLabel"));
