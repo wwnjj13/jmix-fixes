@@ -15,7 +15,7 @@
   -->
 
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://lockListView.caption"
+      title="msg://lockListView.caption"
       focusComponent="locksTable">
 
     <data>
