@@ -635,11 +635,29 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
                         param.value = queryParamValuesManager.getValue(paramName);
                     }
                 } else {
-                    Object value = queryParamValuesManager.getValue(paramName);
+                    Object value = convertParam(queryParamValuesManager.getValue(paramName));
                     params.add(new Param(paramName, value));
                 }
             }
         }
+    }
+
+    private Object convertParam(Object value) {
+        // you can preprocess another type of param here
+        if (value instanceof Id) {
+            value = ((Id) value).getValue();
+
+        } else if (value instanceof Ids) {
+            value = ((Ids) value).getValues();
+
+        } else if (value instanceof EnumClass) {
+            value = ((EnumClass) value).getId();
+
+        } else if (isCollectionOfEntitiesOrEnums(value)) {
+            value = convertToCollectionOfIds(value);
+
+        }
+        return value;
     }
 
     private String expandMacros(String queryStr) {
@@ -847,19 +865,7 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
     private TypedQuery<E> internalSetParameter(String name, Object value) {
         checkState();
 
-        if (value instanceof Id) {
-            value = ((Id) value).getValue();
-
-        } else if (value instanceof Ids) {
-            value = ((Ids) value).getValues();
-
-        } else if (value instanceof EnumClass) {
-            value = ((EnumClass) value).getId();
-
-        } else if (isCollectionOfEntitiesOrEnums(value)) {
-            value = convertToCollectionOfIds(value);
-
-        }
+        value = convertParam(value);
         params.add(new Param(name, value));
         return this;
     }
