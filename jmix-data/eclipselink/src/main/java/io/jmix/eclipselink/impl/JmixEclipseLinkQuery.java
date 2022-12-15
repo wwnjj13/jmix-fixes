@@ -632,26 +632,26 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
                 if (paramOpt.isPresent()) {
                     Param param = paramOpt.get();
                     if (param.value == null) {
-                        param.value = queryParamValuesManager.getValue(paramName);
+                        param.value = convertParamValue(queryParamValuesManager.getValue(paramName));
                     }
                 } else {
-                    Object value = convertParam(queryParamValuesManager.getValue(paramName));
+                    Object value = convertParamValue(queryParamValuesManager.getValue(paramName));
                     params.add(new Param(paramName, value));
                 }
             }
         }
     }
 
-    private Object convertParam(Object value) {
-        // you can preprocess another type of param here
+    private Object convertParamValue(@Nullable Object value) {
+        // here you can convert the type used to the jpql query parameter
         if (value instanceof Id) {
-            value = ((Id) value).getValue();
+            value = ((Id<?>) value).getValue();
 
         } else if (value instanceof Ids) {
-            value = ((Ids) value).getValues();
+            value = ((Ids<?>) value).getValues();
 
         } else if (value instanceof EnumClass) {
-            value = ((EnumClass) value).getId();
+            value = ((EnumClass<?>) value).getId();
 
         } else if (isCollectionOfEntitiesOrEnums(value)) {
             value = convertToCollectionOfIds(value);
@@ -865,7 +865,7 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
     private TypedQuery<E> internalSetParameter(String name, Object value) {
         checkState();
 
-        value = convertParam(value);
+        value = convertParamValue(value);
         params.add(new Param(name, value));
         return this;
     }
