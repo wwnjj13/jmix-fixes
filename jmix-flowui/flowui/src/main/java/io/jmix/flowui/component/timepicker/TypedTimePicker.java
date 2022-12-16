@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 
 public class TypedTimePicker<V extends Comparable> extends TimePicker implements SupportsValueSource<V>,
         SupportsTypedValue<TypedTimePicker<V>, ComponentValueChangeEvent<TimePicker, LocalTime>, V, LocalTime>,
-        SupportsDatatype<V>, SupportsValidation<V>, SupportsStatusHandler<TypedTimePicker<V>>, HasRequired,
+        SupportsDatatype<V>, SupportsValidation<V>, SupportsStatusChangeHandler<TypedTimePicker<V>>, HasRequired,
         HasZoneId, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -152,8 +152,8 @@ public class TypedTimePicker<V extends Comparable> extends TimePicker implements
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<TypedTimePicker<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<TypedTimePicker<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

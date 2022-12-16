@@ -26,7 +26,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsTypedValue;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.CollectionFieldDelegate;
 import io.jmix.flowui.component.delegate.DataViewDelegate;
 import io.jmix.flowui.component.validation.Validator;
@@ -46,7 +46,7 @@ public class JmixCheckboxGroup<V> extends CheckboxGroup<V>
         implements SupportsTypedValue<JmixCheckboxGroup<V>,
         ComponentValueChangeEvent<CheckboxGroup<V>, Set<V>>, Collection<V>, Set<V>>, SupportsValueSource<Collection<V>>,
         SupportsDataProvider<V>, SupportsItemsContainer<V>, SupportsItemsEnum<V>, SupportsValidation<Collection<V>>,
-        SupportsStatusHandler<JmixCheckboxGroup<V>>, HasRequired, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixCheckboxGroup<V>>, HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -133,8 +133,8 @@ public class JmixCheckboxGroup<V> extends CheckboxGroup<V>
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixCheckboxGroup<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixCheckboxGroup<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Override

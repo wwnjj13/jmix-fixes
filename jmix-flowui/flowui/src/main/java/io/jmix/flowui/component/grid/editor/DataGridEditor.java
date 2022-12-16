@@ -19,7 +19,7 @@ package io.jmix.flowui.component.grid.editor;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.editor.Editor;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.data.ValueSource;
 
@@ -55,10 +55,10 @@ public interface DataGridEditor<T> extends Editor<T> {
      *
      * @param property an entity attribute for which the edit component is created
      * @see #setColumnEditorComponent(String, Function)
-     * @see #setColumnEditorComponent(Grid.Column, String)
+     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
-    void setColumnEditorComponent(String property);
+    void setColumnDefaultEditorComponent(String property);
 
     /**
      * Sets a function that returns the column editor component. To bound an editor component
@@ -69,8 +69,8 @@ public interface DataGridEditor<T> extends Editor<T> {
      *
      * @param property  an entity attribute for which the edit component is created
      * @param generator a callback function that is used to create an edit component
-     * @see #setColumnEditorComponent(String)
-     * @see #setColumnEditorComponent(Grid.Column, String)
+     * @see #setColumnDefaultEditorComponent(String)
+     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
     void setColumnEditorComponent(String property,
@@ -82,11 +82,11 @@ public interface DataGridEditor<T> extends Editor<T> {
      *
      * @param column   a grid column for which to set editor component
      * @param property an entity attribute for which an edit component is created
-     * @see #setColumnEditorComponent(String)
+     * @see #setColumnDefaultEditorComponent(String)
      * @see #setColumnEditorComponent(String, Function)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
-    void setColumnEditorComponent(Grid.Column<T> column, String property);
+    void setColumnDefaultEditorComponent(Grid.Column<T> column, String property);
 
     /**
      * Sets a function that returns the column editor component. To bound an editor component
@@ -97,22 +97,22 @@ public interface DataGridEditor<T> extends Editor<T> {
      * @param column    a grid column for which to set editor component
      * @param property  an entity attribute for which the edit component is created
      * @param generator a callback function that is used to create an edit component
-     * @see #setColumnEditorComponent(String)
+     * @see #setColumnDefaultEditorComponent(String)
      * @see #setColumnEditorComponent(String, Function)
-     * @see #setColumnEditorComponent(Grid.Column, String)
+     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
      */
     void setColumnEditorComponent(Grid.Column<T> column, String property,
                                   Function<EditComponentGenerationContext<T>, Component> generator);
 
     /**
      * Sets a callback that is set to editor components which implement
-     * {@link SupportsStatusHandler}. If a custom component generator is used,
+     * {@link SupportsStatusChangeHandler}. If a custom component generator is used,
      * this status handler can be obtained from {@link EditComponentGenerationContext#getStatusHandler()}.
      *
      * @param handler a callback that is set to editor components which
-     *                implement {@link SupportsStatusHandler}
+     *                implement {@link SupportsStatusChangeHandler}
      */
-    void setDefaultComponentStatusHandler(@Nullable Consumer<SupportsStatusHandler.StatusContext<?>> handler);
+    void setDefaultComponentStatusHandler(@Nullable Consumer<SupportsStatusChangeHandler.StatusContext<?>> handler);
 
     /**
      * Sets a callback that is used to handle validation errors when Editor

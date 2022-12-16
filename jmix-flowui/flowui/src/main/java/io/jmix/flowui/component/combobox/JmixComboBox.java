@@ -22,7 +22,7 @@ import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.DataViewDelegate;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixComboBox<V> extends ComboBox<V>
-        implements SupportsValueSource<V>, SupportsValidation<V>, SupportsStatusHandler<JmixComboBox<V>>,
+        implements SupportsValueSource<V>, SupportsValidation<V>, SupportsStatusChangeHandler<JmixComboBox<V>>,
         SupportsDataProvider<V>, SupportsItemsEnum<V>, HasRequired, HasTitle,
         ApplicationContextAware, InitializingBean {
 
@@ -138,8 +138,8 @@ public class JmixComboBox<V> extends ComboBox<V>
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixComboBox<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixComboBox<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @SuppressWarnings("unchecked")

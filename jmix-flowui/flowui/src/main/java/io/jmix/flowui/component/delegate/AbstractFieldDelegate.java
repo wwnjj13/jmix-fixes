@@ -26,7 +26,7 @@ import io.jmix.core.Messages;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.metamodel.datatype.Datatype;
 import io.jmix.flowui.component.SupportsTypedValue;
-import io.jmix.flowui.component.SupportsStatusHandler.StatusContext;
+import io.jmix.flowui.component.SupportsStatusChangeHandler.StatusContext;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.ConversionException;
 import io.jmix.flowui.data.EntityValueSource;
@@ -69,7 +69,7 @@ public abstract class AbstractFieldDelegate<C extends AbstractField<?, V>, T, V>
 
     protected Function<V, T> toModelConverter;
 
-    protected Consumer<StatusContext<C>> statusHandler;
+    protected Consumer<StatusContext<C>> statusChangeHandler;
     protected String errorMessage;
 
     protected String requiredMessage;
@@ -196,8 +196,8 @@ public abstract class AbstractFieldDelegate<C extends AbstractField<?, V>, T, V>
     public void setErrorMessage(@Nullable String errorMessage) {
         this.errorMessage = errorMessage;
 
-        if (statusHandler != null) {
-            statusHandler.accept(new StatusContext<>(component, errorMessage));
+        if (statusChangeHandler != null) {
+            statusChangeHandler.accept(new StatusContext<>(component, errorMessage));
         } else if (component instanceof HasValidation) {
             component.getElement().setProperty(PROPERTY_ERROR_MESSAGE, Strings.nullToEmpty(errorMessage));
         }
@@ -208,8 +208,8 @@ public abstract class AbstractFieldDelegate<C extends AbstractField<?, V>, T, V>
         return errorMessage;
     }
 
-    public void setStatusHandler(@Nullable Consumer<StatusContext<C>> statusHandler) {
-        this.statusHandler = statusHandler;
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<C>> statusChangeHandler) {
+        this.statusChangeHandler = statusChangeHandler;
     }
 
     public boolean isInvalid() {

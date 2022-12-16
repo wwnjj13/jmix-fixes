@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 public class EntityPicker<V> extends ValuePickerBase<EntityPicker<V>, V>
         implements EntityPickerComponent<V>, LookupComponent<V>, SupportsValidation<V>,
-        SupportsStatusHandler<EntityPicker<V>>, HasRequired, HasPrefixAndSuffix,
+        SupportsStatusChangeHandler<EntityPicker<V>>, HasRequired, HasPrefixAndSuffix,
         ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -95,8 +95,8 @@ public class EntityPicker<V> extends ValuePickerBase<EntityPicker<V>, V>
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<EntityPicker<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<EntityPicker<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

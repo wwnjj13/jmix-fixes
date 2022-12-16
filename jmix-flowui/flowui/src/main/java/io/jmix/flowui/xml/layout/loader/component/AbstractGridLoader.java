@@ -302,7 +302,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
     protected void setDefaultEditComponent(Column<?> column, String property) {
         Editor<?> editor = resultComponent.getEditor();
         if (editor instanceof DataGridEditor) {
-            ((DataGridEditor) editor).setColumnEditorComponent(column, property);
+            ((DataGridEditor) editor).setColumnDefaultEditorComponent(column, property);
         }
     }
 

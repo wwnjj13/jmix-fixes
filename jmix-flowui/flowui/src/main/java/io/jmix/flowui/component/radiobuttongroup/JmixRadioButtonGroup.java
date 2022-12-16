@@ -21,7 +21,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.DataViewDelegate;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 public class JmixRadioButtonGroup<V> extends RadioButtonGroup<V> implements SupportsValueSource<V>,
         SupportsDataProvider<V>, SupportsItemsContainer<V>, SupportsItemsEnum<V>, SupportsValidation<V>,
-        SupportsStatusHandler<JmixRadioButtonGroup<V>>, HasRequired, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixRadioButtonGroup<V>>, HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -149,8 +149,8 @@ public class JmixRadioButtonGroup<V> extends RadioButtonGroup<V> implements Supp
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixRadioButtonGroup<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixRadioButtonGroup<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @SuppressWarnings("unchecked")

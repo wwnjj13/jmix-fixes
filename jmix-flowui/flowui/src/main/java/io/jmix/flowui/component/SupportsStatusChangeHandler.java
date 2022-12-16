@@ -21,7 +21,13 @@ import com.vaadin.flow.component.Component;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public interface SupportsStatusHandler<C extends Component> {
+/**
+ * A component that supports delegation of status changes e.g. instead of displaying
+ * validation messages below the component use a separate component such as Label.
+ *
+ * @param <C> the component type
+ */
+public interface SupportsStatusChangeHandler<C extends Component> {
 
     /**
      * Sets a callback to be used to handle component status changes,
@@ -29,7 +35,7 @@ public interface SupportsStatusHandler<C extends Component> {
      *
      * @param handler a handler to set
      */
-    void setStatusHandler(@Nullable Consumer<StatusContext<C>> handler);
+    void setStatusChangeHandler(@Nullable Consumer<StatusContext<C>> handler);
 
     class StatusContext<C extends Component> {
         protected final C component;

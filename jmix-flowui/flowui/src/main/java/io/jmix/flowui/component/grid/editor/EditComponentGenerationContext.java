@@ -16,8 +16,8 @@
 
 package io.jmix.flowui.component.grid.editor;
 
-import io.jmix.flowui.component.SupportsStatusHandler;
-import io.jmix.flowui.component.SupportsStatusHandler.StatusContext;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler.StatusContext;
 import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.data.ValueSourceProvider;
 
@@ -59,7 +59,7 @@ public class EditComponentGenerationContext<T> {
     }
 
     /**
-     * @return a handler to be set to a component that implements {@link SupportsStatusHandler}
+     * @return a handler to be set to a component that implements {@link SupportsStatusChangeHandler}
      */
     @Nullable
     public Consumer<StatusContext<?>> getStatusHandler() {

@@ -21,7 +21,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.DataViewDelegate;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, HasRequired, SupportsDataProvider<V>,
         SupportsItemsContainer<V>, SupportsItemsEnum<V>, SupportsValidation<V>,
-        SupportsStatusHandler<JmixSelect<V>>, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixSelect<V>>, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -109,8 +109,8 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixSelect<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixSelect<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

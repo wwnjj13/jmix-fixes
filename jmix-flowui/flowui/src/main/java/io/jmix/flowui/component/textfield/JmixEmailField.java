@@ -21,7 +21,7 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.TextInputFieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.SupportsValueSource;
@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixEmailField extends EmailField implements SupportsValueSource<String>, SupportsValidation<String>,
-        SupportsStatusHandler<JmixEmailField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixEmailField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -131,8 +131,8 @@ public class JmixEmailField extends EmailField implements SupportsValueSource<St
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixEmailField>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixEmailField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Override

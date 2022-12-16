@@ -20,7 +20,7 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.SupportsValueSource;
@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixNumberField extends NumberField implements SupportsValueSource<Double>, SupportsValidation<Double>,
-        SupportsStatusHandler<JmixNumberField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixNumberField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -94,8 +94,8 @@ public class JmixNumberField extends NumberField implements SupportsValueSource<
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixNumberField>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixNumberField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

@@ -21,7 +21,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.PickerComponent;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.ValueSource;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 public class JmixValuePicker<V> extends ValuePicker<V>
         implements PickerComponent<V>, SupportsValidation<V>, HasRequired, HasPrefixAndSuffix,
-        SupportsStatusHandler<JmixValuePicker<V>>, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixValuePicker<V>>, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -102,8 +102,8 @@ public class JmixValuePicker<V> extends ValuePicker<V>
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixValuePicker<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixValuePicker<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

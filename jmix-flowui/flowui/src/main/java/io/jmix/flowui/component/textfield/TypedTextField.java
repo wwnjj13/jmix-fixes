@@ -50,7 +50,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TypedTextField<V> extends TextField
-        implements SupportsValidation<V>, SupportsStatusHandler<TypedTextField<V>>, SupportsDatatype<V>,
+        implements SupportsValidation<V>, SupportsStatusChangeHandler<TypedTextField<V>>, SupportsDatatype<V>,
         SupportsTypedValue<TypedTextField<V>, ComponentValueChangeEvent<TextField, String>, V, String>,
         SupportsValueSource<V>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
 
@@ -143,8 +143,8 @@ public class TypedTextField<V> extends TextField
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<TypedTextField<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<TypedTextField<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

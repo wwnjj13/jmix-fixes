@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 
 public class EntityComboBox<V> extends ComboBoxPicker<V>
         implements EntityPickerComponent<V>, LookupComponent<V>, SupportsValidation<V>, SupportsDataProvider<V>,
-        SupportsItemsContainer<V>, SupportsFilterableItemsContainer<V>, SupportsStatusHandler<EntityComboBox<V>>,
+        SupportsItemsContainer<V>, SupportsFilterableItemsContainer<V>, SupportsStatusChangeHandler<EntityComboBox<V>>,
         HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -117,8 +117,8 @@ public class EntityComboBox<V> extends ComboBoxPicker<V>
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<EntityComboBox<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<EntityComboBox<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Nullable

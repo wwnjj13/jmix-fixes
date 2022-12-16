@@ -49,7 +49,7 @@ import java.util.function.Consumer;
 public class TypedDateTimePicker<V extends Comparable> extends DateTimePicker
         implements SupportsValueSource<V>, SupportsTypedValue<TypedDateTimePicker<V>,
         ComponentValueChangeEvent<DateTimePicker, LocalDateTime>, V, LocalDateTime>, HasZoneId,
-        SupportsDatatype<V>, SupportsValidation<V>, SupportsStatusHandler<TypedDateTimePicker<V>>,
+        SupportsDatatype<V>, SupportsValidation<V>, SupportsStatusChangeHandler<TypedDateTimePicker<V>>,
         HasRequired, InitializingBean, ApplicationContextAware {
 
     protected ApplicationContext applicationContext;
@@ -187,8 +187,8 @@ public class TypedDateTimePicker<V extends Comparable> extends DateTimePicker
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<TypedDateTimePicker<V>>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<TypedDateTimePicker<V>>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     @Override

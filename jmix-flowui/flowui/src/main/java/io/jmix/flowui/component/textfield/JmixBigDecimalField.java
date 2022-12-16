@@ -18,7 +18,7 @@ package io.jmix.flowui.component.textfield;
 
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.shared.Registration;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.component.HasRequired;
@@ -36,7 +36,7 @@ import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 public class JmixBigDecimalField extends BigDecimalField implements SupportsValueSource<BigDecimal>, HasRequired,
-        SupportsValidation<BigDecimal>, SupportsStatusHandler<JmixBigDecimalField>, HasTitle,
+        SupportsValidation<BigDecimal>, SupportsStatusChangeHandler<JmixBigDecimalField>, HasTitle,
         ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -131,7 +131,7 @@ public class JmixBigDecimalField extends BigDecimalField implements SupportsValu
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixBigDecimalField>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixBigDecimalField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 }

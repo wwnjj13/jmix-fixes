@@ -32,7 +32,7 @@ import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.impl.keyvalue.KeyValueMetaClass;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.flowui.component.*;
-import io.jmix.flowui.component.SupportsStatusHandler.StatusContext;
+import io.jmix.flowui.component.SupportsStatusChangeHandler.StatusContext;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.grid.DataGridDataProviderChangeObserver;
 import io.jmix.flowui.component.validation.ValidationErrors;
@@ -399,7 +399,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     }
 
     @Override
-    public void setColumnEditorComponent(String property) {
+    public void setColumnDefaultEditorComponent(String property) {
         setColumnEditorComponent(property, new DefaultEditComponentGenerator(property));
     }
 
@@ -411,7 +411,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     }
 
     @Override
-    public void setColumnEditorComponent(Grid.Column<T> column, String property) {
+    public void setColumnDefaultEditorComponent(Grid.Column<T> column, String property) {
         setColumnEditorComponent(column, property, new DefaultEditComponentGenerator(property));
     }
 
@@ -574,9 +574,9 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
 
             Component editComponent = getUiComponentsGenerator().generate(context);
 
-            if (editComponent instanceof SupportsStatusHandler) {
+            if (editComponent instanceof SupportsStatusChangeHandler) {
                 //noinspection unchecked,rawtypes
-                ((SupportsStatusHandler) editComponent).setStatusHandler(generationContext.getStatusHandler());
+                ((SupportsStatusChangeHandler) editComponent).setStatusChangeHandler(generationContext.getStatusHandler());
             }
 
             if (editComponent instanceof HasSize) {

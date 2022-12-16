@@ -20,7 +20,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
-import io.jmix.flowui.component.SupportsStatusHandler;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.SupportsValueSource;
@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixIntegerField extends IntegerField implements SupportsValueSource<Integer>, SupportsValidation<Integer>,
-        SupportsStatusHandler<JmixIntegerField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
+        SupportsStatusChangeHandler<JmixIntegerField>, HasRequired, HasTitle, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
@@ -130,7 +130,7 @@ public class JmixIntegerField extends IntegerField implements SupportsValueSourc
     }
 
     @Override
-    public void setStatusHandler(@Nullable Consumer<StatusContext<JmixIntegerField>> handler) {
-        fieldDelegate.setStatusHandler(handler);
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<JmixIntegerField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 }
