@@ -643,7 +643,7 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
     }
 
     private Object convertParamValue(@Nullable Object value) {
-        // here you can convert the type used to the jpql query parameter
+        // Here you can convert type used in jpql query params
         if (value instanceof Id) {
             value = ((Id<?>) value).getValue();
 
@@ -655,7 +655,6 @@ public class JmixEclipseLinkQuery<E> implements JmixQuery<E> {
 
         } else if (isCollectionOfEntitiesOrEnums(value)) {
             value = convertToCollectionOfIds(value);
-
         }
         return value;
     }
