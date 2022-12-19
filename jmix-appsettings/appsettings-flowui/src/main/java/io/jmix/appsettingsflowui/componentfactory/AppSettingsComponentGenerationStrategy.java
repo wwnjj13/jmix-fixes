@@ -159,7 +159,7 @@ public class AppSettingsComponentGenerationStrategy
 
     @Override
     public int getOrder() {
-        return JmixOrder.HIGHEST_PRECEDENCE;
+        return JmixOrder.HIGHEST_PRECEDENCE + 100;
     }
 
 }

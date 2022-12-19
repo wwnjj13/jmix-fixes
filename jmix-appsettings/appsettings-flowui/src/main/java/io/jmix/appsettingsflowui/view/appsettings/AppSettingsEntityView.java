@@ -86,7 +86,6 @@ import static io.jmix.flowui.view.StandardOutcome.SAVE;
 @DialogMode(width = "50em", height = "37.5em")
 public class AppSettingsEntityView extends StandardView {
 
-    private static final int MAX_TEXT_FIELD_STRING_LENGTH = 255;
     private static final Integer MAX_CAPTION_LENGTH = 50;
 
     private static final Integer AMOUNT_COLUMNS = 3;
