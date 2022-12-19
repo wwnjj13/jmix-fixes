@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import test_support.DataSpec
 import test_support.TestQueryParamValueProvider
 import test_support.entity.sales.Customer
+import test_support.entity.sales.Order
 import test_support.entity.sales.Status
 
 class QueryParamValueProvidersTest extends DataSpec {
@@ -34,17 +35,25 @@ class QueryParamValueProvidersTest extends DataSpec {
 
     Customer customer
 
+    Order order
+
     @Override
     void setup() {
         customer = dataManager.create(Customer)
         customer.setName('test1')
         customer.setStatus(Status.OK)
+
+        order = dataManager.create(Order)
+        order.setCustomer(customer)
+
         dataManager.save(customer)
+        dataManager.save(order)
     }
 
     @Override
     void cleanup() {
         dataManager.remove(customer)
+        dataManager.remove(order)
     }
 
     def "parameter in query"() {
@@ -105,6 +114,21 @@ class QueryParamValueProvidersTest extends DataSpec {
 
         cleanup:
         testQueryParamValueProvider.clear('customerName')
+        testQueryParamValueProvider.clear('customerStatus')
+    }
+
+    def "Enum as param query"() {
+        testQueryParamValueProvider.setValue('customerStatus', Status.OK)
+
+        when:
+        def order1 = dataManager.load(Order)
+                .query('e.customer.status = :test_customerStatus')
+                .one()
+
+        then:
+        order1 == order
+
+        cleanup:
         testQueryParamValueProvider.clear('customerStatus')
     }
 
