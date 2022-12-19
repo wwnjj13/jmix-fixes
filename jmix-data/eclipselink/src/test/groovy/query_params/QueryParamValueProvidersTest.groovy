@@ -110,7 +110,7 @@ class QueryParamValueProvidersTest extends DataSpec {
         testQueryParamValueProvider.clear('customerStatus')
     }
 
-    def "Enum as param query"() {
+    def "enum as param query"() {
         testQueryParamValueProvider.setValue('customerStatus', Status.OK)
 
         when:
