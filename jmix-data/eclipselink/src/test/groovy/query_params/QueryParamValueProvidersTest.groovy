@@ -35,25 +35,18 @@ class QueryParamValueProvidersTest extends DataSpec {
 
     Customer customer
 
-    Order order
-
     @Override
     void setup() {
         customer = dataManager.create(Customer)
         customer.setName('test1')
         customer.setStatus(Status.OK)
 
-        order = dataManager.create(Order)
-        order.setCustomer(customer)
-
         dataManager.save(customer)
-        dataManager.save(order)
     }
 
     @Override
     void cleanup() {
         dataManager.remove(customer)
-        dataManager.remove(order)
     }
 
     def "parameter in query"() {
@@ -121,12 +114,12 @@ class QueryParamValueProvidersTest extends DataSpec {
         testQueryParamValueProvider.setValue('customerStatus', Status.OK)
 
         when:
-        def order1 = dataManager.load(Order)
-                .query('e.customer.status = :test_customerStatus')
+        def customer1 = dataManager.load(Customer)
+                .query('e.status = :test_customerStatus')
                 .one()
 
         then:
-        order1 == order
+        customer1 == customer
 
         cleanup:
         testQueryParamValueProvider.clear('customerStatus')
