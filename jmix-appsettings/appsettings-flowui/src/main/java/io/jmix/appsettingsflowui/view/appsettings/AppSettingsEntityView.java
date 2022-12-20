@@ -137,10 +137,8 @@ public class AppSettingsEntityView extends StandardView {
     @ViewComponent
     protected ComboBox<MetaClass> entitiesLookup;
 
-//    @ViewComponent
-//    protected HorizontalLayout entityGroupBoxId;
     @ViewComponent
-    protected Scroller fieldsScrollBox;
+    protected Scroller fieldsScroller;
     @ViewComponent
     protected HorizontalLayout actionsBox;
 
@@ -160,7 +158,7 @@ public class AppSettingsEntityView extends StandardView {
 
         entitiesLookup.addValueChangeListener(e -> {
 
-            fieldsScrollBox.setVisible(e.getValue() != null);
+            fieldsScroller.setVisible(e.getValue() != null);
 
             if (isEntityChangePrevented) {
                 isEntityChangePrevented = false;
@@ -206,11 +204,11 @@ public class AppSettingsEntityView extends StandardView {
 
     @SuppressWarnings("rawtypes")
     protected void showEntityPropertiesGridLayout() {
-        fieldsScrollBox.setContent(null);
+        fieldsScroller.setContent(null);
         if (currentMetaClass != null) {
             InstanceContainer container = initInstanceContainerWithDbEntity();
             FormLayout formLayout = createFormLayout(container);
-            fieldsScrollBox.setContent(formLayout);
+            fieldsScroller.setContent(formLayout);
 
             actionsBox.setVisible(true);
         }
@@ -275,6 +273,7 @@ public class AppSettingsEntityView extends StandardView {
         return metaProperty.getRange().getCardinality().isMany();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void addRowToGrid(InstanceContainer<?> container, FormLayout formLayout, MetaProperty metaProperty) {
         MetaClass metaClass = container.getEntityMetaClass();
         Range range = metaProperty.getRange();
@@ -337,7 +336,7 @@ public class AppSettingsEntityView extends StandardView {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected InstanceContainer initInstanceContainerWithDbEntity() {
         InstanceContainer container = dataComponents.createInstanceContainer(currentMetaClass.getJavaClass());
         entityToEdit = dataManager.load(currentMetaClass.getJavaClass())
@@ -361,12 +360,12 @@ public class AppSettingsEntityView extends StandardView {
         return AppSettingsEntity.class.isAssignableFrom(metaClass.getJavaClass());
     }
 
-    @Subscribe("saveButtonId")
+    @Subscribe("saveButton")
     public void onSaveButtonClick(ClickEvent<Button> event) {
         commitChanges();
     }
 
-    @Subscribe("closeButtonId")
+    @Subscribe("closeButton")
     public void onCloseButtonClick(ClickEvent<Button> event) {
         if (dataContext != null && hasUnsavedChanges()) {
             handleCloseBtnClickWithUnsavedChanges();

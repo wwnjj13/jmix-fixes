@@ -17,15 +17,13 @@
 <view xmlns="http://jmix.io/schema/flowui/view"
       title="msg://screenCaption">
 
-    <layout expand="entityGroupBoxId" spacing="true">
+    <layout expand="fieldsScrollBox" spacing="true">
         <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"
                   allowCustomValue="false"/>
-<!--        <hbox id="entityGroupBoxId" visible="false">-->
-        <scroller id="fieldsScrollBox"/> <!-- height="100%" width="100%" -->
-<!--        </hbox>-->
-        <hbox id="actionsBox" spacing="true" visible="false">
-            <button id="saveButtonId" text="msg://saveApplicationSettings"/>
-            <button id="closeButtonId" text="msg://close"/>
+        <scroller id="fieldsScroller" scrollBarsDirection="VERTICAL"/>
+        <hbox id="actionsPaneLayout" visible="false" alignItems="END">
+            <button id="saveButton" text="msg://saveApplicationSettings" icon="CHECK"/>
+            <button id="closeButton" text="msg://close" icon="BAN"/>
         </hbox>
     </layout>
 </view>
