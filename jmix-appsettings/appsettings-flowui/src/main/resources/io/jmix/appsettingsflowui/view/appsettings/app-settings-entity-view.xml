@@ -15,14 +15,14 @@
   -->
 
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://screenCaption">
+      title="msg://screenCaption">
 
     <layout expand="entityGroupBoxId" spacing="true">
         <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"
                   allowCustomValue="false"/>
-        <hbox id="entityGroupBoxId" visible="false">
-            <scroller id="fieldsScrollBox" height="100%" width="100%"/>
-        </hbox>
+<!--        <hbox id="entityGroupBoxId" visible="false">-->
+        <scroller id="fieldsScrollBox"/> <!-- height="100%" width="100%" -->
+<!--        </hbox>-->
         <hbox id="actionsBox" spacing="true" visible="false">
             <button id="saveButtonId" text="msg://saveApplicationSettings"/>
             <button id="closeButtonId" text="msg://close"/>

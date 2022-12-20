@@ -137,8 +137,8 @@ public class AppSettingsEntityView extends StandardView {
     @ViewComponent
     protected ComboBox<MetaClass> entitiesLookup;
 
-    @ViewComponent
-    protected HorizontalLayout entityGroupBoxId;
+//    @ViewComponent
+//    protected HorizontalLayout entityGroupBoxId;
     @ViewComponent
     protected Scroller fieldsScrollBox;
     @ViewComponent
@@ -160,7 +160,7 @@ public class AppSettingsEntityView extends StandardView {
 
         entitiesLookup.addValueChangeListener(e -> {
 
-            entityGroupBoxId.setVisible(e.getValue() != null);
+            fieldsScrollBox.setVisible(e.getValue() != null);
 
             if (isEntityChangePrevented) {
                 isEntityChangePrevented = false;
