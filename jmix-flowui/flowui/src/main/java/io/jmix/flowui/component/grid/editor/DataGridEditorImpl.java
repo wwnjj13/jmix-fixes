@@ -399,7 +399,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     }
 
     @Override
-    public void setColumnDefaultEditorComponent(String property) {
+    public void initColumnDefaultEditorComponent(String property) {
         setColumnEditorComponent(property, new DefaultEditComponentGenerator(property));
     }
 
@@ -411,7 +411,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     }
 
     @Override
-    public void setColumnDefaultEditorComponent(Grid.Column<T> column, String property) {
+    public void initColumnDefaultEditorComponent(Grid.Column<T> column, String property) {
         setColumnEditorComponent(column, property, new DefaultEditComponentGenerator(property));
     }
 

@@ -17,6 +17,7 @@
 package io.jmix.flowui.component;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValidation;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -31,7 +32,7 @@ public interface SupportsStatusChangeHandler<C extends Component> {
 
     /**
      * Sets a callback to be used to handle component status changes,
-     * e.g. validation messages.
+     * e.g. validation messages set by {@link HasValidation#setErrorMessage(String)}.
      *
      * @param handler a handler to set
      */

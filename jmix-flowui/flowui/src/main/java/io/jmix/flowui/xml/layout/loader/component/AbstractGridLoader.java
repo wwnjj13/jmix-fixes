@@ -60,6 +60,9 @@ import java.util.stream.Stream;
 public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & HasActions>
         extends AbstractComponentLoader<T> {
 
+    public static final String COLUMN_ELEMENT_NAME = "column";
+    public static final String EDITOR_ACTIONS_COLUMN_ELEMENT_NAME = "editorActionsColumn";
+
     protected ActionLoaderSupport actionLoaderSupport;
     protected MetadataTools metaDataTools;
     protected Subscription masterDataLoaderPostLoadListener; // used for CollectionPropertyContainer
@@ -120,28 +123,42 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
 
         if (includeAll) {
             loadColumnsByInclude(resultComponent, columnsElement, metaClass, fetchPlan);
+            // In case of includeAll, EditorActionsColumn will be place at the end
+            loadEditorActionsColumns(resultComponent, columnsElement);
         } else {
-            List<Element> columnElements = columnsElement.elements("column");
+            List<Element> columnElements = columnsElement.elements();
             for (Element columnElement : columnElements) {
-                loadColumn(resultComponent, columnElement, metaClass);
+                loadColumnsElementChild(resultComponent, columnElement, metaClass);
             }
         }
-        loadEditorActionsColumn(resultComponent, columnsElement);
     }
 
-    protected void loadEditorActionsColumn(T resultComponent, Element columnsElement) {
-        List<Element> editorActionsColumns = columnsElement.elements("editorActionsColumn");
+    protected void loadColumnsElementChild(T resultComponent, Element columnElement, MetaClass metaClass) {
+        switch (columnElement.getName()) {
+            case COLUMN_ELEMENT_NAME:
+                loadColumn(resultComponent, columnElement, metaClass);
+                break;
+            case EDITOR_ACTIONS_COLUMN_ELEMENT_NAME:
+                loadEditorActionsColumn(resultComponent, columnElement);
+                break;
+            default:
+                throw new GuiDevelopmentException("Unknown columns' child element: " + columnElement.getName(),
+                        context, "Component ID", resultComponent.getId());
+        }
+    }
+
+    protected void loadEditorActionsColumns(T resultComponent, Element columnsElement) {
+        List<Element> editorActionsColumns = columnsElement.elements(EDITOR_ACTIONS_COLUMN_ELEMENT_NAME);
         if (CollectionUtils.isEmpty(editorActionsColumns)) {
             return;
         }
 
-        if (editorActionsColumns.size() > 1) {
-            throw new GuiDevelopmentException(resultComponent.getClass().getSimpleName() +
-                    " must have only one 'editorActionsColumn'",
-                    context, "Component ID", resultComponent.getId());
+        for (Element columnElement : editorActionsColumns) {
+            loadEditorActionsColumn(resultComponent, columnElement);
         }
+    }
 
-        Element columnElement = editorActionsColumns.get(0);
+    protected void loadEditorActionsColumn(T resultComponent, Element columnElement) {
         if (columnElement.elements().size() == 0) {
             throw new GuiDevelopmentException("'editorActionsColumn' cannot be empty",
                     context, "Component ID", resultComponent.getId());
@@ -224,7 +241,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
     protected void loadColumnsByInclude(T component, Element columnsElement, MetaClass metaClass, FetchPlan fetchPlan) {
         Collection<String> appliedProperties = getAppliedProperties(columnsElement, fetchPlan, metaClass);
 
-        List<Element> columnElements = columnsElement.elements("column");
+        List<Element> columnElements = columnsElement.elements(COLUMN_ELEMENT_NAME);
         Set<Element> overriddenColumns = new HashSet<>();
 
         DocumentFactory documentFactory = DatatypeElementFactory.getInstance();
@@ -232,7 +249,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
         for (String property : appliedProperties) {
             Element column = getOverriddenColumn(columnElements, property);
             if (column == null) {
-                column = documentFactory.createElement("column");
+                column = documentFactory.createElement(COLUMN_ELEMENT_NAME);
                 column.add(documentFactory.createAttribute(column, "property", property));
             } else {
                 overriddenColumns.add(column);
@@ -242,7 +259,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
         }
 
         // load remains columns
-        List<Element> remainedColumns = columnsElement.elements("column");
+        List<Element> remainedColumns = columnsElement.elements(COLUMN_ELEMENT_NAME);
         for (Element column : remainedColumns) {
             if (overriddenColumns.contains(column)) {
                 continue;
@@ -302,7 +319,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
     protected void setDefaultEditComponent(Column<?> column, String property) {
         Editor<?> editor = resultComponent.getEditor();
         if (editor instanceof DataGridEditor) {
-            ((DataGridEditor) editor).setColumnDefaultEditorComponent(column, property);
+            ((DataGridEditor) editor).initColumnDefaultEditorComponent(column, property);
         }
     }
 

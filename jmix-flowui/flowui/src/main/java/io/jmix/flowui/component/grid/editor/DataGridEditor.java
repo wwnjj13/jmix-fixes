@@ -49,16 +49,16 @@ public interface DataGridEditor<T> extends Editor<T> {
     boolean isSaving();
 
     /**
-     * Sets the default function that returns the column editor component
+     * Inits the default function that returns the column editor component
      * that is bound to the passed entity's property. To find the column
      * it's assumed that the column key is equal to the property.
      *
      * @param property an entity attribute for which the edit component is created
      * @see #setColumnEditorComponent(String, Function)
-     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
+     * @see #initColumnDefaultEditorComponent(Grid.Column, String)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
-    void setColumnDefaultEditorComponent(String property);
+    void initColumnDefaultEditorComponent(String property);
 
     /**
      * Sets a function that returns the column editor component. To bound an editor component
@@ -69,24 +69,24 @@ public interface DataGridEditor<T> extends Editor<T> {
      *
      * @param property  an entity attribute for which the edit component is created
      * @param generator a callback function that is used to create an edit component
-     * @see #setColumnDefaultEditorComponent(String)
-     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
+     * @see #initColumnDefaultEditorComponent(String)
+     * @see #initColumnDefaultEditorComponent(Grid.Column, String)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
     void setColumnEditorComponent(String property,
                                   Function<EditComponentGenerationContext<T>, Component> generator);
 
     /**
-     * Sets the default function that returns the column editor component
+     * Inits the default function that returns the column editor component
      * that is bound to the passed entity's property.
      *
      * @param column   a grid column for which to set editor component
      * @param property an entity attribute for which an edit component is created
-     * @see #setColumnDefaultEditorComponent(String)
+     * @see #initColumnDefaultEditorComponent(String)
      * @see #setColumnEditorComponent(String, Function)
      * @see #setColumnEditorComponent(Grid.Column, String, Function)
      */
-    void setColumnDefaultEditorComponent(Grid.Column<T> column, String property);
+    void initColumnDefaultEditorComponent(Grid.Column<T> column, String property);
 
     /**
      * Sets a function that returns the column editor component. To bound an editor component
@@ -97,9 +97,9 @@ public interface DataGridEditor<T> extends Editor<T> {
      * @param column    a grid column for which to set editor component
      * @param property  an entity attribute for which the edit component is created
      * @param generator a callback function that is used to create an edit component
-     * @see #setColumnDefaultEditorComponent(String)
+     * @see #initColumnDefaultEditorComponent(String)
      * @see #setColumnEditorComponent(String, Function)
-     * @see #setColumnDefaultEditorComponent(Grid.Column, String)
+     * @see #initColumnDefaultEditorComponent(Grid.Column, String)
      */
     void setColumnEditorComponent(Grid.Column<T> column, String property,
                                   Function<EditComponentGenerationContext<T>, Component> generator);
