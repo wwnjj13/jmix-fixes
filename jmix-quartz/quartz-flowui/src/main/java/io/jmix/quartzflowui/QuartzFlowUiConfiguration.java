@@ -18,6 +18,8 @@ package io.jmix.quartzflowui;
 
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
+import io.jmix.flowui.FlowuiConfiguration;
+import io.jmix.flowui.sys.ViewControllersConfiguration;
 import io.jmix.quartz.QuartzConfiguration;
 import io.jmix.ui.UiConfiguration;
 import io.jmix.ui.sys.UiControllersConfiguration;
@@ -33,16 +35,16 @@ import java.util.Collections;
 @Configuration
 @ComponentScan
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {QuartzConfiguration.class, FlowUiConfiguration.class})
-@PropertySource(name = "io.jmix.quartzui", value = "classpath:/io/jmix/quartzui/module.properties")
+@JmixModule(dependsOn = {QuartzConfiguration.class, FlowuiConfiguration.class})
+@PropertySource(name = "io.jmix.quartzflowui", value = "classpath:/io/jmix/quartzflowui/module.properties")
 public class QuartzFlowUiConfiguration {
 
-    @Bean("quartz_QuartzFlowUiControllers")
-    public FlowUiControllersConfiguration screens(ApplicationContext applicationContext,
+    @Bean("flowui_quartz_QuartzViewControllers")
+    public ViewControllersConfiguration screens(ApplicationContext applicationContext,
                                               AnnotationScanMetadataReaderFactory metadataReaderFactory) {
-        UiControllersConfiguration uiControllers
-                = new UiControllersConfiguration(applicationContext, metadataReaderFactory);
-        uiControllers.setBasePackages(Collections.singletonList("io.jmix.quartzflowui"));
-        return uiControllers;
+        ViewControllersConfiguration viewControllers
+                = new ViewControllersConfiguration(applicationContext, metadataReaderFactory);
+        viewControllers.setBasePackages(Collections.singletonList("io.jmix.quartzflowui"));
+        return viewControllers;
     }
 }

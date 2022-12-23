@@ -19,12 +19,23 @@ package io.jmix.quartzflowui.view.jobs;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import io.jmix.core.UnconstrainedDataManager;
+import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.MessageBundle;
-import io.jmix.quartz.model.*;
-import io.jmix.quartzflowui.view.trigger.TriggerModelEdit;
+import io.jmix.flowui.view.StandardDetailView;
+import io.jmix.flowui.view.StandardListView;
+import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.ViewController;
+import io.jmix.flowui.view.ViewDescriptor;
+import io.jmix.quartz.model.JobDataParameterModel;
+import io.jmix.quartz.model.JobModel;
+import io.jmix.quartz.model.JobSource;
+import io.jmix.quartz.model.JobState;
+import io.jmix.quartz.model.TriggerModel;
 import io.jmix.quartz.service.QuartzService;
 import io.jmix.quartz.util.QuartzJobClassFinder;
+import io.jmix.quartzflowui.view.trigger.TriggerModelEdit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -33,10 +44,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@UiController("quartz_JobModel.edit")
-@UiDescriptor("job-model-edit.xml")
+@ViewController("quartz_JobModel.edit")
+@ViewDescriptor("job-model-edit.xml")
 @EditedEntityContainer("jobModelDc")
-public class JobModelEdit extends StandardEditor<JobModel> {
+@DialogMode(width = "50em", height = "37.5em")
+public class JobModelEdit extends StandardListView<JobModel> {
 
     @Autowired
     private QuartzService quartzService;
@@ -78,7 +90,7 @@ public class JobModelEdit extends StandardEditor<JobModel> {
     private ViewAction<TriggerModel> triggerModelTableView;
 
     @Autowired
-    private Table<JobDataParameterModel> jobDataParamsTable;
+    private DataGrid<JobDataParameterModel> jobDataParamsTable;
 
     @Autowired
     private Button addDataParamButton;
@@ -90,7 +102,7 @@ public class JobModelEdit extends StandardEditor<JobModel> {
 
     @SuppressWarnings("ConstantConditions")
     @Subscribe
-    public void onInitEntity(InitEntityEvent<JobModel> event) {
+    public void onInitEntity(StandardDetailView.InitEntityEvent<JobModel> event) {
         JobModel entity = event.getEntity();
         if (entity.getJobSource() == null) {
             entity.setJobSource(JobSource.USER_DEFINED);

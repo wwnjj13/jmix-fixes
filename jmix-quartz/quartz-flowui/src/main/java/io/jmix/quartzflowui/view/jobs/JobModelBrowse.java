@@ -21,18 +21,20 @@ import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.MessageBundle;
 import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.View;
+import io.jmix.flowui.view.ViewController;
+import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.quartz.model.JobModel;
 import io.jmix.quartz.model.JobSource;
 import io.jmix.quartz.model.JobState;
 import io.jmix.quartz.service.QuartzService;
-import io.jmix.ui.Notifications;
-import io.jmix.ui.RemoveOperation;
-import io.jmix.ui.action.Action;
-import io.jmix.ui.component.ComboBox;
-import io.jmix.ui.component.GroupTable;
-import io.jmix.ui.component.TextField;
-import io.jmix.ui.model.CollectionContainer;
-import io.jmix.ui.screen.*;
+import io.jmix.flowui.Notifications;
+import io.jmix.flowui.RemoveOperation;
+import io.jmix.flowui.action.Action;
+import io.jmix.flowui.component.ComboBox;
+import io.jmix.flowui.component.GroupTable;
+import io.jmix.flowui.component.TextField;
+import io.jmix.flowui.model.CollectionContainer;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Comparator.*;
 
-@UiController("quartz_JobModel.browse")
-@UiDescriptor("job-model-browse.xml")
+@ViewController("quartz_JobModel.browse")
+@ViewDescriptor("job-model-browse.xml")
 @LookupComponent("jobModelsTable")
 public class JobModelBrowse extends StandardLookup<JobModel> {
 
