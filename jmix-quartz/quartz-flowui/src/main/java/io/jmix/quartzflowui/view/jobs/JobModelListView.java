@@ -17,22 +17,17 @@
 package io.jmix.quartzflowui.view.jobs;
 
 import com.google.common.base.Strings;
-import io.jmix.flowui.view.LookupComponent;
-import io.jmix.flowui.view.MessageBundle;
-import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.View;
-import io.jmix.flowui.view.ViewController;
-import io.jmix.flowui.view.ViewDescriptor;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.textfield.TextField;
+import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.util.RemoveOperation;
+import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.JobModel;
 import io.jmix.quartz.model.JobSource;
 import io.jmix.quartz.model.JobState;
 import io.jmix.quartz.service.QuartzService;
 import io.jmix.flowui.Notifications;
-import io.jmix.flowui.RemoveOperation;
-import io.jmix.flowui.action.Action;
-import io.jmix.flowui.component.ComboBox;
-import io.jmix.flowui.component.GroupTable;
-import io.jmix.flowui.component.TextField;
 import io.jmix.flowui.model.CollectionContainer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,10 +39,31 @@ import java.util.stream.Collectors;
 
 import static java.util.Comparator.*;
 
-@ViewController("quartz_JobModel.browse")
-@ViewDescriptor("job-model-browse.xml")
+@ViewController("quartz_JobModel.list")
+@ViewDescriptor("job-model-list-view.xml")
 @LookupComponent("jobModelsTable")
-public class JobModelBrowse extends StandardLookup<JobModel> {
+public class JobModelListView extends StandardListView<JobModel> {
+
+    @ViewComponent
+    private RemoveOperation removeOperation;
+
+    @ViewComponent
+    private CollectionContainer<JobModel> jobModelsDc;
+
+    @ViewComponent
+    private DataGrid<JobModel> jobModelsTable;
+
+    @ViewComponent
+    private TextField nameField;
+
+    @ViewComponent
+    private TextField classField;
+
+    @ViewComponent
+    private TextField groupField;
+
+    @ViewComponent
+    private ComboBox<JobState> jobStateComboBox;
 
     @Autowired
     private QuartzService quartzService;
@@ -58,30 +74,9 @@ public class JobModelBrowse extends StandardLookup<JobModel> {
     @Autowired
     private MessageBundle messageBundle;
 
-    @Autowired
-    private RemoveOperation removeOperation;
-
-    @Autowired
-    private CollectionContainer<JobModel> jobModelsDc;
-
-    @Autowired
-    private GroupTable<JobModel> jobModelsTable;
-
-    @Autowired
-    private TextField<String> nameField;
-
-    @Autowired
-    private TextField<String> classField;
-
-    @Autowired
-    private TextField<String> groupField;
-
-    @Autowired
-    private ComboBox<JobState> jobStateComboBox;
-
     @Subscribe
     public void onBeforeShow(View.BeforeShowEvent event) {
-        jobStateComboBox.setOptionsEnum(JobState.class);
+        jobStateComboBox.setItems(JobState.values());
         loadJobsData();
     }
 
@@ -100,79 +95,78 @@ public class JobModelBrowse extends StandardLookup<JobModel> {
 
     @Install(to = "jobModelsTable.executeNow", subject = "enabledRule")
     private boolean jobModelsTableExecuteNowEnabledRule() {
-        return !CollectionUtils.isEmpty(jobModelsTable.getSelected())
-                && !isJobActive(jobModelsTable.getSelected().iterator().next());
+        return !CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())
+                && !isJobActive(jobModelsTable.getSingleSelectedItem());
     }
 
     @Install(to = "jobModelsTable.activate", subject = "enabledRule")
     private boolean jobModelsTableActivateEnabledRule() {
-        if (CollectionUtils.isEmpty(jobModelsTable.getSelected())) {
+        if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
             return false;
         }
 
-        JobModel selectedJobModel = jobModelsTable.getSelected().iterator().next();
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         return !isJobActive(selectedJobModel) && CollectionUtils.isNotEmpty(selectedJobModel.getTriggers());
     }
 
     @Install(to = "jobModelsTable.deactivate", subject = "enabledRule")
     private boolean jobModelsTableDeactivateEnabledRule() {
-        return !CollectionUtils.isEmpty(jobModelsTable.getSelected())
-                && isJobActive(jobModelsTable.getSelected().iterator().next());
+        return !CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())
+                && isJobActive(jobModelsTable.getSingleSelectedItem());
     }
 
     @Install(to = "jobModelsTable.remove", subject = "enabledRule")
     private boolean jobModelsTableRemoveEnabledRule() {
-        if (CollectionUtils.isEmpty(jobModelsTable.getSelected())) {
+        if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
             return false;
         }
 
-        JobModel selectedJobModel = jobModelsTable.getSelected().iterator().next();
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         return !isJobActive(selectedJobModel) && JobSource.USER_DEFINED.equals(selectedJobModel.getJobSource());
     }
 
     @Subscribe("jobModelsTable.executeNow")
-    public void onJobModelsTableExecuteNow(Action.ActionPerformedEvent event) {
-        JobModel selectedJobModel = jobModelsTable.getSelected().iterator().next();
+    public void onJobModelsTableExecuteNow(ActionPerformedEvent event) {
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.executeNow(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
-        notifications.create(Notifications.NotificationType.HUMANIZED)
-                .withDescription(messageBundle.formatMessage("jobExecuted", selectedJobModel.getJobName()))
+        notifications.create(messageBundle.formatMessage("jobExecuted", selectedJobModel.getJobName()))
+                .withType(Notifications.Type.DEFAULT)
                 .show();
-
         loadJobsData();
     }
 
     @Subscribe("jobModelsTable.activate")
-    public void onJobModelsTableActivate(Action.ActionPerformedEvent event) {
-        JobModel selectedJobModel = jobModelsTable.getSelected().iterator().next();
+    public void onJobModelsTableActivate(ActionPerformedEvent event) {
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.resumeJob(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
-        notifications.create(Notifications.NotificationType.HUMANIZED)
-                .withDescription(messageBundle.formatMessage("jobResumed", selectedJobModel.getJobName()))
+        notifications.create(messageBundle.formatMessage("jobResumed", selectedJobModel.getJobName()))
+                .withType(Notifications.Type.DEFAULT)
                 .show();
 
         loadJobsData();
     }
 
     @Subscribe("jobModelsTable.deactivate")
-    public void onJobModelsTableDeactivate(Action.ActionPerformedEvent event) {
-        JobModel selectedJobModel = jobModelsTable.getSelected().iterator().next();
+    public void onJobModelsTableDeactivate(ActionPerformedEvent event) {
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.pauseJob(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
-        notifications.create(Notifications.NotificationType.HUMANIZED)
-                .withDescription(messageBundle.formatMessage("jobPaused", selectedJobModel.getJobName()))
+        notifications.create(messageBundle.formatMessage("jobPaused", selectedJobModel.getJobName()))
+                .withType(Notifications.Type.DEFAULT)
                 .show();
 
         loadJobsData();
     }
 
     @Subscribe("jobModelsTable.remove")
-    public void onJobModelsTableRemove(Action.ActionPerformedEvent event) {
+    public void onJobModelsTableRemove(ActionPerformedEvent event) {
         removeOperation.builder(jobModelsTable)
                 .withConfirmation(true)
                 .beforeActionPerformed(e -> {
                     if (CollectionUtils.isNotEmpty(e.getItems())) {
                         JobModel jobToDelete = e.getItems().get(0);
                         quartzService.deleteJob(jobToDelete.getJobName(), jobToDelete.getJobGroup());
-                        notifications.create(Notifications.NotificationType.HUMANIZED)
-                                .withDescription(messageBundle.formatMessage("jobDeleted", jobToDelete.getJobName()))
+                        notifications.create(messageBundle.formatMessage("jobDeleted", jobToDelete.getJobName()))
+                                .withType(Notifications.Type.DEFAULT)
                                 .show();
                         loadJobsData();
                     }
@@ -181,7 +175,7 @@ public class JobModelBrowse extends StandardLookup<JobModel> {
     }
 
     @Subscribe("jobModelsTable.refresh")
-    public void onJobModelsTableRefresh(Action.ActionPerformedEvent event) {
+    public void onJobModelsTableRefresh(ActionPerformedEvent event) {
         loadJobsData();
     }
 
@@ -200,7 +194,7 @@ public class JobModelBrowse extends StandardLookup<JobModel> {
     }
 
     @Subscribe("applyFilter")
-    public void onApplyFilter(Action.ActionPerformedEvent event) {
+    public void onApplyFilter(ActionPerformedEvent event) {
         loadJobsData();
     }
 

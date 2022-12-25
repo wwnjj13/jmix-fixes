@@ -16,21 +16,20 @@
 
 package io.jmix.quartzflowui.view.trigger;
 
-import com.google.common.base.Strings;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.textfield.TextField;
+import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.ScheduleType;
 import io.jmix.quartz.model.TriggerModel;
 import io.jmix.quartz.service.QuartzService;
-import io.jmix.ui.component.ComboBox;
-import io.jmix.ui.component.TextField;
-import io.jmix.ui.screen.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@UiController("quartz_TriggerModel.edit")
-@UiDescriptor("trigger-model-edit.xml")
+@ViewController("quartz_TriggerModel.list")
+@ViewDescriptor("trigger-model-list-view.xml")
 @EditedEntityContainer("triggerModelDc")
-public class TriggerModelEdit extends StandardEditor<TriggerModel> {
+public class TriggerModelEdit extends StandardDetailView<TriggerModel> {
 
     @Autowired
     private QuartzService quartzService;
@@ -39,13 +38,13 @@ public class TriggerModelEdit extends StandardEditor<TriggerModel> {
     private ComboBox<String> triggerGroupField;
 
     @Autowired
-    private TextField<String> cronExpressionField;
+    private TextField cronExpressionField;
 
     @Autowired
-    private TextField<Integer> repeatCountField;
+    private TextField repeatCountField;
 
     @Autowired
-    private TextField<Long> repeatIntervalField;
+    private TextField repeatIntervalField;
 
     @Autowired
     private ComboBox<ScheduleType> scheduleTypeField;
@@ -63,14 +62,14 @@ public class TriggerModelEdit extends StandardEditor<TriggerModel> {
 
     private void initTriggerGroupNames() {
         List<String> triggerGroupNames = quartzService.getTriggerGroupNames();
-        triggerGroupField.setOptionsList(triggerGroupNames);
-        triggerGroupField.setEnterPressHandler(enterPressEvent -> {
-            String newTriggerGroupName = enterPressEvent.getText();
-            if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
-                triggerGroupNames.add(newTriggerGroupName);
-                triggerGroupField.setOptionsList(triggerGroupNames);
-            }
-        });
+        triggerGroupField.setItems(triggerGroupNames);
+//        triggerGroupField.setEnterPressHandler(enterPressEvent -> {
+//            String newTriggerGroupName = enterPressEvent.getText();
+//            if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
+//                triggerGroupNames.add(newTriggerGroupName);
+//                triggerGroupField.setOptionsList(triggerGroupNames);
+//            }
+//        });
     }
 
     private void initFieldVisibility() {

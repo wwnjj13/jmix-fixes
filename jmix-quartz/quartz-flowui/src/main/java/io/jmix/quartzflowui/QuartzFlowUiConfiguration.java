@@ -21,8 +21,6 @@ import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
 import io.jmix.flowui.FlowuiConfiguration;
 import io.jmix.flowui.sys.ViewControllersConfiguration;
 import io.jmix.quartz.QuartzConfiguration;
-import io.jmix.ui.UiConfiguration;
-import io.jmix.ui.sys.UiControllersConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

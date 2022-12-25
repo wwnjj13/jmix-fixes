@@ -18,13 +18,20 @@ package io.jmix.quartzflowui.view.jobs;
 
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.textfield.TextField;
 import io.jmix.core.UnconstrainedDataManager;
+import io.jmix.flowui.DialogWindows;
+import io.jmix.flowui.action.list.EditAction;
+import io.jmix.flowui.action.view.ViewAction;
 import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.component.validation.ValidationErrors;
+import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.EditedEntityContainer;
 import io.jmix.flowui.view.MessageBundle;
 import io.jmix.flowui.view.StandardDetailView;
-import io.jmix.flowui.view.StandardListView;
 import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
@@ -45,10 +52,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ViewController("quartz_JobModel.edit")
-@ViewDescriptor("job-model-edit.xml")
+@ViewDescriptor("job-model-detail-view.xml")
 @EditedEntityContainer("jobModelDc")
 @DialogMode(width = "50em", height = "37.5em")
-public class JobModelEdit extends StandardListView<JobModel> {
+public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     @Autowired
     private QuartzService quartzService;
@@ -57,7 +64,7 @@ public class JobModelEdit extends StandardListView<JobModel> {
     private QuartzJobClassFinder quartzJobClassFinder;
 
     @Autowired
-    private ScreenBuilders screenBuilders;
+    private DialogWindows dialogWindows;
 
     @Autowired
     private MessageBundle messageBundle;
@@ -72,7 +79,7 @@ public class JobModelEdit extends StandardListView<JobModel> {
     private CollectionContainer<TriggerModel> triggerModelDc;
 
     @Autowired
-    private TextField<String> jobNameField;
+    private TextField jobNameField;
 
     @Autowired
     private ComboBox<String> jobGroupField;
@@ -81,7 +88,7 @@ public class JobModelEdit extends StandardListView<JobModel> {
     private ComboBox<String> jobClassField;
 
     @Autowired
-    private Table<TriggerModel> triggerModelTable;
+    private DataGrid<TriggerModel> triggerModelTable;
 
     @Named("triggerModelTable.edit")
     private EditAction<TriggerModel> triggerModelTableEdit;
@@ -116,9 +123,9 @@ public class JobModelEdit extends StandardListView<JobModel> {
         boolean readOnly = JobState.NORMAL.equals(getEditedEntity().getJobState())
                 || JobSource.PREDEFINED.equals(getEditedEntity().getJobSource());
         setReadOnly(readOnly);
-        jobNameField.setEditable(!readOnly);
-        jobGroupField.setEditable(!readOnly);
-        jobClassField.setEditable(!readOnly);
+        jobNameField.setEnabled(!readOnly);
+        jobGroupField.setEnabled(!readOnly);
+        jobClassField.setEnabled(!readOnly);
         triggerModelTableEdit.setVisible(!readOnly);
         triggerModelTableView.setVisible(readOnly);
         addDataParamButton.setEnabled(!readOnly);
@@ -166,7 +173,7 @@ public class JobModelEdit extends StandardListView<JobModel> {
     }
 
     @Subscribe("triggerModelTable.view")
-    public void onTriggerModelGroupTableView(Action.ActionPerformedEvent event) {
+    public void onTriggerModelGroupTableView(ActionPerformedEvent event) {
         TriggerModel triggerModel = triggerModelTable.getSingleSelected();
         if (triggerModel == null) {
             return;
@@ -238,7 +245,7 @@ public class JobModelEdit extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobDataParamsTable.addNewDataParam")
-    public void onJobDataParamsTableCreate(Action.ActionPerformedEvent event) {
+    public void onJobDataParamsTableCreate(ActionPerformedEvent event) {
         List<JobDataParameterModel> currentItems = new ArrayList<>(jobDataParamsDc.getItems());
 
         JobDataParameterModel itemToAdd = dataManager.create(JobDataParameterModel.class);
