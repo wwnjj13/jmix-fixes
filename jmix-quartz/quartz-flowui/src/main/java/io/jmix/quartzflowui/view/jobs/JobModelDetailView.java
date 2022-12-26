@@ -90,11 +90,11 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     @Autowired
     private DataGrid<TriggerModel> triggerModelTable;
 
-    @Named("triggerModelTable.edit")
-    private EditAction<TriggerModel> triggerModelTableEdit;
-
-    @Named("triggerModelTable.view")
-    private ViewAction<TriggerModel> triggerModelTableView;
+//    @Named("triggerModelTable.edit")
+//    private EditAction<TriggerModel> triggerModelTableEdit;
+//
+//    @Named("triggerModelTable.view")
+//    private ViewAction<TriggerModel> triggerModelTableView;
 
     @Autowired
     private DataGrid<JobDataParameterModel> jobDataParamsTable;
@@ -126,10 +126,10 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         jobNameField.setEnabled(!readOnly);
         jobGroupField.setEnabled(!readOnly);
         jobClassField.setEnabled(!readOnly);
-        triggerModelTableEdit.setVisible(!readOnly);
-        triggerModelTableView.setVisible(readOnly);
+//        triggerModelTableEdit.setVisible(!readOnly);
+//        triggerModelTableView.setVisible(readOnly);
         addDataParamButton.setEnabled(!readOnly);
-        jobDataParamsTable.setEditable(!readOnly);
+//        jobDataParamsTable.setEditable(!readOnly);
 
         obsoleteJobName = getEditedEntity().getJobName();
         obsoleteJobGroup = getEditedEntity().getJobGroup();
@@ -144,21 +144,21 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         });
 
         List<String> jobGroupNames = quartzService.getJobGroupNames();
-        jobGroupField.setOptionsList(jobGroupNames);
-        jobGroupField.setEnterPressHandler(enterPressEvent -> {
-            String newJobGroupName = enterPressEvent.getText();
-            if (!Strings.isNullOrEmpty(newJobGroupName)
-                    && !jobGroupNames.contains(newJobGroupName)) {
-                jobGroupNames.add(newJobGroupName);
-                jobGroupField.setOptionsList(jobGroupNames);
-            }
-
-            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
-                    && !Strings.isNullOrEmpty(newJobGroupName)
-                    && !obsoleteJobGroup.equals(newJobGroupName)) {
-                deleteObsoleteJob = true;
-            }
-        });
+        jobGroupField.setItems(jobGroupNames);
+//        jobGroupField.setEnterPressHandler(enterPressEvent -> {
+//            String newJobGroupName = enterPressEvent.getText();
+//            if (!Strings.isNullOrEmpty(newJobGroupName)
+//                    && !jobGroupNames.contains(newJobGroupName)) {
+//                jobGroupNames.add(newJobGroupName);
+//                jobGroupField.setOptionsList(jobGroupNames);
+//            }
+//
+//            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
+//                    && !Strings.isNullOrEmpty(newJobGroupName)
+//                    && !obsoleteJobGroup.equals(newJobGroupName)) {
+//                deleteObsoleteJob = true;
+//            }
+//        });
         jobGroupField.addValueChangeListener(e -> {
             String currentValue = e.getValue();
             if (!Strings.isNullOrEmpty(obsoleteJobGroup)
@@ -169,22 +169,22 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         });
 
         List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
-        jobClassField.setOptionsList(existedJobsClassNames);
+        jobClassField.setItems(existedJobsClassNames);
     }
 
     @Subscribe("triggerModelTable.view")
     public void onTriggerModelGroupTableView(ActionPerformedEvent event) {
-        TriggerModel triggerModel = triggerModelTable.getSingleSelected();
+        TriggerModel triggerModel = triggerModelTable.getSingleSelectedItem();
         if (triggerModel == null) {
             return;
         }
 
-        TriggerModelEdit editor = screenBuilders.editor(triggerModelTable)
-                .withScreenClass(TriggerModelEdit.class)
-                .withParentDataContext(getScreenData().getDataContext())
-                .build();
-        ((ReadOnlyAwareScreen) editor).setReadOnly(true);
-        editor.show();
+//        TriggerModelEdit editor = screenBuilders.editor(triggerModelTable)
+//                .withScreenClass(TriggerModelEdit.class)
+//                .withParentDataContext(getScreenData().getDataContext())
+//                .build();
+//        ((ReadOnlyAwareScreen) editor).setReadOnly(true);
+//        editor.show();
     }
 
     @Subscribe
@@ -236,7 +236,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     }
 
     @Subscribe
-    public void onBeforeCommitChanges(BeforeCommitChangesEvent event) {
+    public void onBeforeCommitChanges(BeforeSaveEvent event) {
         if (deleteObsoleteJob) {
             quartzService.deleteJob(obsoleteJobName, obsoleteJobGroup);
         }
@@ -251,8 +251,8 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         JobDataParameterModel itemToAdd = dataManager.create(JobDataParameterModel.class);
         currentItems.add(itemToAdd);
         jobDataParamsDc.setItems(currentItems);
-        jobDataParamsTable.setSelected(itemToAdd);
-        jobDataParamsTable.requestFocus(itemToAdd, "key");
+        jobDataParamsTable.select(itemToAdd);
+//        jobDataParamsTable.requestFocus(itemToAdd, "key");
     }
 
 }
