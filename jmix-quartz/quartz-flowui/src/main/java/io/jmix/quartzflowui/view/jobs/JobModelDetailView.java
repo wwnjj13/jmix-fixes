@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Route;
 import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.action.list.EditAction;
@@ -28,13 +29,7 @@ import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionContainer;
-import io.jmix.flowui.view.DialogMode;
-import io.jmix.flowui.view.EditedEntityContainer;
-import io.jmix.flowui.view.MessageBundle;
-import io.jmix.flowui.view.StandardDetailView;
-import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.ViewController;
-import io.jmix.flowui.view.ViewDescriptor;
+import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.JobDataParameterModel;
 import io.jmix.quartz.model.JobModel;
 import io.jmix.quartz.model.JobSource;
@@ -51,11 +46,42 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@ViewController("quartz_JobModel.edit")
+@Route(value = "quartz/jobmodels/:id", layout = DefaultMainViewParent.class)
+@ViewController("quartz_JobModel.detail")
 @ViewDescriptor("job-model-detail-view.xml")
 @EditedEntityContainer("jobModelDc")
 @DialogMode(width = "50em", height = "37.5em")
 public class JobModelDetailView extends StandardDetailView<JobModel> {
+
+    @ViewComponent
+    private CollectionContainer<JobDataParameterModel> jobDataParamsDc;
+
+    @ViewComponent
+    private CollectionContainer<TriggerModel> triggerModelDc;
+
+    @ViewComponent
+    private TextField jobNameField;
+
+    @ViewComponent
+    private ComboBox<String> jobGroupField;
+
+    @ViewComponent
+    private ComboBox<String> jobClassField;
+
+    @ViewComponent
+    private DataGrid<TriggerModel> triggerModelTable;
+
+//    @Named("triggerModelTable.edit")
+//    private EditAction<TriggerModel> triggerModelTableEdit;
+//
+//    @Named("triggerModelTable.view")
+//    private ViewAction<TriggerModel> triggerModelTableView;
+
+    @ViewComponent
+    private DataGrid<JobDataParameterModel> jobDataParamsTable;
+
+    @ViewComponent
+    private Button addDataParamButton;
 
     @Autowired
     private QuartzService quartzService;
@@ -71,36 +97,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     @Autowired
     private UnconstrainedDataManager dataManager;
-
-    @Autowired
-    private CollectionContainer<JobDataParameterModel> jobDataParamsDc;
-
-    @Autowired
-    private CollectionContainer<TriggerModel> triggerModelDc;
-
-    @Autowired
-    private TextField jobNameField;
-
-    @Autowired
-    private ComboBox<String> jobGroupField;
-
-    @Autowired
-    private ComboBox<String> jobClassField;
-
-    @Autowired
-    private DataGrid<TriggerModel> triggerModelTable;
-
-//    @Named("triggerModelTable.edit")
-//    private EditAction<TriggerModel> triggerModelTableEdit;
-//
-//    @Named("triggerModelTable.view")
-//    private ViewAction<TriggerModel> triggerModelTableView;
-
-    @Autowired
-    private DataGrid<JobDataParameterModel> jobDataParamsTable;
-
-    @Autowired
-    private Button addDataParamButton;
 
     private boolean replaceJobIfExists = true;
     private boolean deleteObsoleteJob = false;

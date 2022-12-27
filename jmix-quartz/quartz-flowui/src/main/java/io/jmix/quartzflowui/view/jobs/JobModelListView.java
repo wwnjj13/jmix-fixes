@@ -19,6 +19,7 @@ package io.jmix.quartzflowui.view.jobs;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Route;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.util.RemoveOperation;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Comparator.*;
 
+@Route(value = "quartz/jobmodels", layout = DefaultMainViewParent.class)
 @ViewController("quartz_JobModel.list")
 @ViewDescriptor("job-model-list-view.xml")
 @LookupComponent("jobModelsTable")
@@ -179,12 +181,12 @@ public class JobModelListView extends StandardListView<JobModel> {
         loadJobsData();
     }
 
-    @Install(to = "jobModelsTable.create", subject = "afterCommitHandler")
+    @Install(to = "jobModelsTable.create", subject = "afterSaveHandler")
     private void jobModelsTableCreateAfterCommitHandler(JobModel jobModel) {
         loadJobsData();
     }
 
-    @Install(to = "jobModelsTable.edit", subject = "afterCommitHandler")
+    @Install(to = "jobModelsTable.edit", subject = "afterSaveHandler")
     private void jobModelsTableEditAfterCommitHandler(JobModel jobModel) {
         loadJobsData();
     }

@@ -4,34 +4,33 @@
         focusComponent="form">
     <data>
         <instance id="jobModelDc" class="io.jmix.quartz.model.JobModel">
-            <collection id="triggerModelDc" property="triggers"/>
+            <collection id="triggerModelDc" property="triggers">
+
+            </collection>
             <collection id="jobDataParamsDc" property="jobDataParameters"/>
+            <loader id="jobModelDl"/>
         </instance>
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
     </facets>
     <actions>
-        <action id="windowCommitAndClose" text="msg://actions.Ok"
-                icon="EDITOR_OK"
-                shortcutCombination="${COMMIT_SHORTCUT}"/> <!-- primary="true" -->
-        <action id="windowClose"
-                text="msg://actions.Close"
-                icon="EDITOR_CANCEL"/>
+        <action id="viewSaveAndClose" type="detail_saveClose"
+                shortcutCombination="${SAVE_SHORTCUT}"/> <!-- primary="true" -->
+        <action id="viewClose"
+                type="detail_close"/>
     </actions>
     <layout spacing="true" expand="jobDetailsTabSheet">
 
-<!--        <form id="form" dataContainer="jobModelDc">-->
-<!--            <column width="400px">-->
-<!--                <textField id="jobNameField" property="jobName"/>-->
-<!--                <comboBox id="jobClassField" property="jobClass"/>-->
-<!--                <textArea id="jobDescriptionField" property="description"/>-->
-<!--            </column>-->
-<!--            <column width="400px">-->
-<!--                <comboBox id="jobGroupField" property="jobGroup"/>-->
-<!--                <comboBox id="jobSourceField" property="jobSource" editable="false"/>-->
-<!--            </column>-->
-<!--        </form>-->
+        <formLayout id="form" dataContainer="jobModelDc">
+
+                <textField id="jobNameField" property="jobName"/>
+                <comboBox id="jobClassField" property="jobClass"/>
+                <textArea id="jobDescriptionField" property="description"/>
+                <comboBox id="jobGroupField" property="jobGroup"/>
+                <comboBox id="jobSourceField" property="jobSource"/>
+
+        </formLayout>
 
         <tabs id="jobDetailsTabSheet">
             <tab id="triggersTabSheet" label="msg://triggersTabCaption"/>
@@ -53,7 +52,7 @@
                         </properties>
                     </action>
                     <action id="edit" type="edit"/>
-                    <action id="view" type="view"/>
+                    <action id="view" type="view_close"/>
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
@@ -80,8 +79,8 @@
             </dataGrid>
         </vbox>
 
-        <vbox id="jobDataParamsTable"
-              expand="triggerModelTable" padding="false">
+        <vbox expand="jobDataParamsTable"
+              padding="false">
             <hbox classNames="buttons-panel">
                 <button id="addDataParamButton"
                         action="jobDataParamsTable.addNewDataParam"/>
@@ -89,7 +88,7 @@
             </hbox>
             <dataGrid id="jobDataParamsTable" dataContainer="jobDataParamsDc" height="100%" width="100%">
                 <actions>
-                    <action id="addNewDataParam" text="msg://addNewDataParamCaption" icon="ADD_ACTION"/> <!-- primary="true" -->
+                    <action id="addNewDataParam" text="msg://addNewDataParamCaption" icon="FILE_O"/> <!-- primary="true" -->
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
@@ -101,8 +100,8 @@
 
 
         <hbox id="editActions" spacing="true">
-            <button id="commitAndCloseBtn" action="windowCommitAndClose"/>
-            <button id="closeBtn" action="windowClose"/>
+            <button id="commitAndCloseBtn" action="viewSaveAndClose"/>
+            <button id="closeBtn" action="viewClose"/>
         </hbox>
 
     </layout>

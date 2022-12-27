@@ -11,52 +11,62 @@
     <actions>
         <action id="lookupSelectAction"
                 text="msg:///actions.Select"
-                icon="LOOKUP_OK"
-                shortcutCombination="${SAVE_SHORTCUT}"/> <!-- primary="true" -->
+                type="lookup_select"
+                shortcutCombination="${SAVE_SHORTCUT}"/> <!-- icon="LOOKUP_OK" primary="true" -->
         <action id="lookupCancelAction"
                 text="msg:///actions.Cancel"
-                icon="LOOKUP_CANCEL"/>
+                type="lookup_discard"/> <!-- icon="LOOKUP_CANCEL" -->
         <action id="applyFilter"
                 text="msg:///actions.Apply"
-                icon="font-icon:SEARCH"/>
+                icon="SEARCH"/>
     </actions>
-<!--    <dialogMode height="600"-->
-<!--                width="800"/>-->
     <layout expand="jobModelsTable" spacing="true">
-        <hbox id="filter" spacing="true" expand="">
-
+        <details id="filterDetails"
+                 summaryText="msg://filter"
+                 opened="true"
+                 width="100%">
             <formLayout>
                 <responsiveSteps>
-                    <responsiveStep minWidth="0" columns="1"/>
-                    <responsiveStep minWidth="40em" columns="2"/>
+                    <responsiveStep minWidth="0" columns="2"/>
                     <responsiveStep minWidth="60em" columns="4"/>
                 </responsiveSteps>
-                <label text="msg://nameContains"/> <!-- align="MIDDLE_LEFT" -->
-                <textField id="nameField"/>
-                <label text="msg://groupContains"/> <!--  align="MIDDLE_LEFT" -->
-                <textField id="groupField"/>
-                <label text="msg://classContains"/> <!-- align="MIDDLE_LEFT" -->
-                <textField id="classField"/>
-                <label text="msg://jobState"/> <!--  align="MIDDLE_LEFT" -->
-                <comboBox id="jobStateComboBox"/>
+                <textField id="nameField" label="msg://nameContains"/>
+                <textField id="groupField" label="msg://groupContains"/>
+                <textField id="classField" label="msg://classContains"/>
+                <comboBox id="jobStateComboBox" label="msg://jobState"/>
             </formLayout>
             <button id="applyFilterBtn" action="applyFilter"/>
-            <label id="spring"/>
+        </details>
 
-        </hbox>
 <!--        <groupBox id="filter" spacing="true" caption="msg:///filter.emptyConfiguration.name" orientation="horizontal"-->
 <!--                  collapsable="true" expand="spring">-->
+        <formLayout id="buttonsPanel" classNames="buttons-panel" width="100%">
+            <responsiveSteps>
+                <responsiveStep minWidth="0" columns="2"/>
+                <responsiveStep minWidth="40em" columns="4"/>
+                <responsiveStep minWidth="60em" columns="7"/>
+            </responsiveSteps>
 
+            <button id="createBtn" action="jobModelsTable.create"/>
+            <button id="editBtn" action="jobModelsTable.edit"/>
+            <button id="removeBtn" action="jobModelsTable.remove"/>
+            <button id="refreshBtn" action="jobModelsTable.refresh"/>
+            <button id="executeNowBtn" action="jobModelsTable.executeNow"/>
+            <button id="activateBtn" action="jobModelsTable.activate"/>
+            <button id="deactivateBtn" action="jobModelsTable.deactivate"/>
+        </formLayout>
 
-        <dataGrid>
+        <dataGrid id="jobModelsTable"
+                  dataContainer="jobModelsDc"
+                  width="100%">
             <actions>
                 <action id="create" type="create"/>
                 <action id="edit" type="edit"/>
                 <action id="remove" type="remove"/>
                 <action id="refresh" type="refresh"/>
-                <action id="executeNow" text="msg://io.jmix.quartz.screen.jobs/triggerJob" icon="PLAY_CIRCLE"/>
-                <action id="activate" text="msg://io.jmix.quartz.screen.jobs/resumeJob" icon="PLAY"/>
-                <action id="deactivate" text="msg://io.jmix.quartz.screen.jobs/pauseJob" icon="PAUSE"/>
+                <action id="executeNow" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/triggerJob" icon="PLAY_CIRCLE"/>
+                <action id="activate" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/resumeJob" icon="PLAY"/>
+                <action id="deactivate" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/pauseJob" icon="PAUSE"/>
             </actions>
             <columns>
                 <column property="jobName"/>
@@ -65,7 +75,7 @@
                 <column property="jobState"/>
                 <column property="jobSource"/>
                 <column property="triggerDescription"/>
-                <column property="lastFireDate">
+                <column property="lastFireDate" >
 <!--                    <formatter>-->
 <!--                        <date format="msg://dateTimeWithSeconds"/>-->
 <!--                    </formatter>-->
@@ -78,16 +88,6 @@
                 <column property="description"/>
             </columns>
         </dataGrid>
-
-        <hbox id="buttonsPanel" classNames="buttons-panel">
-            <button id="createBtn" action="jobModelsTable.create"/>
-            <button id="editBtn" action="jobModelsTable.edit"/>
-            <button id="removeBtn" action="jobModelsTable.remove"/>
-            <button id="refreshBtn" action="jobModelsTable.refresh"/>
-            <button id="executeNowBtn" action="jobModelsTable.executeNow"/>
-            <button id="activateBtn" action="jobModelsTable.activate"/>
-            <button id="deactivateBtn" action="jobModelsTable.deactivate"/>
-        </hbox>
 
         <hbox id="lookupActions" spacing="true" visible="false">
             <button action="lookupSelectAction"/>
