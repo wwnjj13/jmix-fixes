@@ -15,7 +15,7 @@
                 shortcutCombination="${SAVE_SHORTCUT}"/> <!-- icon="LOOKUP_OK" primary="true" -->
         <action id="lookupCancelAction"
                 text="msg:///actions.Cancel"
-                type="lookup_discard"/> <!-- icon="LOOKUP_CANCEL" -->
+                type="lookup_discard"/>
         <action id="applyFilter"
                 text="msg:///actions.Apply"
                 icon="SEARCH"/>

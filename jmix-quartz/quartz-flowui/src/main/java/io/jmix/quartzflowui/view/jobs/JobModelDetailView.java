@@ -19,7 +19,14 @@ package io.jmix.quartzflowui.view.jobs;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.flowui.DialogWindows;
@@ -71,6 +78,14 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     @ViewComponent
     private DataGrid<TriggerModel> triggerModelTable;
 
+    @ViewComponent
+    private Tabs jobDetailsTabs;
+
+    @ViewComponent
+    private VerticalLayout triggersTab;
+
+    @ViewComponent
+    private VerticalLayout jobDataParamsTab;
 //    @Named("triggerModelTable.edit")
 //    private EditAction<TriggerModel> triggerModelTableEdit;
 //
@@ -102,6 +117,64 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     private boolean deleteObsoleteJob = false;
     private String obsoleteJobName = null;
     private String obsoleteJobGroup = null;
+
+    @Subscribe
+    protected void onInit(View.InitEvent event) {
+        jobDetailsTabs.addSelectedChangeListener(this::onSelectedTabChange);
+
+
+        Editor<JobDataParameterModel> editor = jobDataParamsTable.getEditor();
+
+        Grid.Column<JobDataParameterModel> keyColumn = jobDataParamsTable.getColumnByKey("key");
+        Grid.Column<JobDataParameterModel> valueColumn = jobDataParamsTable.getColumnByKey("value");
+        Grid.Column<JobDataParameterModel> editColumn = jobDataParamsTable.addComponentColumn(job -> {
+            Button editButton = new Button("Edit");
+            editButton.addClickListener(e -> {
+                if (editor.isOpen())
+                    editor.cancel();
+                jobDataParamsTable.getEditor().editItem(job);
+            });
+            return editButton;
+        }).setFlexGrow(0);
+
+
+        TextField keyField = new TextField();
+        keyField.setWidthFull();
+        keyColumn.setEditorComponent(keyField);
+
+        TextField valueField = new TextField();
+        valueField.setWidthFull();
+        valueColumn.setEditorComponent(valueField);
+
+
+        Button saveButton = new Button("Save", e -> jobDataParamsDc.getMutableItems().add(editor.getItem()));
+        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
+                e -> editor.cancel());
+        HorizontalLayout actions = new HorizontalLayout(saveButton,
+                cancelButton);
+        actions.setPadding(false);
+        editColumn.setEditorComponent(actions);
+
+    }
+
+    protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
+        String tabId = event.getSelectedTab().getId()
+                .orElse("<no_id>");
+
+        switch (tabId) {
+            case "triggers":
+                triggersTab.setVisible(true);
+                jobDataParamsTab.setVisible(false);
+                break;
+            case "jobs":
+                triggersTab.setVisible(false);
+                jobDataParamsTab.setVisible(true);
+                break;
+            default:
+                triggersTab.setVisible(false);
+                jobDataParamsTab.setVisible(false);
+        }
+    }
 
     @SuppressWarnings("ConstantConditions")
     @Subscribe

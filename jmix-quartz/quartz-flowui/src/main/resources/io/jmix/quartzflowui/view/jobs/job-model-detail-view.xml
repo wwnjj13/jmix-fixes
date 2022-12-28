@@ -1,7 +1,6 @@
-
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://jobModelEdit.caption"
-        focusComponent="form">
+      title="msg://jobModelEdit.caption"
+      focusComponent="form">
     <data>
         <instance id="jobModelDc" class="io.jmix.quartz.model.JobModel">
             <collection id="triggerModelDc" property="triggers">
@@ -20,31 +19,38 @@
         <action id="viewClose"
                 type="detail_close"/>
     </actions>
-    <layout spacing="true" expand="jobDetailsTabSheet">
+    <layout spacing="true">
 
         <formLayout id="form" dataContainer="jobModelDc">
-
-                <textField id="jobNameField" property="jobName"/>
-                <comboBox id="jobClassField" property="jobClass"/>
-                <textArea id="jobDescriptionField" property="description"/>
-                <comboBox id="jobGroupField" property="jobGroup"/>
-                <comboBox id="jobSourceField" property="jobSource"/>
+            <responsiveSteps>
+                <responsiveStep minWidth="0" columns="2"/>
+                <responsiveStep minWidth="60em" columns="3"/>
+            </responsiveSteps>
+            <textField id="jobNameField" property="jobName"/>
+            <comboBox id="jobClassField" property="jobClass"/>
+            <textArea id="jobDescriptionField" property="description"/>
+            <comboBox id="jobGroupField" property="jobGroup"/>
+            <comboBox id="jobSourceField" property="jobSource"/>
 
         </formLayout>
 
-        <tabs id="jobDetailsTabSheet">
-            <tab id="triggersTabSheet" label="msg://triggersTabCaption"/>
-            <tab id="jobDataParamsSheet" label="msg://jobDataParamsTabCaption"/>
+        <tabs id="jobDetailsTabs" width="100%">
+            <tab id="triggers" label="msg://triggersTabCaption"/>
+            <tab id="jobs" label="msg://jobDataParamsTabCaption"/>
         </tabs>
-        <vbox id="triggersTableBox"
-              expand="triggerModelTable" padding="false">
+
+        <vbox id="triggersTab"
+              visible="true"
+              expand="triggerModelTable"
+              padding="false"
+              width="100%">
             <hbox classNames="buttons-panel">
                 <button action="triggerModelTable.create"/>
                 <button action="triggerModelTable.edit"/>
                 <button action="triggerModelTable.view"/>
                 <button action="triggerModelTable.remove"/>
             </hbox>
-            <dataGrid id="triggerModelTable" dataContainer="triggerModelDc" height="100%" width="100%">
+            <dataGrid id="triggerModelTable" dataContainer="triggerModelDc" width="100%">
                 <actions>
                     <action id="create" type="create">
                         <properties>
@@ -61,34 +67,39 @@
                     <column property="scheduleType"/>
                     <column property="scheduleDescription"/>
                     <column property="startDate">
-    <!--                    <formatter>-->
-    <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-    <!--                    </formatter>-->
+                        <!--                    <formatter>-->
+                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
+                        <!--                    </formatter>-->
                     </column>
                     <column property="lastFireDate">
-    <!--                    <formatter>-->
-    <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-    <!--                    </formatter>-->
+                        <!--                    <formatter>-->
+                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
+                        <!--                    </formatter>-->
                     </column>
                     <column property="nextFireDate">
-    <!--                    <formatter>-->
-    <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-    <!--                    </formatter>-->
+                        <!--                    <formatter>-->
+                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
+                        <!--                    </formatter>-->
                     </column>
                 </columns>
             </dataGrid>
         </vbox>
 
-        <vbox expand="jobDataParamsTable"
-              padding="false">
+        <vbox id="jobDataParamsTab"
+              visible="false"
+              expand="jobDataParamsTable"
+              padding="false"
+              width="100%">
             <hbox classNames="buttons-panel">
                 <button id="addDataParamButton"
                         action="jobDataParamsTable.addNewDataParam"/>
                 <button action="jobDataParamsTable.remove"/>
             </hbox>
-            <dataGrid id="jobDataParamsTable" dataContainer="jobDataParamsDc" height="100%" width="100%">
+            <dataGrid id="jobDataParamsTable"
+                      dataContainer="jobDataParamsDc" width="100%">
                 <actions>
-                    <action id="addNewDataParam" text="msg://addNewDataParamCaption" icon="FILE_O"/> <!-- primary="true" -->
+                    <action id="addNewDataParam" text="msg://addNewDataParamCaption"
+                            icon="FILE_O"/> <!-- primary="true" -->
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
