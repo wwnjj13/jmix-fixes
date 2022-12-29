@@ -16,8 +16,12 @@
 
 package io.jmix.quartzflowui.view.trigger;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import io.jmix.flowui.Notifications;
 import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.ScheduleType;
 import io.jmix.quartz.model.TriggerModel;
@@ -26,27 +30,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@ViewController("quartz_TriggerModel.list")
-@ViewDescriptor("trigger-model-list-view.xml")
+@ViewController("quartz_TriggerModel.detail")
+@ViewDescriptor("trigger-model-detail-view.xml")
 @EditedEntityContainer("triggerModelDc")
-public class TriggerModelEdit extends StandardDetailView<TriggerModel> {
+@DialogMode(width = "50em", height = "37.5em")
+public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
 
     @Autowired
     private QuartzService quartzService;
 
     @Autowired
+    private Notifications notifications;
+
+    @Autowired
+    private MessageBundle messageBundle;
+
+    @ViewComponent
     private ComboBox<String> triggerGroupField;
 
-    @Autowired
+    @ViewComponent
     private TextField cronExpressionField;
 
-    @Autowired
+    @ViewComponent
+    private HorizontalLayout cronExpressionBox;
+
+    @ViewComponent
     private TextField repeatCountField;
 
-    @Autowired
+    @ViewComponent
     private TextField repeatIntervalField;
 
-    @Autowired
+    @ViewComponent
     private ComboBox<ScheduleType> scheduleTypeField;
 
     @SuppressWarnings("ConstantConditions")
@@ -54,10 +68,18 @@ public class TriggerModelEdit extends StandardDetailView<TriggerModel> {
     public void onBeforeShow(BeforeShowEvent event) {
         initTriggerGroupNames();
         initFieldVisibility();
+        scheduleTypeField.setItems(ScheduleType.values());
         scheduleTypeField.addValueChangeListener(e -> initFieldVisibility());
         if (getEditedEntity().getScheduleType() == null) {
             scheduleTypeField.setValue(ScheduleType.CRON_EXPRESSION);
         }
+    }
+
+    @Subscribe("helperBtn")
+    protected void onHelperButtonClick(ClickEvent event) {
+        notifications.create(new Html(messageBundle.getMessage("cronExpressionHelpText")))
+                .withDuration(0)
+                .show();
     }
 
     private void initTriggerGroupNames() {
@@ -74,7 +96,7 @@ public class TriggerModelEdit extends StandardDetailView<TriggerModel> {
 
     private void initFieldVisibility() {
         boolean isSimpleTrigger = getEditedEntity().getScheduleType() == ScheduleType.SIMPLE;
-        cronExpressionField.setVisible(!isSimpleTrigger);
+        cronExpressionBox.setVisible(!isSimpleTrigger);
         repeatCountField.setVisible(isSimpleTrigger);
         repeatIntervalField.setVisible(isSimpleTrigger);
     }

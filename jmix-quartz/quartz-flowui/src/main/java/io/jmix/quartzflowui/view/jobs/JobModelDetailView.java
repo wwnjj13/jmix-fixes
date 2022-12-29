@@ -20,18 +20,12 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.editor.Editor;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.flowui.DialogWindows;
-import io.jmix.flowui.action.list.EditAction;
-import io.jmix.flowui.action.view.ViewAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
@@ -44,7 +38,6 @@ import io.jmix.quartz.model.JobState;
 import io.jmix.quartz.model.TriggerModel;
 import io.jmix.quartz.service.QuartzService;
 import io.jmix.quartz.util.QuartzJobClassFinder;
-import io.jmix.quartzflowui.view.trigger.TriggerModelEdit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -121,37 +114,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     @Subscribe
     protected void onInit(View.InitEvent event) {
         jobDetailsTabs.addSelectedChangeListener(this::onSelectedTabChange);
-
-
-
-        Grid.Column<JobDataParameterModel> keyColumn = jobDataParamsTable.getColumnByKey("key");
-//        Grid.Column<JobDataParameterModel> valueColumn = jobDataParamsTable.getColumnByKey("value");
-//        Grid.Column<JobDataParameterModel> editColumn = jobDataParamsTable.addComponentColumn(job -> {
-//            Button editButton = new Button("Edit");
-//            editButton.addClickListener(e -> {
-//                jobDataParamsTable.getEditor().editItem(jobDataParamsDc.getItem());
-//            });
-//            return editButton;
-//        }).setFlexGrow(0);
-//
-//
-//        TextField keyField = new TextField();
-//        keyField.setWidthFull();
-//        keyColumn.setEditorComponent(keyField);
-//
-//        TextField valueField = new TextField();
-//        valueField.setWidthFull();
-//        valueColumn.setEditorComponent(valueField);
-//
-//
-//        Button saveButton = new Button("Save", e -> jobDataParamsDc.getMutableItems().add(editor.getItem()));
-//        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
-//                e -> editor.cancel());
-//        HorizontalLayout actions = new HorizontalLayout(saveButton,
-//                cancelButton);
-//        actions.setPadding(false);
-//        editColumn.setEditorComponent(actions);
-
     }
 
     protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {

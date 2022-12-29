@@ -89,7 +89,7 @@
               padding="false"
               width="100%">
             <hbox classNames="buttons-panel">
-                <button id="addDataParamButton"
+                <button id="addDataParamButton" themeNames="primary"
                         action="jobDataParamsTable.addNewDataParam"/>
                 <button action="jobDataParamsTable.remove"/>
             </hbox>
@@ -97,12 +97,16 @@
                       dataContainer="jobDataParamsDc" width="100%">
                 <actions>
                     <action id="addNewDataParam" text="msg://addNewDataParamCaption"
-                            icon="FILE_O"/> <!-- primary="true" -->
+                            icon="FILE_O"/>
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
-                    <column property="key"/>
-                    <column property="value"/>
+                    <column property="key" editable="true"/>
+                    <column property="value" editable="true"/>
+                    <editorActionsColumn>
+                        <editButton icon="PENCIL"/>
+                        <closeButton icon="CHECK" themeNames="success"/>
+                    </editorActionsColumn>
                 </columns>
             </dataGrid>
         </vbox>
