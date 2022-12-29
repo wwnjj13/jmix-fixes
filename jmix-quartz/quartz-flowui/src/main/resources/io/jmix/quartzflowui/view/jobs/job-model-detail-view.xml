@@ -3,9 +3,7 @@
       focusComponent="form">
     <data>
         <instance id="jobModelDc" class="io.jmix.quartz.model.JobModel">
-            <collection id="triggerModelDc" property="triggers">
-
-            </collection>
+            <collection id="triggerModelDc" property="triggers"/>
             <collection id="jobDataParamsDc" property="jobDataParameters"/>
             <loader id="jobModelDl"/>
         </instance>

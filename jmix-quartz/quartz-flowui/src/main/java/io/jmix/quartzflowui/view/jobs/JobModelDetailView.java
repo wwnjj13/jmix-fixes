@@ -123,37 +123,34 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         jobDetailsTabs.addSelectedChangeListener(this::onSelectedTabChange);
 
 
-        Editor<JobDataParameterModel> editor = jobDataParamsTable.getEditor();
 
         Grid.Column<JobDataParameterModel> keyColumn = jobDataParamsTable.getColumnByKey("key");
-        Grid.Column<JobDataParameterModel> valueColumn = jobDataParamsTable.getColumnByKey("value");
-        Grid.Column<JobDataParameterModel> editColumn = jobDataParamsTable.addComponentColumn(job -> {
-            Button editButton = new Button("Edit");
-            editButton.addClickListener(e -> {
-                if (editor.isOpen())
-                    editor.cancel();
-                jobDataParamsTable.getEditor().editItem(job);
-            });
-            return editButton;
-        }).setFlexGrow(0);
-
-
-        TextField keyField = new TextField();
-        keyField.setWidthFull();
-        keyColumn.setEditorComponent(keyField);
-
-        TextField valueField = new TextField();
-        valueField.setWidthFull();
-        valueColumn.setEditorComponent(valueField);
-
-
-        Button saveButton = new Button("Save", e -> jobDataParamsDc.getMutableItems().add(editor.getItem()));
-        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
-                e -> editor.cancel());
-        HorizontalLayout actions = new HorizontalLayout(saveButton,
-                cancelButton);
-        actions.setPadding(false);
-        editColumn.setEditorComponent(actions);
+//        Grid.Column<JobDataParameterModel> valueColumn = jobDataParamsTable.getColumnByKey("value");
+//        Grid.Column<JobDataParameterModel> editColumn = jobDataParamsTable.addComponentColumn(job -> {
+//            Button editButton = new Button("Edit");
+//            editButton.addClickListener(e -> {
+//                jobDataParamsTable.getEditor().editItem(jobDataParamsDc.getItem());
+//            });
+//            return editButton;
+//        }).setFlexGrow(0);
+//
+//
+//        TextField keyField = new TextField();
+//        keyField.setWidthFull();
+//        keyColumn.setEditorComponent(keyField);
+//
+//        TextField valueField = new TextField();
+//        valueField.setWidthFull();
+//        valueColumn.setEditorComponent(valueField);
+//
+//
+//        Button saveButton = new Button("Save", e -> jobDataParamsDc.getMutableItems().add(editor.getItem()));
+//        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
+//                e -> editor.cancel());
+//        HorizontalLayout actions = new HorizontalLayout(saveButton,
+//                cancelButton);
+//        actions.setPadding(false);
+//        editColumn.setEditorComponent(actions);
 
     }
 
