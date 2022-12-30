@@ -20,10 +20,13 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import io.jmix.flowui.DialogWindows;
+import io.jmix.flowui.action.list.EditAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.util.RemoveOperation;
 import io.jmix.flowui.view.*;
+import io.jmix.flowui.view.builder.DetailWindowBuilder;
 import io.jmix.quartz.model.JobModel;
 import io.jmix.quartz.model.JobSource;
 import io.jmix.quartz.model.JobState;
@@ -75,6 +78,9 @@ public class JobModelListView extends StandardListView<JobModel> {
 
     @Autowired
     private MessageBundle messageBundle;
+
+    @Autowired
+    private DialogWindows dialogWindows;
 
     @Subscribe
     public void onBeforeShow(View.BeforeShowEvent event) {
@@ -174,6 +180,11 @@ public class JobModelListView extends StandardListView<JobModel> {
                     }
                 })
                 .remove();
+    }
+
+    @Subscribe("jobModelsTable.edit")
+    public void onJobModelsEdit(ActionPerformedEvent event) {
+        ((EditAction<?>) event.getSource()).execute();
     }
 
     @Subscribe("jobModelsTable.refresh")

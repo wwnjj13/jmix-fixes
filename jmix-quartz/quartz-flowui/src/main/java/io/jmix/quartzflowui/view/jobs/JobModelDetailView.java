@@ -69,6 +69,9 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     private ComboBox<String> jobClassField;
 
     @ViewComponent
+    private ComboBox<String> jobSourceField;
+
+    @ViewComponent
     private DataGrid<TriggerModel> triggerModelTable;
 
     @ViewComponent
@@ -114,6 +117,10 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     @Subscribe
     protected void onInit(View.InitEvent event) {
         jobDetailsTabs.addSelectedChangeListener(this::onSelectedTabChange);
+        List<String> jobGroupNames = quartzService.getJobGroupNames();
+        jobGroupField.setItems(jobGroupNames);
+        List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
+        jobClassField.setItems(existedJobsClassNames);
     }
 
     protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
@@ -171,8 +178,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
             }
         });
 
-        List<String> jobGroupNames = quartzService.getJobGroupNames();
-        jobGroupField.setItems(jobGroupNames);
+
 //        jobGroupField.setEnterPressHandler(enterPressEvent -> {
 //            String newJobGroupName = enterPressEvent.getText();
 //            if (!Strings.isNullOrEmpty(newJobGroupName)
@@ -196,8 +202,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
             }
         });
 
-        List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
-        jobClassField.setItems(existedJobsClassNames);
+
     }
 
     @Subscribe("triggerModelTable.view")
