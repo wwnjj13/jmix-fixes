@@ -10,15 +10,12 @@
     </facets>
     <actions>
         <action id="lookupSelectAction"
-                text="msg:///actions.Select"
                 type="lookup_select"
-                shortcutCombination="${SAVE_SHORTCUT}"/> <!-- icon="LOOKUP_OK" primary="true" -->
+                actionVariant="PRIMARY"
+                shortcutCombination="${SAVE_SHORTCUT}"/>
         <action id="lookupCancelAction"
-                text="msg:///actions.Cancel"
                 type="lookup_discard"/>
-        <action id="applyFilter"
-                text="msg:///actions.Apply"
-                icon="SEARCH"/>
+        <action id="applyFilter" type="refresh"/>
     </actions>
     <layout expand="jobModelsTable" spacing="true">
         <details id="filterDetails"
@@ -27,30 +24,26 @@
                  width="100%">
             <formLayout>
                 <responsiveSteps>
-                    <responsiveStep minWidth="0" columns="2"/>
-                    <responsiveStep minWidth="60em" columns="4"/>
+                    <responsiveStep minWidth="0" columns="1"/>
+                    <responsiveStep minWidth="60em" columns="5"/>
                 </responsiveSteps>
                 <textField id="nameField" label="msg://nameContains"/>
                 <textField id="groupField" label="msg://groupContains"/>
                 <textField id="classField" label="msg://classContains"/>
                 <comboBox id="jobStateComboBox" label="msg://jobState"/>
+                <button id="applyFilterBtn" action="applyFilter"/>
             </formLayout>
-            <button id="applyFilterBtn" action="applyFilter"/>
         </details>
 
-<!--        <groupBox id="filter" spacing="true" caption="msg:///filter.emptyConfiguration.name" orientation="horizontal"-->
-<!--                  collapsable="true" expand="spring">-->
         <formLayout id="buttonsPanel" classNames="buttons-panel" width="100%">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="2"/>
-                <responsiveStep minWidth="40em" columns="4"/>
-                <responsiveStep minWidth="60em" columns="7"/>
+                <responsiveStep minWidth="40em" columns="3"/>
+                <responsiveStep minWidth="60em" columns="6"/>
             </responsiveSteps>
-
             <button id="createBtn" action="jobModelsTable.create"/>
             <button id="editBtn" action="jobModelsTable.edit"/>
             <button id="removeBtn" action="jobModelsTable.remove"/>
-            <button id="refreshBtn" action="jobModelsTable.refresh"/>
             <button id="executeNowBtn" action="jobModelsTable.executeNow"/>
             <button id="activateBtn" action="jobModelsTable.activate"/>
             <button id="deactivateBtn" action="jobModelsTable.deactivate"/>
@@ -62,34 +55,28 @@
             <actions>
                 <action id="create" type="create"/>
                 <action id="edit" type="edit">
-<!--                    <properties>-->
-<!--                        <property name="openMode" value="DIALOG"/>-->
-<!--                    </properties>-->
+                    <properties>
+                        <property name="openMode" value="DIALOG"/>
+                    </properties>
                 </action>
                 <action id="remove" type="remove"/>
                 <action id="refresh" type="refresh"/>
-                <action id="executeNow" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/triggerJob" icon="PLAY_CIRCLE"/>
-                <action id="activate" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/resumeJob" icon="PLAY"/>
-                <action id="deactivate" type="itemTracking" text="msg://io.jmix.quartz.screen.jobs/pauseJob" icon="PAUSE"/>
+                <action id="executeNow" type="itemTracking" text="msg://triggerJob" icon="PLAY_CIRCLE"/>
+                <action id="activate" type="itemTracking" text="msg://resumeJob" icon="PLAY"/>
+                <action id="deactivate" type="itemTracking" text="msg://pauseJob" icon="PAUSE"/>
             </actions>
             <columns>
-                <column property="jobName"/>
-                <column property="jobGroup"/> <!-- collapsed="true" -->
-                <column property="jobClass"/>
-                <column property="jobState"/>
-                <column property="jobSource"/>
-                <column property="triggerDescription"/>
-                <column property="lastFireDate" >
-<!--                    <formatter>-->
-<!--                        <date format="msg://dateTimeWithSeconds"/>-->
-<!--                    </formatter>-->
+                <column property="jobName" resizable="true"/>
+                <column property="jobGroup" resizable="true"/>
+                <column property="jobClass" resizable="true"/>
+                <column property="jobState" resizable="true"/>
+                <column property="jobSource" resizable="true"/>
+                <column property="triggerDescription" resizable="true"/>
+                <column property="lastFireDate" resizable="true" >
                 </column>
-                <column property="nextFireDate">
-<!--                    <formatter>-->
-<!--                        <date format="msg://dateTimeWithSeconds"/>-->
-<!--                    </formatter>-->
+                <column property="nextFireDate" resizable="true">
                 </column>
-                <column property="description"/>
+                <column property="description" resizable="true"/>
             </columns>
         </dataGrid>
 

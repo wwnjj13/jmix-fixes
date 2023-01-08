@@ -21,15 +21,14 @@
 
         <formLayout id="form" dataContainer="jobModelDc">
             <responsiveSteps>
-                <responsiveStep minWidth="0" columns="2"/>
-                <responsiveStep minWidth="60em" columns="3"/>
+                <responsiveStep minWidth="0" columns="1"/>
+                <responsiveStep minWidth="60em" columns="2"/>
             </responsiveSteps>
             <textField id="jobNameField" property="jobName"/>
             <comboBox id="jobClassField" property="jobClass"/>
-            <textArea id="jobDescriptionField" property="description"/>
             <comboBox id="jobGroupField" property="jobGroup"/>
             <comboBox id="jobSourceField" property="jobSource"/>
-
+            <textArea id="jobDescriptionField" property="description" colspan="2"/>
         </formLayout>
 
         <tabs id="jobDetailsTabs" width="100%">
@@ -110,7 +109,6 @@
                 </columns>
             </dataGrid>
         </vbox>
-
 
         <hbox id="editActions" spacing="true">
             <button id="commitAndCloseBtn" action="viewSaveAndClose"/>
