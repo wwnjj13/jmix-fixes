@@ -36,20 +36,8 @@ import java.util.List;
 @DialogMode(width = "50em", height = "37.5em")
 public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
 
-    @Autowired
-    private QuartzService quartzService;
-
-    @Autowired
-    private Notifications notifications;
-
-    @Autowired
-    private MessageBundle messageBundle;
-
     @ViewComponent
     private ComboBox<String> triggerGroupField;
-
-    @ViewComponent
-    private TextField cronExpressionField;
 
     @ViewComponent
     private HorizontalLayout cronExpressionBox;
@@ -62,6 +50,14 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
 
     @ViewComponent
     private ComboBox<ScheduleType> scheduleTypeField;
+    @Autowired
+    private QuartzService quartzService;
+
+    @Autowired
+    private Notifications notifications;
+
+    @Autowired
+    private MessageBundle messageBundle;
 
     @SuppressWarnings("ConstantConditions")
     @Subscribe
@@ -85,13 +81,6 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     private void initTriggerGroupNames() {
         List<String> triggerGroupNames = quartzService.getTriggerGroupNames();
         triggerGroupField.setItems(triggerGroupNames);
-//        triggerGroupField.setEnterPressHandler(enterPressEvent -> {
-//            String newTriggerGroupName = enterPressEvent.getText();
-//            if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
-//                triggerGroupNames.add(newTriggerGroupName);
-//                triggerGroupField.setOptionsList(triggerGroupNames);
-//            }
-//        });
     }
 
     private void initFieldVisibility() {

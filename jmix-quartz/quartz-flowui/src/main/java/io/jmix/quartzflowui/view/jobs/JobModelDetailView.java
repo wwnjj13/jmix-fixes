@@ -19,18 +19,29 @@ package io.jmix.quartzflowui.view.jobs;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.UnconstrainedDataManager;
 import io.jmix.flowui.DialogWindows;
+import io.jmix.flowui.action.list.EditAction;
+import io.jmix.flowui.action.view.ViewAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionContainer;
-import io.jmix.flowui.view.*;
+import io.jmix.flowui.view.DefaultMainViewParent;
+import io.jmix.flowui.view.DialogMode;
+import io.jmix.flowui.view.DialogWindow;
+import io.jmix.flowui.view.EditedEntityContainer;
+import io.jmix.flowui.view.MessageBundle;
+import io.jmix.flowui.view.StandardDetailView;
+import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.View;
+import io.jmix.flowui.view.ViewComponent;
+import io.jmix.flowui.view.ViewController;
+import io.jmix.flowui.view.ViewDescriptor;
 import io.jmix.quartz.model.JobDataParameterModel;
 import io.jmix.quartz.model.JobModel;
 import io.jmix.quartz.model.JobSource;
@@ -38,8 +49,10 @@ import io.jmix.quartz.model.JobState;
 import io.jmix.quartz.model.TriggerModel;
 import io.jmix.quartz.service.QuartzService;
 import io.jmix.quartz.util.QuartzJobClassFinder;
+import io.jmix.quartzflowui.view.trigger.TriggerModelDetailView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +65,8 @@ import java.util.stream.Collectors;
 @EditedEntityContainer("jobModelDc")
 @DialogMode(width = "50em", height = "37.5em")
 public class JobModelDetailView extends StandardDetailView<JobModel> {
+
+    private static final String VIEW_ACTION_ID = "view";
 
     @ViewComponent
     private CollectionContainer<JobDataParameterModel> jobDataParamsDc;
@@ -82,11 +97,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     @ViewComponent
     private VerticalLayout jobDataParamsTab;
-//    @Named("triggerModelTable.edit")
-//    private EditAction<TriggerModel> triggerModelTableEdit;
-//
-//    @Named("triggerModelTable.view")
-//    private ViewAction<TriggerModel> triggerModelTableView;
 
     @ViewComponent
     private DataGrid<JobDataParameterModel> jobDataParamsTable;
@@ -121,6 +131,18 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         jobGroupField.setItems(jobGroupNames);
         List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
         jobClassField.setItems(existedJobsClassNames);
+        triggerModelTable.addColumn(entity -> entity.getLastFireDate() != null ?
+                        new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
+                                .format(entity.getLastFireDate()) : "").setResizable(true)
+                .setHeader(messageBundle.getMessage("column.lastFireDate.header"));
+        triggerModelTable.addColumn(entity -> entity.getStartDate() != null ?
+                        new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
+                                .format(entity.getStartDate()) : "").setResizable(true)
+                .setHeader(messageBundle.getMessage("column.startDate.header"));
+        triggerModelTable.addColumn(entity -> entity.getNextFireDate() != null ?
+                        new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
+                                .format(entity.getNextFireDate()) : "").setResizable(true)
+                .setHeader(messageBundle.getMessage("column.nextFireDate.header"));
     }
 
     protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
@@ -161,10 +183,10 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         jobNameField.setEnabled(!readOnly);
         jobGroupField.setEnabled(!readOnly);
         jobClassField.setEnabled(!readOnly);
-//        triggerModelTableEdit.setVisible(!readOnly);
-//        triggerModelTableView.setVisible(readOnly);
+        triggerModelTable.getAction(EditAction.ID).setVisible(!readOnly);
+        triggerModelTable.getAction(VIEW_ACTION_ID).setVisible(readOnly);
         addDataParamButton.setEnabled(!readOnly);
-//        jobDataParamsTable.setEditable(!readOnly);
+        jobDataParamsTable.setEnabled(!readOnly);
 
         obsoleteJobName = getEditedEntity().getJobName();
         obsoleteJobGroup = getEditedEntity().getJobGroup();
@@ -212,12 +234,13 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
             return;
         }
 
-//        TriggerModelEdit editor = screenBuilders.editor(triggerModelTable)
-//                .withScreenClass(TriggerModelEdit.class)
-//                .withParentDataContext(getScreenData().getDataContext())
-//                .build();
-//        ((ReadOnlyAwareScreen) editor).setReadOnly(true);
-//        editor.show();
+        DialogWindow<TriggerModelDetailView> detailView = dialogWindows.detail(triggerModelTable)
+                .withViewClass(TriggerModelDetailView.class)
+                .withParentDataContext(getViewData().getDataContext())
+                .build();
+
+        detailView.getView().setReadOnly(true);
+        detailView.open();
     }
 
     @Subscribe
@@ -285,7 +308,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         currentItems.add(itemToAdd);
         jobDataParamsDc.setItems(currentItems);
         jobDataParamsTable.select(itemToAdd);
-//        jobDataParamsTable.requestFocus(itemToAdd, "key");
     }
 
 }

@@ -20,7 +20,7 @@
                 <responsiveStep minWidth="0" columns="1"/>
                 <responsiveStep minWidth="60em" columns="2"/>
             </responsiveSteps>
-            <comboBox id="scheduleTypeField" property="scheduleType" required="true"/> <!--  nullOptionVisible="false" -->
+            <comboBox id="scheduleTypeField" property="scheduleType" required="true"/>
             <hbox id="cronExpressionBox" expand="cronExpressionField" visible="false">
                 <textField id="cronExpressionField" property="cronExpression"
                            required="true"/>
@@ -30,18 +30,8 @@
             <textField id="repeatIntervalField" property="repeatInterval" required="true" visible="false"/>
             <dateTimePicker property="startDate"/>
             <dateTimePicker property="endDate"/>
-<!--            <div classNames="datetime-picker-container">-->
-<!--                <datePicker id="startDateField" datatype="localDate"-->
-<!--                            label="msg://till"/>-->
-<!--                <timePicker id="startTimeField" datatype="localTime"/>-->
-<!--            </div>-->
-<!--            <div classNames="datetime-picker-container">-->
-<!--                <datePicker id="endDateField" datatype="localDate"-->
-<!--                            label="msg://till"/>-->
-<!--                <timePicker id="endTimeField" datatype="localTime"/>-->
-<!--            </div>-->
             <textField id="triggerNameField" property="triggerName"/>
-            <comboBox id="triggerGroupField" property="triggerGroup"/>
+            <comboBox id="triggerGroupField" property="triggerGroup" allowCustomValue="true"/>
         </formLayout>
         <hbox id="editActions" spacing="true">
             <button id="saveAndCloseBtn" action="viewSaveAndClose"/>

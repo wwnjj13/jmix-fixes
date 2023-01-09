@@ -38,6 +38,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,18 @@ public class JobModelListView extends StandardListView<JobModel> {
     private DialogWindows dialogWindows;
 
     @Subscribe
+    protected void onInit(View.InitEvent event) {
+        jobModelsTable.addColumn(entity -> entity.getLastFireDate() != null ?
+                        new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
+                                .format(entity.getLastFireDate()) : "").setResizable(true)
+                .setHeader(messageBundle.getMessage("column.lastFireDate.header"));
+        jobModelsTable.addColumn(entity -> entity.getNextFireDate() != null ?
+                        new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
+                                .format(entity.getNextFireDate()) : "").setResizable(true)
+                .setHeader(messageBundle.getMessage("column.nextFireDate.header"));
+    }
+
+    @Subscribe
     public void onBeforeShow(View.BeforeShowEvent event) {
         jobStateComboBox.setItems(JobState.values());
         loadJobsData();
@@ -90,9 +103,12 @@ public class JobModelListView extends StandardListView<JobModel> {
 
     private void loadJobsData() {
         List<JobModel> sortedJobs = quartzService.getAllJobs().stream()
-                .filter(jobModel -> Strings.isNullOrEmpty(nameField.getValue()) || StringUtils.containsIgnoreCase(jobModel.getJobName(), nameField.getValue()))
-                .filter(jobModel -> Strings.isNullOrEmpty(classField.getValue()) || StringUtils.containsIgnoreCase(jobModel.getJobName(), classField.getValue()))
-                .filter(jobModel -> Strings.isNullOrEmpty(groupField.getValue()) || StringUtils.containsIgnoreCase(jobModel.getJobGroup(), groupField.getValue()))
+                .filter(jobModel -> Strings.isNullOrEmpty(nameField.getValue()) ||
+                        StringUtils.containsIgnoreCase(jobModel.getJobName(), nameField.getValue()))
+                .filter(jobModel -> Strings.isNullOrEmpty(classField.getValue()) ||
+                        StringUtils.containsIgnoreCase(jobModel.getJobClass(), classField.getValue()))
+                .filter(jobModel -> Strings.isNullOrEmpty(groupField.getValue()) ||
+                        StringUtils.containsIgnoreCase(jobModel.getJobGroup(), groupField.getValue()))
                 .filter(jobModel -> jobStateComboBox.getValue() == null || jobStateComboBox.getValue().equals(jobModel.getJobState()))
                 .sorted(comparing(JobModel::getJobState, nullsLast(naturalOrder()))
                         .thenComparing(JobModel::getJobName))

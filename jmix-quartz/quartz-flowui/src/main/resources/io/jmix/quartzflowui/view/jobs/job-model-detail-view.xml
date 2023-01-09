@@ -13,7 +13,7 @@
     </facets>
     <actions>
         <action id="viewSaveAndClose" type="detail_saveClose"
-                shortcutCombination="${SAVE_SHORTCUT}"/> <!-- primary="true" -->
+                actionVariant="PRIMARY" shortcutCombination="${SAVE_SHORTCUT}"/>
         <action id="viewClose"
                 type="detail_close"/>
     </actions>
@@ -63,21 +63,9 @@
                     <column property="triggerGroup"/>
                     <column property="scheduleType"/>
                     <column property="scheduleDescription"/>
-                    <column property="startDate">
-                        <!--                    <formatter>-->
-                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-                        <!--                    </formatter>-->
-                    </column>
-                    <column property="lastFireDate">
-                        <!--                    <formatter>-->
-                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-                        <!--                    </formatter>-->
-                    </column>
-                    <column property="nextFireDate">
-                        <!--                    <formatter>-->
-                        <!--                        <date format="msg://dateTimeWithSeconds"/>-->
-                        <!--                    </formatter>-->
-                    </column>
+                    <column property="startDate"/>
+                    <column property="lastFireDate"/>
+                    <column property="nextFireDate"/>
                 </columns>
             </dataGrid>
         </vbox>
