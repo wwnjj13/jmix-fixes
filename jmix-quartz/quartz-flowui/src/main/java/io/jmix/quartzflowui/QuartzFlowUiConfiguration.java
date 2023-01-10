@@ -39,7 +39,7 @@ public class QuartzFlowUiConfiguration {
 
     @Bean("flowui_quartz_QuartzViewControllers")
     public ViewControllersConfiguration screens(ApplicationContext applicationContext,
-                                              AnnotationScanMetadataReaderFactory metadataReaderFactory) {
+                                                AnnotationScanMetadataReaderFactory metadataReaderFactory) {
         ViewControllersConfiguration viewControllers
                 = new ViewControllersConfiguration(applicationContext, metadataReaderFactory);
         viewControllers.setBasePackages(Collections.singletonList("io.jmix.quartzflowui"));

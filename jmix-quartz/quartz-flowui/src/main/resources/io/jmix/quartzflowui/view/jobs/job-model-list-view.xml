@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://jobModelBrowse.caption"
-        focusComponent="jobModelsTable">
+      title="msg://jobModelBrowse.caption"
+      focusComponent="jobModelsTable">
     <data readOnly="true">
         <collection id="jobModelsDc" class="io.jmix.quartz.model.JobModel"/>
     </data>
@@ -72,10 +72,10 @@
                 <column property="jobState" resizable="true"/>
                 <column property="jobSource" resizable="true"/>
                 <column property="triggerDescription" resizable="true"/>
-<!--                <column property="lastFireDate" resizable="true" >-->
-<!--                </column>-->
-<!--                <column property="nextFireDate" resizable="true">-->
-<!--                </column>-->
+                <!--                <column property="lastFireDate" resizable="true" >-->
+                <!--                </column>-->
+                <!--                <column property="nextFireDate" resizable="true">-->
+                <!--                </column>-->
                 <column property="description" resizable="true"/>
             </columns>
         </dataGrid>

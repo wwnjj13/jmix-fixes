@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-        title="msg://triggerModelEdit.caption"
-        focusComponent="form">
+      title="msg://triggerModelEdit.caption"
+      focusComponent="form">
     <data>
         <instance id="triggerModelDc"
                   class="io.jmix.quartz.model.TriggerModel"/>
