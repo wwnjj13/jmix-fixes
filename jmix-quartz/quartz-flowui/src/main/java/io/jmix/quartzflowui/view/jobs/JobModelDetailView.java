@@ -127,10 +127,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     @Subscribe
     protected void onInit(View.InitEvent event) {
         jobDetailsTabs.addSelectedChangeListener(this::onSelectedTabChange);
-        List<String> jobGroupNames = quartzService.getJobGroupNames();
-        jobGroupField.setItems(jobGroupNames);
-        List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
-        jobClassField.setItems(existedJobsClassNames);
         triggerModelTable.addColumn(entity -> entity.getLastFireDate() != null ?
                         new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
                                 .format(entity.getLastFireDate()) : "").setResizable(true)
@@ -143,6 +139,45 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
                         new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
                                 .format(entity.getNextFireDate()) : "").setResizable(true)
                 .setHeader(messageBundle.getMessage("column.nextFireDate.header"));
+
+        List<String> jobGroupNames = quartzService.getJobGroupNames();
+        jobGroupField.setItems(jobGroupNames);
+        List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
+        jobClassField.setItems(existedJobsClassNames);
+
+        jobGroupField.addCustomValueSetListener(item -> {
+            String newJobGroupName = item.getDetail();
+            if (!Strings.isNullOrEmpty(newJobGroupName)
+                    && !jobGroupNames.contains(newJobGroupName)) {
+                jobGroupNames.add(newJobGroupName);
+                jobGroupField.setItems(jobGroupNames);
+                jobGroupField.setValue(newJobGroupName);
+            }
+            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
+                    && !Strings.isNullOrEmpty(newJobGroupName)
+                    && !obsoleteJobGroup.equals(newJobGroupName)) {
+                deleteObsoleteJob = true;
+            }
+        });
+
+        jobGroupField.addValueChangeListener(e -> {
+            String currentValue = e.getValue();
+            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
+                    && !Strings.isNullOrEmpty(currentValue)
+                    && !obsoleteJobGroup.equals(currentValue)) {
+                deleteObsoleteJob = true;
+            }
+        });
+
+        jobNameField.addValueChangeListener(e -> {
+            String currentValue = e.getValue();
+            if (!Strings.isNullOrEmpty(obsoleteJobName)
+                    && !Strings.isNullOrEmpty(currentValue)
+                    && !obsoleteJobName.equals(currentValue)) {
+                deleteObsoleteJob = true;
+            }
+        });
+
     }
 
     protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
@@ -190,40 +225,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
 
         obsoleteJobName = getEditedEntity().getJobName();
         obsoleteJobGroup = getEditedEntity().getJobGroup();
-
-        jobNameField.addValueChangeListener(e -> {
-            String currentValue = e.getValue();
-            if (!Strings.isNullOrEmpty(obsoleteJobName)
-                    && !Strings.isNullOrEmpty(currentValue)
-                    && !obsoleteJobName.equals(currentValue)) {
-                deleteObsoleteJob = true;
-            }
-        });
-
-
-//        jobGroupField.setEnterPressHandler(enterPressEvent -> {
-//            String newJobGroupName = enterPressEvent.getText();
-//            if (!Strings.isNullOrEmpty(newJobGroupName)
-//                    && !jobGroupNames.contains(newJobGroupName)) {
-//                jobGroupNames.add(newJobGroupName);
-//                jobGroupField.setOptionsList(jobGroupNames);
-//            }
-//
-//            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
-//                    && !Strings.isNullOrEmpty(newJobGroupName)
-//                    && !obsoleteJobGroup.equals(newJobGroupName)) {
-//                deleteObsoleteJob = true;
-//            }
-//        });
-        jobGroupField.addValueChangeListener(e -> {
-            String currentValue = e.getValue();
-            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
-                    && !Strings.isNullOrEmpty(currentValue)
-                    && !obsoleteJobGroup.equals(currentValue)) {
-                deleteObsoleteJob = true;
-            }
-        });
-
 
     }
 

@@ -15,7 +15,7 @@
         <action id="viewClose" type="view_close"/>
     </actions>
     <layout spacing="true" expand="editActions">
-        <formLayout dataContainer="triggerModelDc">
+        <formLayout id="form" dataContainer="triggerModelDc">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
                 <responsiveStep minWidth="60em" columns="2"/>

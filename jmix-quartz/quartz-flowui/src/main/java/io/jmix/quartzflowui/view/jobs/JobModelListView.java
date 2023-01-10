@@ -198,11 +198,6 @@ public class JobModelListView extends StandardListView<JobModel> {
                 .remove();
     }
 
-    @Subscribe("jobModelsTable.edit")
-    public void onJobModelsEdit(ActionPerformedEvent event) {
-        ((EditAction<?>) event.getSource()).execute();
-    }
-
     @Subscribe("jobModelsTable.refresh")
     public void onJobModelsTableRefresh(ActionPerformedEvent event) {
         loadJobsData();

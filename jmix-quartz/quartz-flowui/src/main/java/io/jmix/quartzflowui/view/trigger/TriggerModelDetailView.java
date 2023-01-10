@@ -16,6 +16,7 @@
 
 package io.jmix.quartzflowui.view.trigger;
 
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -81,6 +82,15 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     private void initTriggerGroupNames() {
         List<String> triggerGroupNames = quartzService.getTriggerGroupNames();
         triggerGroupField.setItems(triggerGroupNames);
+        triggerGroupField.addCustomValueSetListener(enterPressEvent -> {
+            String newTriggerGroupName = enterPressEvent.getDetail();
+            if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
+                triggerGroupNames.add(newTriggerGroupName);
+                triggerGroupField.setItems(triggerGroupNames);
+                triggerGroupField.setValue(newTriggerGroupName);
+            }
+        });
+
     }
 
     private void initFieldVisibility() {
