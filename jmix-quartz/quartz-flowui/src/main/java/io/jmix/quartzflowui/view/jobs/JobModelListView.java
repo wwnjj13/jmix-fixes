@@ -20,7 +20,6 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
@@ -76,9 +75,6 @@ public class JobModelListView extends StandardListView<JobModel> {
 
     @Autowired
     private MessageBundle messageBundle;
-
-    @Autowired
-    private DialogWindows dialogWindows;
 
     @Subscribe
     protected void onInit(View.InitEvent event) {

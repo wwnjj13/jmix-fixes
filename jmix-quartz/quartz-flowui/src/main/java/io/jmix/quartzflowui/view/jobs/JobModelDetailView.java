@@ -69,9 +69,6 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     private ComboBox<String> jobClassField;
 
     @ViewComponent
-    private ComboBox<String> jobSourceField;
-
-    @ViewComponent
     private DataGrid<TriggerModel> triggerModelTable;
 
     @ViewComponent
