@@ -72,10 +72,6 @@
                 <column property="jobState" resizable="true"/>
                 <column property="jobSource" resizable="true"/>
                 <column property="triggerDescription" resizable="true"/>
-                <!--                <column property="lastFireDate" resizable="true" >-->
-                <!--                </column>-->
-                <!--                <column property="nextFireDate" resizable="true">-->
-                <!--                </column>-->
                 <column property="description" resizable="true"/>
             </columns>
         </dataGrid>
