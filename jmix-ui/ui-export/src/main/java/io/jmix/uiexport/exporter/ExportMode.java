@@ -19,6 +19,7 @@ package io.jmix.uiexport.exporter;
 public enum ExportMode {
 
     ALL,
+    VISIBLE,
     SELECTED
 
 }

@@ -16,8 +16,10 @@
  */
 package io.jmix.uiexport.exporter.excel;
 
+import io.jmix.core.DataManager;
 import io.jmix.core.Entity;
 import io.jmix.core.Id;
+import io.jmix.core.LoadContext;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.datatype.Datatype;
 import io.jmix.core.metamodel.model.MetaProperty;
@@ -28,9 +30,14 @@ import io.jmix.ui.component.Table;
 import io.jmix.ui.component.*;
 import io.jmix.ui.component.data.*;
 import io.jmix.ui.component.data.meta.EntityDataGridItems;
+import io.jmix.ui.component.data.table.ContainerGroupTableItems;
+import io.jmix.ui.component.data.table.ContainerTableItems;
 import io.jmix.ui.download.ByteArrayDataProvider;
 import io.jmix.ui.download.Downloader;
+import io.jmix.ui.model.CollectionContainer;
+import io.jmix.ui.model.DataLoader;
 import io.jmix.ui.model.InstanceContainer;
+import io.jmix.ui.model.impl.CollectionContainerImpl;
 import io.jmix.uiexport.action.ExportAction;
 import io.jmix.uiexport.exporter.AbstractTableExporter;
 import io.jmix.uiexport.exporter.ExportMode;
@@ -42,6 +49,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -65,6 +73,9 @@ import static io.jmix.ui.download.DownloadFormat.XLSX;
 @Component("ui_ExcelExporter")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
+
+    @Autowired
+    DataManager dataManager;
 
     public static enum ExportFormat {
         XLS,
@@ -195,7 +206,30 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
                 createRow(table, columns, 0, ++r, Id.of(item).getValue());
             }
-        } else {
+        } else if(exportMode == ExportMode.ALL) {
+            if (tableItems != null) {
+
+//                dataManager.load()
+                DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
+                        .getContainer()).getLoader();
+
+
+                List<Object> items = dataManager.load(loader.getContainer().getEntityMetaClass()
+                                .getJavaClass())
+                        .query(loader.getQuery())
+                        .hints(loader.getHints())
+                        .parameters(loader.getParameters())
+                        .firstResult(0).maxResults(100).list();
+
+                for (Object item : items) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+                    createRow(columns, 0, ++r, item);
+//                    createRow(table, columns, 0, ++r, itemId);
+                }
+            }
+        } else if(exportMode == ExportMode.VISIBLE) {
             if (table.isAggregatable() && exportAggregation
                     && hasAggregatableColumn(table)) {
                 if (table.getAggregationStyle() == Table.AggregationStyle.TOP) {
@@ -639,6 +673,40 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
             }
         }
     }
+
+    protected void createRow(List<Table.Column<Object>> columns, int startColumn, int rowNumber, Object instance) {
+        if (startColumn >= columns.size()) {
+            return;
+        }
+
+        if (rowNumber > MAX_ROW_COUNT) {
+            return;
+        }
+
+        Row row = sheet.createRow(rowNumber);
+
+
+            int level = 0;
+//            if (table instanceof TreeTable) {
+//                level = ((TreeTable<Object>) table).getLevel(itemId);
+//            }
+
+            for (int c = startColumn; c < columns.size(); c++) {
+                Cell cell = row.createCell(c);
+
+                Table.Column<Object> column = columns.get(c);
+                MetaPropertyPath propertyPath = null;
+                if (column.getId() instanceof MetaPropertyPath) {
+                    propertyPath = (MetaPropertyPath) column.getId();
+                }
+
+                Object cellValue = EntityValues.getValue(instance, column.getMetaPropertyPath().getMetaProperty().getName());
+
+                formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
+            }
+
+    }
+
 
     protected String createSpaceString(int level) {
         if (level == 0) {
