@@ -45,6 +45,11 @@ public class FlowuiComponentProperties {
      */
     List<Integer> paginationItemsPerPageItems;
 
+    /**
+     * Default value for the autoApply attribute of the {@link Filter} component
+     */
+    boolean filterAutoApply;
+
     public FlowuiComponentProperties(
             String gridCreateShortcut,
             String gridAddShortcut,
@@ -56,7 +61,8 @@ public class FlowuiComponentProperties {
             String pickerLookupShortcut,
             String pickerOpenShortcut,
             String pickerClearShortcut,
-            @DefaultValue({"20", "50", "100", "500", "1000", "5000"}) List<Integer> paginationItemsPerPageItems) {
+            @DefaultValue({"20", "50", "100", "500", "1000", "5000"}) List<Integer> paginationItemsPerPageItems,
+            @DefaultValue("true") boolean filterAutoApply) {
         this.gridCreateShortcut = gridCreateShortcut;
         this.gridAddShortcut = gridAddShortcut;
         this.gridRemoveShortcut = gridRemoveShortcut;
@@ -70,6 +76,8 @@ public class FlowuiComponentProperties {
         this.pickerClearShortcut = pickerClearShortcut;
 
         this.paginationItemsPerPageItems = paginationItemsPerPageItems;
+
+        this.filterAutoApply = filterAutoApply;
     }
 
     public String getGridCreateShortcut() {
@@ -117,5 +125,12 @@ public class FlowuiComponentProperties {
      */
     public List<Integer> getPaginationItemsPerPageItems() {
         return paginationItemsPerPageItems;
+    }
+
+    /**
+     * @see #filterAutoApply
+     */
+    public boolean isFilterAutoApply() {
+        return filterAutoApply;
     }
 }

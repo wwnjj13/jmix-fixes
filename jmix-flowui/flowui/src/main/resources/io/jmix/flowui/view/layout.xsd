@@ -1029,6 +1029,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="labelPositionType">
+        <xs:restriction>
+            <xs:enumeration value="ASIDE"/>
+            <xs:enumeration value="TOP"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="formLabelsPosition">
         <xs:restriction>
             <xs:enumeration value="ASIDE"/>
@@ -1274,6 +1281,25 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="DATE"/>
             <xs:enumeration value="DATETIME"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="propertyFilterOperation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EQUAL"/>
+            <xs:enumeration value="NOT_EQUAL"/>
+            <xs:enumeration value="GREATER"/>
+            <xs:enumeration value="GREATER_OR_EQUAL"/>
+            <xs:enumeration value="LESS"/>
+            <xs:enumeration value="LESS_OR_EQUAL"/>
+            <xs:enumeration value="CONTAINS"/>
+            <xs:enumeration value="NOT_CONTAINS"/>
+            <xs:enumeration value="STARTS_WITH"/>
+            <xs:enumeration value="ENDS_WITH"/>
+            <xs:enumeration value="IS_SET"/>
+            <xs:enumeration value="IN_LIST"/>
+            <xs:enumeration value="NOT_IN_LIST"/>
+            <xs:enumeration value="DATE_INTERVAL"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -3062,6 +3088,48 @@
     </xs:complexType>
 
 
+    <!-- Filters -->
+
+    <!-- PropertyFilter -->
+    <xs:complexType name="propertyFilterComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:group ref="layoutOrComponent"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasSize"/>
+                <xs:attributeGroup ref="hasEnabled"/>
+                <xs:attributeGroup ref="hasLabel"/>
+                <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasValidation"/>
+                <xs:attributeGroup ref="hasHelperText"/>
+                <xs:attributeGroup ref="hasRequired"/>
+                <xs:attributeGroup ref="hasValueAndElement"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
+
+                <xs:attribute name="property" type="xs:string" use="required"/>
+                <xs:attribute name="parameterName" type="xs:string"/>
+
+                <xs:attribute name="operation" type="propertyFilterOperation" use="required"/>
+                <xs:attribute name="operationEditable" type="xs:boolean"/>
+                <xs:attribute name="operationTextVisible" type="xs:boolean"/>
+
+                <xs:attribute name="labelVisible" type="xs:boolean"/>
+                <xs:attribute name="labelPosition" type="labelPositionType"/>
+                <xs:attribute name="labelWidth" type="xs:string"/>
+
+                <xs:attribute name="themeNames" type="xs:string"/>
+
+                <xs:attribute name="defaultValue" type="xs:string"/>
+
+                <xs:attribute name="dataLoader" type="xs:string" use="required"/>
+                <xs:attribute name="autoApply" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
     <!-- Facets -->
 
     <xs:complexType name="facets">
@@ -3088,8 +3156,6 @@
     </xs:complexType>
 
     <xs:complexType name="dataLoadCoordinatorTriggerType">
-        <xs:attribute name="loader" type="xs:string" use="required"/>
-
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="onViewEvent" type="onViewEventType"/>
@@ -3097,6 +3163,8 @@
                 <xs:element name="onComponentValueChanged" type="onComponentValueChangedType"/>
             </xs:choice>
         </xs:sequence>
+
+        <xs:attribute name="loader" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="onViewEventType">
@@ -3231,6 +3299,7 @@
                 <xs:element name="tabSheet" type="tabSheetComponent"/>
                 <xs:element name="fileUploadField" type="fileUploadFieldComponent"/>
                 <xs:element name="fileStorageUploadField" type="fileStorageUploadFieldComponent"/>
+                <xs:element name="propertyFilter" type="propertyFilterComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

@@ -86,6 +86,7 @@ public abstract class BaseLoaderConfig {
         loaders.put("simplePagination", SimplePaginationLoader.class);
         loaders.put("fileUploadField", FileUploadFieldLoader.class);
         loaders.put("fileStorageUploadField", FileStorageUploadFieldLoader.class);
+        loaders.put("propertyFilter", PropertyFilterLoader.class);
 
         /* HTML components */
         loaders.put("param", ParamLoader.class);
