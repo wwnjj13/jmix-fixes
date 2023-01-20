@@ -31,7 +31,8 @@ public class PropertyFilterComponentGenerationContext extends ComponentGeneratio
      * @param property  the entity attribute for which the component is created
      * @param operation the property filter operation for which the component is created
      */
-    public PropertyFilterComponentGenerationContext(MetaClass metaClass, String property, FilteringOperation operation) {
+    public PropertyFilterComponentGenerationContext(MetaClass metaClass,
+                                                    String property, FilteringOperation operation) {
         super(metaClass, property);
         this.operation = operation;
     }

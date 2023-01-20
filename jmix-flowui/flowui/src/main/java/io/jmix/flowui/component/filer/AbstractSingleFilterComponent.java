@@ -116,10 +116,7 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
 
     protected void onFilterValueChanged(ComponentValueChangeEvent<CustomField<V>, V> event) {
         updateQueryCondition(event.getValue());
-
-        if (event.isFromClient()) {
-            apply();
-        }
+        apply();
     }
 
     protected HorizontalLayout createRootComponent() {
@@ -198,7 +195,9 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
     public void apply() {
         if (dataLoader != null) {
             setupLoaderFirstResult();
-            if (autoApply) dataLoader.load();
+            if (autoApply) {
+                dataLoader.load();
+            }
         }
     }
 
@@ -338,7 +337,12 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
     protected void initValueComponent(HasValueAndElement<?, V> valueComponent) {
         ((Component) valueComponent).setId(getInnerComponentPrefix() + "valueComponent");
 
-        valueComponent.addValueChangeListener(this::onFieldValueChanged);
+        if (valueComponent instanceof SupportsTypedValue) {
+            //noinspection unchecked
+            ((SupportsTypedValue<?, ?, V, ?>) valueComponent).addTypedValueChangeListener(this::onFieldValueChanged);
+        } else {
+            valueComponent.addValueChangeListener(this::onFieldValueChanged);
+        }
 
         if (valueComponent instanceof SupportsStatusChangeHandler) {
             ((SupportsStatusChangeHandler<?>) valueComponent).setStatusChangeHandler(this::onFieldStatusChanged);

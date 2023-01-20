@@ -45,8 +45,8 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
 
     public static final String UNARY_FIELD_CLASS_NAME = "unary-field";
 
-    //    protected DataAwareComponentsTools dataAwareComponentsTools;
     protected ApplicationContext applicationContext;
+//    protected DataAwareComponentsTools dataAwareComponentsTools;
 
     public PropertyFilterComponentGenerationStrategy(UiComponents uiComponents,
                                                      Metadata metadata,
@@ -55,8 +55,8 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
                                                      DatatypeRegistry datatypeRegistry,
                                                      Messages messages,
                                                      EntityFieldCreationSupport entityFieldCreationSupport,
-            /*DataAwareComponentsTools dataAwareComponentsTools,*/
-                                                     ApplicationContext applicationContext) {
+                                                     ApplicationContext applicationContext/*,
+                                                     DataAwareComponentsTools dataAwareComponentsTools*/) {
         super(uiComponents, metadata, metadataTools, actions, datatypeRegistry, messages, entityFieldCreationSupport);
 //        this.dataAwareComponentsTools = dataAwareComponentsTools;
         this.applicationContext = applicationContext;
@@ -96,6 +96,7 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
         return super.createComponentInternal(context);
     }
 
+    @SuppressWarnings("rawtypes")
     @Nullable
     @Override
     protected Component createDatatypeField(ComponentGenerationContext context, MetaPropertyPath mpp) {
@@ -114,13 +115,27 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
         Component datePicker = super.createDatePicker(context);
 
         // TODO: gg, implement
-        /*MetaClass metaClass = context.getMetaClass();
+        MetaClass metaClass = context.getMetaClass();
         MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
         if (mpp != null) {
-            dataAwareComponentsTools.setupDateFormat(datePicker, mpp.getMetaProperty());
-        }*/
+//            dataAwareComponentsTools.setupDateFormat(datePicker, mpp.getMetaProperty());
+        }
 
         return datePicker;
+    }
+
+    @Override
+    protected Component createDateTimePicker(ComponentGenerationContext context) {
+        Component dateTimePicker = super.createDateTimePicker(context);
+
+        // TODO: gg, implement
+        MetaClass metaClass = context.getMetaClass();
+        MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
+        if (mpp != null) {
+//            dataAwareComponentsTools.setupDateFormat(datePicker, mpp.getMetaProperty());
+        }
+
+        return dateTimePicker;
     }
 
     @Override
@@ -128,6 +143,7 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
         return createUnaryField(context);
     }
 
+    @SuppressWarnings("unchecked")
     protected Component createUnaryField(ComponentGenerationContext context) {
         JmixSelect<Boolean> component = uiComponents.create(JmixSelect.class);
         // TODO: gg, style or theme?
@@ -141,6 +157,7 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
         return component;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Component createEnumField(ComponentGenerationContext context) {
         MetaClass metaClass = context.getMetaClass();

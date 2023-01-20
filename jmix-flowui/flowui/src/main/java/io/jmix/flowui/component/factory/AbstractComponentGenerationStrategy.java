@@ -50,7 +50,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
-@SuppressWarnings("rawtypes")
 public abstract class AbstractComponentGenerationStrategy implements ComponentGenerationStrategy {
 
     protected UiComponents uiComponents;
@@ -109,7 +108,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     protected Component createDatatypeField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         Range mppRange = mpp.getRange();
 
-        Class type = mppRange.asDatatype().getJavaClass();
+        Class<?> type = mppRange.asDatatype().getJavaClass();
 
         if (type.equals(String.class)
                 || type.equals(UUID.class)) {
@@ -134,7 +133,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Component createEnumField(ComponentGenerationContext context) {
-        JmixSelect enumField = uiComponents.create(JmixSelect.class);
+        JmixSelect<?> enumField = uiComponents.create(JmixSelect.class);
         setValueSource(enumField, context);
         return enumField;
     }
@@ -159,7 +158,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return booleanField;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Component createDatePicker(ComponentGenerationContext context) {
         TypedDatePicker dateField = uiComponents.create(TypedDatePicker.class);
         setValueSource(dateField, context);
@@ -183,7 +182,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return dateField;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected Component createTimePicker(ComponentGenerationContext context) {
         TypedTimePicker timeField = uiComponents.create(TypedTimePicker.class);
         setValueSource(timeField, context);
@@ -197,7 +196,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return timeField;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected Component createDateTimePicker(ComponentGenerationContext context) {
         TypedDateTimePicker dateTimeField = uiComponents.create(TypedDateTimePicker.class);
         setValueSource(dateTimeField, context);
@@ -212,7 +211,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Component createNumberField(ComponentGenerationContext context) {
-        TypedTextField numberField = uiComponents.create(TypedTextField.class);
+        TypedTextField<?> numberField = uiComponents.create(TypedTextField.class);
         setValueSource(numberField, context);
         return numberField;
     }

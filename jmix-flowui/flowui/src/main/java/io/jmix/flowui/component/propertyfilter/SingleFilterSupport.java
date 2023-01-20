@@ -21,8 +21,12 @@ import io.jmix.core.annotation.Internal;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.flowui.component.ComponentGenerationContext;
 import io.jmix.flowui.component.UiComponentsGenerator;
+import io.jmix.flowui.component.factory.JpqlFilterComponentGenerationContext;
 import io.jmix.flowui.component.factory.PropertyFilterComponentGenerationContext;
+import io.jmix.flowui.component.jpqlfilter.JpqlFilter;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
 
 @Internal
 @Component("flowui_SingleFilterSupport")
@@ -43,6 +47,7 @@ public class SingleFilterSupport {
      * @param operation an operation
      * @return a filter value component
      */
+    @SuppressWarnings("rawtypes")
     public HasValueAndElement generateValueComponent(MetaClass metaClass,
                                                      String property,
                                                      FilteringOperation operation) {
@@ -63,15 +68,15 @@ public class SingleFilterSupport {
      * @return a filter value component
      */
     @SuppressWarnings({"rawtypes"})
-    /*public HasValueAndElement generateValueComponent(MetaClass metaClass,
+    public HasValueAndElement generateValueComponent(MetaClass metaClass,
                                                      boolean hasInExpression,
-                                                     @Nullable Class parameterClass) {
+                                                     @Nullable Class<?> parameterClass) {
         ComponentGenerationContext context =
                 new JpqlFilterComponentGenerationContext(metaClass, "", hasInExpression, parameterClass);
         context.setTargetClass(JpqlFilter.class);
 
         return ((HasValueAndElement) uiComponentsGenerator.generate(context));
-    }*/
+    }
 
     /**
      * @return a value component name
