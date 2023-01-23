@@ -86,9 +86,9 @@ import static io.jmix.flowui.view.StandardOutcome.SAVE;
 @DialogMode(width = "50em", height = "37.5em")
 public class AppSettingsEntityView extends StandardView {
 
-    private static final Integer MAX_CAPTION_LENGTH = 50;
+    private static final int MAX_CAPTION_LENGTH = 50;
 
-    private static final Integer AMOUNT_COLUMNS = 3;
+    private static final int AMOUNT_COLUMNS = 3;
 
     private static final String SELECT_APP_SETTINGS_ENTITY_QUERY = "select e from %s e where e.id = 1";
 
@@ -140,7 +140,7 @@ public class AppSettingsEntityView extends StandardView {
     @ViewComponent
     protected Scroller fieldsScroller;
     @ViewComponent
-    protected HorizontalLayout actionsBox;
+    protected HorizontalLayout actionsPanelWrapper;
 
     private DataContext dataContext;
     private MetaClass currentMetaClass;
@@ -153,7 +153,8 @@ public class AppSettingsEntityView extends StandardView {
     public void onInit(InitEvent event) {
 
         entitiesLookup
-                .setItemLabelGenerator((ItemLabelGenerator<MetaClass>) item -> messageTools.getEntityCaption(item) + " (" + item.getName() + ")");
+                .setItemLabelGenerator((ItemLabelGenerator<MetaClass>) item -> messageTools.getEntityCaption(item) +
+                        " (" + item.getName() + ")");
         entitiesLookup.setItems(getEntitiesLookupFieldOptions());
 
         entitiesLookup.addValueChangeListener(e -> {
@@ -210,7 +211,7 @@ public class AppSettingsEntityView extends StandardView {
             FormLayout formLayout = createFormLayout(container);
             fieldsScroller.setContent(formLayout);
 
-            actionsBox.setVisible(true);
+            actionsPanelWrapper.setVisible(true);
         }
     }
 
@@ -278,7 +279,8 @@ public class AppSettingsEntityView extends StandardView {
         MetaClass metaClass = container.getEntityMetaClass();
         Range range = metaProperty.getRange();
 
-        FlowuiEntityAttributeContext attributeContext = new FlowuiEntityAttributeContext(metaClass, metaProperty.getName());
+        FlowuiEntityAttributeContext attributeContext = new FlowuiEntityAttributeContext(metaClass,
+                metaProperty.getName());
         accessManager.applyRegisteredConstraints(attributeContext);
         if (!attributeContext.canView()) {
             return;
@@ -308,16 +310,22 @@ public class AppSettingsEntityView extends StandardView {
         formLayout.add(currentField);
 
         //default value
-        ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass, metaProperty.getName());
-        ValueSource<?> valueSourceForDefaultField = new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()), metaProperty.getName());
+        ComponentGenerationContext componentContextForDefaultField = new ComponentGenerationContext(metaClass,
+                metaProperty.getName());
+        ValueSource<?> valueSourceForDefaultField =
+                new ContainerValueSource<>(dataComponents.createInstanceContainer(metaClass.getJavaClass()),
+                        metaProperty.getName());
         componentContextForDefaultField.setValueSource(valueSourceForDefaultField);
-        AbstractField defaultValueField = (AbstractField) uiComponentsGenerator.generate(componentContextForDefaultField);
+        AbstractField defaultValueField = (AbstractField)
+                uiComponentsGenerator.generate(componentContextForDefaultField);
         ((HasLabel) defaultValueField).setLabel(messages.getMessage(this.getClass(), "defaultValueLabel"));
         if (defaultValueField instanceof SupportsTypedValue) {
             ((SupportsTypedValue<?, ?, Object, ?>) defaultValueField)
-                    .setTypedValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+                    .setTypedValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(),
+                            metaProperty.getName()));
         } else {
-            defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(), metaProperty.getName()));
+            defaultValueField.setValue(appSettingsTools.getDefaultPropertyValue(metaClass.getJavaClass(),
+                    metaProperty.getName()));
         }
         defaultValueField.setEnabled(false);
         formLayout.add(defaultValueField);
@@ -427,9 +435,9 @@ public class AppSettingsEntityView extends StandardView {
     }
 
     protected void showSaveNotification() {
-        String caption = messages.formatMessage(this.getClass(), "entitySaved", messageTools.getEntityCaption(currentMetaClass));
+        String caption = messages.formatMessage(this.getClass(), "entitySaved",
+                messageTools.getEntityCaption(currentMetaClass));
         notifications.create(caption)
-                .withType(Notifications.Type.DEFAULT)
                 .show();
     }
 
