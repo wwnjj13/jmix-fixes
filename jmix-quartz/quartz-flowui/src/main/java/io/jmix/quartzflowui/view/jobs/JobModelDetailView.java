@@ -17,8 +17,10 @@
 package io.jmix.quartzflowui.view.jobs;
 
 import com.google.common.base.Strings;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
@@ -29,6 +31,7 @@ import io.jmix.flowui.action.list.EditAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
+import io.jmix.flowui.kit.component.valuepicker.CustomValueSetEvent;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.*;
@@ -48,7 +51,7 @@ import java.util.stream.Collectors;
 @ViewController("quartz_JobModel.detail")
 @ViewDescriptor("job-model-detail-view.xml")
 @EditedEntityContainer("jobModelDc")
-@DialogMode(width = "50em", height = "37.5em")
+@DialogMode(width = "60em", height = "37.5em", resizable = true)
 public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     private static final String VIEW_ACTION_ID = "view";
@@ -105,6 +108,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     private boolean deleteObsoleteJob = false;
     private String obsoleteJobName = null;
     private String obsoleteJobGroup = null;
+    private List<String> jobGroupNames;
 
     @Subscribe
     protected void onInit(View.InitEvent event) {
@@ -122,45 +126,61 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
                                 .format(entity.getNextFireDate()) : "").setResizable(true)
                 .setHeader(messageBundle.getMessage("column.nextFireDate.header"));
 
-        List<String> jobGroupNames = quartzService.getJobGroupNames();
+        jobGroupNames = quartzService.getJobGroupNames();
         jobGroupField.setItems(jobGroupNames);
         List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
         jobClassField.setItems(existedJobsClassNames);
 
         jobGroupField.addCustomValueSetListener(item -> {
-            String newJobGroupName = item.getDetail();
-            if (!Strings.isNullOrEmpty(newJobGroupName)
-                    && !jobGroupNames.contains(newJobGroupName)) {
-                jobGroupNames.add(newJobGroupName);
-                jobGroupField.setItems(jobGroupNames);
-                jobGroupField.setValue(newJobGroupName);
-            }
-            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
-                    && !Strings.isNullOrEmpty(newJobGroupName)
-                    && !obsoleteJobGroup.equals(newJobGroupName)) {
-                deleteObsoleteJob = true;
-            }
+
         });
 
         jobGroupField.addValueChangeListener(e -> {
-            String currentValue = e.getValue();
-            if (!Strings.isNullOrEmpty(obsoleteJobGroup)
-                    && !Strings.isNullOrEmpty(currentValue)
-                    && !obsoleteJobGroup.equals(currentValue)) {
-                deleteObsoleteJob = true;
-            }
+
         });
 
         jobNameField.addValueChangeListener(e -> {
-            String currentValue = e.getValue();
-            if (!Strings.isNullOrEmpty(obsoleteJobName)
-                    && !Strings.isNullOrEmpty(currentValue)
-                    && !obsoleteJobName.equals(currentValue)) {
-                deleteObsoleteJob = true;
-            }
+
         });
 
     }
+
+    @Subscribe("jobGroupField")
+    protected void onJobGroupFieldValueSet(CustomValueSetEvent<ComboBox<String>, String> event) {
+        String newJobGroupName = event.getText();
+        if (!Strings.isNullOrEmpty(newJobGroupName)
+                && !jobGroupNames.contains(newJobGroupName)) {
+            jobGroupNames.add(newJobGroupName);
+            jobGroupField.setItems(jobGroupNames);
+            jobGroupField.setValue(newJobGroupName);
+        }
+        if (!Strings.isNullOrEmpty(obsoleteJobGroup)
+                && !Strings.isNullOrEmpty(newJobGroupName)
+                && !obsoleteJobGroup.equals(newJobGroupName)) {
+            deleteObsoleteJob = true;
+        }
+    }
+
+    @Subscribe("jobGroupField")
+    protected void onJobGroupFieldChange(AbstractField.ComponentValueChangeEvent<ComboBox<String>, String> event) {
+        String currentValue = event.getValue();
+        if (!Strings.isNullOrEmpty(obsoleteJobGroup)
+                && !Strings.isNullOrEmpty(currentValue)
+                && !obsoleteJobGroup.equals(currentValue)) {
+            deleteObsoleteJob = true;
+        }
+    }
+
+    @Subscribe("jobNameField")
+    protected void onjobNameFieldChange(AbstractField.ComponentValueChangeEvent<TextField, String> event) {
+        String currentValue = event.getValue();
+        if (!Strings.isNullOrEmpty(obsoleteJobName)
+                && !Strings.isNullOrEmpty(currentValue)
+                && !obsoleteJobName.equals(currentValue)) {
+            deleteObsoleteJob = true;
+        }
+    }
+
 
     protected void onSelectedTabChange(Tabs.SelectedChangeEvent event) {
         String tabId = event.getSelectedTab().getId()
@@ -191,19 +211,24 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         }
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        jobNameField.setReadOnly(readOnly);
+        jobGroupField.setReadOnly(readOnly);
+        jobClassField.setReadOnly(readOnly);
+        triggerModelTable.getAction(EditAction.ID).setVisible(!readOnly);
+        triggerModelTable.getAction(VIEW_ACTION_ID).setVisible(readOnly);
+        addDataParamButton.setEnabled(!readOnly);
+        jobDataParamsTable.setEnabled(!readOnly);
+    }
+
     @Subscribe
     public void onBeforeShow(BeforeShowEvent event) {
         //allow editing only not active and user-defined jobs
         boolean readOnly = JobState.NORMAL.equals(getEditedEntity().getJobState())
                 || JobSource.PREDEFINED.equals(getEditedEntity().getJobSource());
         setReadOnly(readOnly);
-        jobNameField.setEnabled(!readOnly);
-        jobGroupField.setEnabled(!readOnly);
-        jobClassField.setEnabled(!readOnly);
-        triggerModelTable.getAction(EditAction.ID).setVisible(!readOnly);
-        triggerModelTable.getAction(VIEW_ACTION_ID).setVisible(readOnly);
-        addDataParamButton.setEnabled(!readOnly);
-        jobDataParamsTable.setEnabled(!readOnly);
 
         obsoleteJobName = getEditedEntity().getJobName();
         obsoleteJobGroup = getEditedEntity().getJobGroup();
@@ -238,22 +263,26 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         //if jobKey is changed it is necessary to delete job by it old jobKey and create new one
         //job should be deleted only if it is possible to create new one
         if (deleteObsoleteJob && quartzService.checkJobExists(currentJobName, currentJobGroup)) {
-            errors.add(messageBundle.formatMessage("jobAlreadyExistsValidationMessage", currentJobName, Strings.isNullOrEmpty(currentJobGroup) ? "DEFAULT" : currentJobGroup));
+            errors.add(messageBundle.formatMessage("jobAlreadyExistsValidationMessage", currentJobName,
+                    Strings.isNullOrEmpty(currentJobGroup) ? "DEFAULT" : currentJobGroup));
         }
 
         if (!replaceJobIfExists) {
             if (quartzService.checkJobExists(currentJobName, currentJobGroup)) {
-                errors.add(messageBundle.formatMessage("jobAlreadyExistsValidationMessage", currentJobName, Strings.isNullOrEmpty(currentJobGroup) ? "DEFAULT" : currentJobGroup));
+                errors.add(messageBundle.formatMessage("jobAlreadyExistsValidationMessage", currentJobName,
+                        Strings.isNullOrEmpty(currentJobGroup) ? "DEFAULT" : currentJobGroup));
             }
 
             getEditedEntity().getTriggers().stream()
                     .filter(triggerModel -> !Strings.isNullOrEmpty(triggerModel.getTriggerName()))
-                    .filter(triggerModel -> quartzService.checkTriggerExists(triggerModel.getTriggerName(), triggerModel.getTriggerGroup()))
+                    .filter(triggerModel -> quartzService.checkTriggerExists(triggerModel.getTriggerName(),
+                            triggerModel.getTriggerGroup()))
                     .forEach(triggerModel -> errors.add(
                             messageBundle.formatMessage(
                                     "triggerAlreadyExistsValidationMessage",
                                     triggerModel.getTriggerName(),
-                                    Strings.isNullOrEmpty(triggerModel.getTriggerGroup()) ? "DEFAULT" : triggerModel.getTriggerGroup())
+                                    Strings.isNullOrEmpty(triggerModel.getTriggerGroup()) ? "DEFAULT" :
+                                            triggerModel.getTriggerGroup())
                     ));
         }
 
