@@ -148,8 +148,8 @@ class FetchPlanRepositoryTest extends Specification {
 
         expect:
 
-        fetchPlanDescendant.getProperty("param1")
-        fetchPlanDescendant.getProperty("quantity")
+        fetchPlanDescendant.containsProperty("param1")
+        fetchPlanDescendant.containsProperty("quantity")
         fetchPlanDescendant.containsProperty("id")
     }
 }
