@@ -18,8 +18,7 @@
       title="msg://screenCaption">
 
     <layout expand="fieldsScroller">
-        <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"
-                  allowCustomValue="false"/>
+        <comboBox id="entitiesLookup" label="msg://selectEntityLabel" width="100%"/>
         <scroller id="fieldsScroller" scrollBarsDirection="VERTICAL"/>
         <hbox id="actionsPanelWrapper" visible="false" alignItems="END">
             <button id="saveBtn" text="msg://saveApplicationSettings" icon="CHECK"/>
