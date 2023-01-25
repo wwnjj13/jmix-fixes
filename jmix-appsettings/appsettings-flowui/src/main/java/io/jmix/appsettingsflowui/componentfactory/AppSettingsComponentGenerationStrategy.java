@@ -19,7 +19,7 @@ package io.jmix.appsettingsflowui.componentfactory;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ItemLabelGenerator;
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.PasswordField;
 import io.jmix.appsettings.entity.AppSettingsEntity;
 import io.jmix.core.JmixOrder;
@@ -76,7 +76,8 @@ public class AppSettingsComponentGenerationStrategy
             AbstractField field = null;
 
             if (context.getValueSource()!=null &&
-                    requireTextArea(metaProperty, ((ContainerValueSource) context.getValueSource()).getContainer().getItemOrNull())) {
+                    requireTextArea(metaProperty, ((ContainerValueSource) context.getValueSource())
+                            .getContainer().getItemOrNull())) {
                 field = uiComponents.create(TypedTextField.class);
             }
 
@@ -109,8 +110,8 @@ public class AppSettingsComponentGenerationStrategy
         return pickerField;
     }
 
-    protected AbstractField<ComboBox<Boolean>, Boolean> createBooleanField() {
-        ComboBox<Boolean> field = uiComponents.create(ComboBox.class);
+    protected AbstractField<Select<Boolean>, Boolean> createBooleanField() {
+        Select<Boolean> field = uiComponents.create(Select.class);
         field.setItems(List.of(Boolean.TRUE, Boolean.FALSE));
         field.setItemLabelGenerator((ItemLabelGenerator<Boolean>) item -> {
             if (item == Boolean.TRUE) {
@@ -121,7 +122,6 @@ public class AppSettingsComponentGenerationStrategy
             }
             return null;
         });
-        field.setAllowCustomValue(false);
         return field;
     }
 

@@ -368,12 +368,12 @@ public class AppSettingsEntityView extends StandardView {
         return AppSettingsEntity.class.isAssignableFrom(metaClass.getJavaClass());
     }
 
-    @Subscribe("saveButton")
+    @Subscribe("saveBtn")
     public void onSaveButtonClick(ClickEvent<Button> event) {
         commitChanges();
     }
 
-    @Subscribe("closeButton")
+    @Subscribe("closeBtn")
     public void onCloseButtonClick(ClickEvent<Button> event) {
         if (dataContext != null && hasUnsavedChanges()) {
             handleCloseBtnClickWithUnsavedChanges();
