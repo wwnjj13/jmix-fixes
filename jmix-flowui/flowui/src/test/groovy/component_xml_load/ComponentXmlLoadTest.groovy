@@ -80,6 +80,7 @@ class ComponentXmlLoadTest extends FlowuiTestSpecification {
             minHeight == "40px"
             minWidth == "80px"
             text == "textString"
+            tabIndex == 3
             themeNames.containsAll(["large", "primary"])
             title == "buttonTitle"
             visible
@@ -159,6 +160,7 @@ class ComponentXmlLoadTest extends FlowuiTestSpecification {
         verifyAll(componentView.dropdownButtonId) {
             id.get() == "dropdownButtonId"
             classNames.containsAll(["cssClassName1", "cssClassName2"])
+            (!dropdownIndicatorVisible)
             enabled
             height == "50px"
             icon.element.getAttribute("icon") ==
@@ -168,6 +170,7 @@ class ComponentXmlLoadTest extends FlowuiTestSpecification {
             minHeight == "40px"
             minWidth == "80px"
             openOnHover
+            tabIndex == 3
             text == "dropdownButtonText"
             themeNames.containsAll([DropdownButtonVariant.LUMO_SMALL.getVariantName(),
                                     DropdownButtonVariant.LUMO_PRIMARY.getVariantName()])
@@ -192,6 +195,8 @@ class ComponentXmlLoadTest extends FlowuiTestSpecification {
             id.get() == "comboButtonId"
             action.getText() == "Action Text"
             classNames.containsAll(["cssClassName1", "cssClassName2"])
+            getDropdownIcon().element.getAttribute("icon")
+                    == VaadinIcon.CHECK.create().element.getAttribute("icon")
             enabled
             height == "50px"
             icon.element.getAttribute("icon") ==
@@ -201,6 +206,7 @@ class ComponentXmlLoadTest extends FlowuiTestSpecification {
             minHeight == "40px"
             minWidth == "80px"
             openOnHover
+            tabIndex == 3
             text == "Action Text"
             themeNames.containsAll([DropdownButtonVariant.LUMO_PRIMARY.getVariantName()])
             title == "Action Description"
