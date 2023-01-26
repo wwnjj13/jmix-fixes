@@ -353,7 +353,6 @@ public class AppSettingsEntityView extends StandardView {
                 .hint(PersistenceHints.SOFT_DELETION, false)
                 .optional()
                 .orElse(null);
-
         if (entityToEdit == null) {
             entityToEdit = dataContext.create(currentMetaClass.getJavaClass());
         } else {

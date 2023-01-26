@@ -20,7 +20,6 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.PasswordField;
 import io.jmix.appsettings.entity.AppSettingsEntity;
 import io.jmix.core.JmixOrder;
 import io.jmix.core.Messages;
@@ -38,11 +37,12 @@ import io.jmix.flowui.action.entitypicker.EntityLookupAction;
 import io.jmix.flowui.component.ComponentGenerationContext;
 import io.jmix.flowui.component.factory.AbstractComponentGenerationStrategy;
 import io.jmix.flowui.component.factory.EntityFieldCreationSupport;
+import io.jmix.flowui.component.select.JmixSelect;
+import io.jmix.flowui.component.textfield.JmixPasswordField;
 import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.component.valuepicker.EntityPicker;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.value.ContainerValueSource;
-import io.jmix.flowui.view.OpenMode;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -104,14 +104,13 @@ public class AppSettingsComponentGenerationStrategy
     protected EntityPicker<?> createEntityPickerField() {
         EntityPicker<?> pickerField = uiComponents.create(EntityPicker.class);
         EntityLookupAction<?> lookupAction = actions.create(EntityLookupAction.class);
-        lookupAction.setOpenMode(OpenMode.DIALOG);
         pickerField.addAction(lookupAction);
         pickerField.addAction(actions.create(EntityClearAction.class));
         return pickerField;
     }
 
-    protected AbstractField<Select<Boolean>, Boolean> createBooleanField() {
-        Select<Boolean> field = uiComponents.create(Select.class);
+    protected Select<Boolean> createBooleanField() {
+        Select<Boolean> field = uiComponents.create(JmixSelect.class);
         field.setItems(List.of(Boolean.TRUE, Boolean.FALSE));
         field.setItemLabelGenerator((ItemLabelGenerator<Boolean>) item -> {
             if (item == Boolean.TRUE) {
@@ -126,7 +125,7 @@ public class AppSettingsComponentGenerationStrategy
     }
 
     protected AbstractField createPasswordField() {
-        return uiComponents.create(PasswordField.class);
+        return uiComponents.create(JmixPasswordField.class);
     }
 
     protected static boolean isSecret(MetaProperty metaProperty) {
