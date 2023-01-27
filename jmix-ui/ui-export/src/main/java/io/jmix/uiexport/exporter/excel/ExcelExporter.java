@@ -32,12 +32,14 @@ import io.jmix.ui.component.data.*;
 import io.jmix.ui.component.data.meta.EntityDataGridItems;
 import io.jmix.ui.component.data.table.ContainerGroupTableItems;
 import io.jmix.ui.component.data.table.ContainerTableItems;
+import io.jmix.ui.component.data.table.ContainerTreeTableItems;
 import io.jmix.ui.download.ByteArrayDataProvider;
 import io.jmix.ui.download.Downloader;
 import io.jmix.ui.model.CollectionContainer;
 import io.jmix.ui.model.DataLoader;
 import io.jmix.ui.model.InstanceContainer;
 import io.jmix.ui.model.impl.CollectionContainerImpl;
+import io.jmix.uiexport.ExporterProperties;
 import io.jmix.uiexport.action.ExportAction;
 import io.jmix.uiexport.exporter.AbstractTableExporter;
 import io.jmix.uiexport.exporter.ExportMode;
@@ -75,7 +77,10 @@ import static io.jmix.ui.download.DownloadFormat.XLSX;
 public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
     @Autowired
-    DataManager dataManager;
+    protected DataManager dataManager;
+
+    @Autowired
+    protected ExporterProperties exporterProperties;
 
     public static enum ExportFormat {
         XLS,
@@ -133,6 +138,14 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
     protected void createAutoColumnSizers(int count) {
         sizers = new ExcelAutoColumnSizer[count];
+    }
+
+    public Long getCountRecordsFromLoader(DataLoader loader) {
+        LoadContext.Query query = new LoadContext.Query(loader.getQuery());
+        query.setParameters(loader.getParameters());
+        LoadContext loadContext = new LoadContext(loader.getContainer().getEntityMetaClass()).setHints(loader.getHints())
+                .setQuery(query);
+        return dataManager.getCount(loadContext);
     }
 
     @Override
@@ -207,26 +220,65 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                 createRow(table, columns, 0, ++r, Id.of(item).getValue());
             }
         } else if(exportMode == ExportMode.ALL) {
-            if (tableItems != null) {
+            if (table.isAggregatable() && exportAggregation
+                    && hasAggregatableColumn(table)) {
+                if (table.getAggregationStyle() == Table.AggregationStyle.TOP) {
+                    r = createAggregatableRow(table, columns, ++r, 1);
+                }
+            }
 
-//                dataManager.load()
+            if (table instanceof TreeTable) {
+
                 DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
                         .getContainer()).getLoader();
-
-
-                List<Object> items = dataManager.load(loader.getContainer().getEntityMetaClass()
-                                .getJavaClass())
-                        .query(loader.getQuery())
-                        .hints(loader.getHints())
-                        .parameters(loader.getParameters())
-                        .firstResult(0).maxResults(100).list();
-
+                Long count = getCountRecordsFromLoader(loader);
+                List<Object> items = new ArrayList<>();
+                for (int offset = 0; offset < count; offset = offset + exporterProperties.getBatchSize()) {
+                    items.addAll(dataManager.load(loader.getContainer().getEntityMetaClass()
+                                    .getJavaClass())
+                            .query(loader.getQuery())
+                            .hints(loader.getHints())
+                            .parameters(loader.getParameters())
+                            .firstResult(offset)
+                            .maxResults(offset + exporterProperties.getBatchSize())
+                            .list());
+                }
                 for (Object item : items) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
                     }
                     createRow(columns, 0, ++r, item);
-//                    createRow(table, columns, 0, ++r, itemId);
+                }
+//                for (Object itemId : treeTableSource.getRootItemIds()) {
+//                    if (checkIsRowNumberExceed(r)) {
+//                        break;
+//                    }
+//
+//                    r = createHierarchicalRow(treeTable, columns, exportExpanded, r, itemId);
+//                }
+
+            } else
+
+            if (tableItems != null) {
+                List<Object> items = new ArrayList<>();
+                DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
+                        .getContainer()).getLoader();
+                Long count = getCountRecordsFromLoader(loader);
+                for (int offset = 0; offset < count; offset = offset + exporterProperties.getBatchSize()) {
+                    items.addAll(dataManager.load(loader.getContainer().getEntityMetaClass()
+                                    .getJavaClass())
+                            .query(loader.getQuery())
+                            .hints(loader.getHints())
+                            .parameters(loader.getParameters())
+                            .firstResult(offset)
+                            .maxResults(offset + exporterProperties.getBatchSize())
+                            .list());
+                }
+                for (Object item : items) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+                    createRow(columns, 0, ++r, item);
                 }
             }
         } else if(exportMode == ExportMode.VISIBLE) {

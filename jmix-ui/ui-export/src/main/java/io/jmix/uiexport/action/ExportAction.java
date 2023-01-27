@@ -139,7 +139,34 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
             throw new IllegalStateException("Table exporter is not defined");
         }
         if (needExportAll()) {
-            doExport(ExportMode.ALL);
+            AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS", Status.PRIMARY) {
+                @Override
+                public void actionPerform(Component component) {
+                    doExport(ExportMode.ALL);
+                }
+            };
+            exportAllAction.setCaption(getMessage(exportAllAction.getId()));
+            AbstractAction exportVisibleAction = new AbstractAction("actions.export.VISIBLE_ROWS") {
+                @Override
+                public void actionPerform(Component component) {
+                    doExport(ExportMode.VISIBLE);
+                }
+            };
+            exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
+
+            Action[] actions = new Action[]{
+                    exportAllAction,
+                    exportVisibleAction,
+                    new DialogAction(DialogAction.Type.CANCEL)
+            };
+
+            Dialogs dialogs = ComponentsHelper.getScreenContext(target).getDialogs();
+
+            dialogs.createOptionDialog()
+                    .withCaption(getMessage("actions.exportSelectedTitle"))
+                    .withMessage(getMessage("actions.exportSelectedCaption"))
+                    .withActions(actions)
+                    .show();
 
         } else {
             AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
@@ -149,6 +176,14 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
                 }
             };
             exportSelectedAction.setCaption(getMessage(exportSelectedAction.getId()));
+
+            AbstractAction exportVisibleAction = new AbstractAction("actions.export.VISIBLE_ROWS") {
+                @Override
+                public void actionPerform(Component component) {
+                    doExport(ExportMode.VISIBLE);
+                }
+            };
+            exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
 
             AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS") {
                 @Override
@@ -161,6 +196,7 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
             Action[] actions = new Action[]{
                     exportSelectedAction,
                     exportAllAction,
+                    exportVisibleAction,
                     new DialogAction(DialogAction.Type.CANCEL)
             };
 
