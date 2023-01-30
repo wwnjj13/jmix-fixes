@@ -24,18 +24,41 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConstructorBinding
 public class ExporterProperties {
 
-    private Integer batchSize;
+    private Integer loadBatchSize;
 
+    private Boolean streamInDisk;
 
-    public ExporterProperties(@DefaultValue("50") Integer batchSize) {
-        this.batchSize = batchSize;
+    private Integer streamWindowSize;
+
+    public ExporterProperties(@DefaultValue("50") Integer batchSize,
+                              @DefaultValue("false") Boolean streamInDisk,
+                              @DefaultValue("100") Integer streamWindowSize) {
+        this.streamInDisk = streamInDisk;
+        this.loadBatchSize = batchSize;
+        this.streamWindowSize = streamWindowSize;
     }
 
-    public Integer getBatchSize() {
-        return batchSize;
+    public Integer getLoadBatchSize() {
+        return loadBatchSize;
     }
 
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
+    public void setLoadBatchSize(Integer loadBatchSize) {
+        this.loadBatchSize = loadBatchSize;
+    }
+
+    public Integer getStreamWindowSize() {
+        return streamWindowSize;
+    }
+
+    public void setStreamWindowSize(Integer streamWindowSize) {
+        this.streamWindowSize = streamWindowSize;
+    }
+
+    public Boolean getStreamInDisk() {
+        return streamInDisk;
+    }
+
+    public void setStreamInDisk(Boolean streamInDisk) {
+        this.streamInDisk = streamInDisk;
     }
 }

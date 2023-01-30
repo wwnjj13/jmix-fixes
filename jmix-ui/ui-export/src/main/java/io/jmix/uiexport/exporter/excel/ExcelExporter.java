@@ -64,6 +64,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dom4j.Element;
@@ -141,10 +142,14 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
     protected void createWorkbookWithSheet() {
         switch (exportFormat) {
             case XLS:
-                wb = new HSSFWorkbook();
+                    wb = new HSSFWorkbook();
                 break;
             case XLSX:
-                wb = new XSSFWorkbook();
+                if (exporterProperties.getStreamInDisk()) {
+                    wb = new SXSSFWorkbook();
+                } else {
+                    wb = new XSSFWorkbook();
+                }
                 break;
             default:
                 throw new IllegalStateException("Unknown export format " + exportFormat);
@@ -256,7 +261,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                 DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
                         .getContainer()).getLoader();
                 Long count = getCountRecordsFromLoader(loader);
-                for (int offset = 0; offset < count; offset = offset + exporterProperties.getBatchSize()) {
+                for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
                     items.addAll(dataManager.load(loader.getContainer().getEntityMetaClass()
                                     .getJavaClass())
                             .query(loader.getQuery())
@@ -264,7 +269,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                             .condition(loader.getCondition())
                             .parameters(loader.getParameters())
                             .firstResult(offset)
-                            .maxResults(offset + exporterProperties.getBatchSize())
+                            .maxResults(offset + exporterProperties.getLoadBatchSize())
                             .list());
                 }
                 for (Object item : items) {
