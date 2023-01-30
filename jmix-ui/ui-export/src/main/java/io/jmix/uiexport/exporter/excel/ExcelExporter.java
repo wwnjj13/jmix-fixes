@@ -143,6 +143,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
     public Long getCountRecordsFromLoader(DataLoader loader) {
         LoadContext.Query query = new LoadContext.Query(loader.getQuery());
         query.setParameters(loader.getParameters());
+        query.setCondition(loader.getCondition());
         LoadContext loadContext = new LoadContext(loader.getContainer().getEntityMetaClass()).setHints(loader.getHints())
                 .setQuery(query);
         return dataManager.getCount(loadContext);
@@ -227,38 +228,6 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                 }
             }
 
-            if (table instanceof TreeTable) {
-
-                DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
-                        .getContainer()).getLoader();
-                Long count = getCountRecordsFromLoader(loader);
-                List<Object> items = new ArrayList<>();
-                for (int offset = 0; offset < count; offset = offset + exporterProperties.getBatchSize()) {
-                    items.addAll(dataManager.load(loader.getContainer().getEntityMetaClass()
-                                    .getJavaClass())
-                            .query(loader.getQuery())
-                            .hints(loader.getHints())
-                            .parameters(loader.getParameters())
-                            .firstResult(offset)
-                            .maxResults(offset + exporterProperties.getBatchSize())
-                            .list());
-                }
-                for (Object item : items) {
-                    if (checkIsRowNumberExceed(r)) {
-                        break;
-                    }
-                    createRow(columns, 0, ++r, item);
-                }
-//                for (Object itemId : treeTableSource.getRootItemIds()) {
-//                    if (checkIsRowNumberExceed(r)) {
-//                        break;
-//                    }
-//
-//                    r = createHierarchicalRow(treeTable, columns, exportExpanded, r, itemId);
-//                }
-
-            } else
-
             if (tableItems != null) {
                 List<Object> items = new ArrayList<>();
                 DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
@@ -269,6 +238,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                                     .getJavaClass())
                             .query(loader.getQuery())
                             .hints(loader.getHints())
+                            .condition(loader.getCondition())
                             .parameters(loader.getParameters())
                             .firstResult(offset)
                             .maxResults(offset + exporterProperties.getBatchSize())

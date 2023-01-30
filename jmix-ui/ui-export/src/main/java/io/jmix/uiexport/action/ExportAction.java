@@ -138,7 +138,7 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
         if (tableExporter == null) {
             throw new IllegalStateException("Table exporter is not defined");
         }
-        if (needExportAll()) {
+        if (!containSelectedEntities()) {
             AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS", Status.PRIMARY) {
                 @Override
                 public void actionPerform(Component component) {
@@ -154,7 +154,7 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
             };
             exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
 
-            Action[] actions = new Action[]{
+            Action[] actions = new Action[] {
                     exportAllAction,
                     exportVisibleAction,
                     new DialogAction(DialogAction.Type.CANCEL)
@@ -205,6 +205,7 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
             dialogs.createOptionDialog()
                     .withCaption(getMessage("actions.exportSelectedTitle"))
                     .withMessage(getMessage("actions.exportSelectedCaption"))
+                    .withWidth("500px")
                     .withActions(actions)
                     .show();
         }
@@ -224,12 +225,8 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
         return messages.getMessage(id);
     }
 
-    protected boolean needExportAll() {
-        if (target.getSelected().isEmpty()
-                || !(target.getItems() instanceof ContainerDataUnit)) {
-            return true;
-        }
-        CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
-        return container != null && container.getItems().size() <= 1;
+    protected boolean containSelectedEntities() {
+        return !target.getSelected().isEmpty()
+                && target.getItems() instanceof ContainerDataUnit;
     }
 }
