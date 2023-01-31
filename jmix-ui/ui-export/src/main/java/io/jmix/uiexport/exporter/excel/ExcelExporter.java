@@ -77,7 +77,6 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -146,7 +145,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                 break;
             case XLSX:
                 if (exporterProperties.getStreamInDisk()) {
-                    wb = new SXSSFWorkbook();
+                    wb = new SXSSFWorkbook(exporterProperties.getStreamWindowSize());
                 } else {
                     wb = new XSSFWorkbook();
                 }
@@ -257,27 +256,29 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
             }
 
             if (tableItems != null) {
-                List<Object> items = new ArrayList<>();
+
                 DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
                         .getContainer()).getLoader();
                 Long count = getCountRecordsFromLoader(loader);
                 for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
-                    items.addAll(dataManager.load(loader.getContainer().getEntityMetaClass()
+                    List<Object> items =
+                    dataManager.load(loader.getContainer().getEntityMetaClass()
                                     .getJavaClass())
                             .query(loader.getQuery())
                             .hints(loader.getHints())
                             .condition(loader.getCondition())
                             .parameters(loader.getParameters())
                             .firstResult(offset)
-                            .maxResults(offset + exporterProperties.getLoadBatchSize())
-                            .list());
-                }
-                for (Object item : items) {
-                    if (checkIsRowNumberExceed(r)) {
-                        break;
+                            .maxResults(exporterProperties.getLoadBatchSize())
+                            .list();
+                    for (Object item : items) {
+                        if (checkIsRowNumberExceed(r)) {
+                            break;
+                        }
+                        createRow(columns, 0, ++r, item);
                     }
-                    createRow(columns, 0, ++r, item);
                 }
+
             }
         } else if(exportMode == ExportMode.VISIBLE) {
             if (table.isAggregatable() && exportAggregation
@@ -737,9 +738,6 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
 
             int level = 0;
-//            if (table instanceof TreeTable) {
-//                level = ((TreeTable<Object>) table).getLevel(itemId);
-//            }
 
             for (int c = startColumn; c < columns.size(); c++) {
                 Cell cell = row.createCell(c);
