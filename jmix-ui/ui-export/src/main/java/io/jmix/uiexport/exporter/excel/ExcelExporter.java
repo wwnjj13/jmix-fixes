@@ -45,7 +45,6 @@ import io.jmix.ui.download.Downloader;
 import io.jmix.ui.model.DataLoader;
 import io.jmix.ui.model.InstanceContainer;
 import io.jmix.ui.model.impl.CollectionContainerImpl;
-import io.jmix.uiexport.ExporterProperties;
 import io.jmix.uiexport.action.ExportAction;
 import io.jmix.uiexport.exporter.AbstractTableExporter;
 import io.jmix.uiexport.exporter.ExportMode;
@@ -103,7 +102,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
     protected DataManager dataManager;
 
     @Autowired
-    protected ExporterProperties exporterProperties;
+    protected ExcelExporterProperties exporterProperties;
 
     public static enum ExportFormat {
         XLS,
@@ -144,7 +143,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                     wb = new HSSFWorkbook();
                 break;
             case XLSX:
-                if (exporterProperties.getStreamInDisk()) {
+                if (exporterProperties.getUseStreamingApi()) {
                     wb = new SXSSFWorkbook(exporterProperties.getStreamWindowSize());
                 } else {
                     wb = new XSSFWorkbook();
@@ -233,7 +232,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
         TableItems<Object> tableItems = table.getItems();
 
-        if (exportMode == ExportMode.SELECTED && table.getSelected().size() > 0) {
+        if (exportMode == ExportMode.CURRENT_PAGE && table.getSelected().size() > 0) {
             Set<Object> selected = table.getSelected();
 
             List<Object> ordered = tableItems.getItemIds().stream()
@@ -278,7 +277,6 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                         createRow(columns, 0, ++r, item);
                     }
                 }
-
             }
         } else if(exportMode == ExportMode.VISIBLE) {
             if (table.isAggregatable() && exportAggregation
@@ -351,6 +349,11 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
         ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(out.toByteArray(),
                 uiProperties.getSaveExportedByteArrayDataThresholdBytes(), coreProperties.getTempDir());
+
+        if(wb instanceof SXSSFWorkbook){
+            ((SXSSFWorkbook) wb).dispose();
+        }
+
         switch (exportFormat) {
             case XLSX:
                 downloader.download(dataProvider, getFileName(table) + ".xlsx", XLSX);
@@ -415,7 +418,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
         if (dataGridSource == null) {
             throw new IllegalStateException("DataGrid is not bound to data");
         }
-        if (exportMode == ExportMode.SELECTED && dataGrid.getSelected().size() > 0) {
+        if (exportMode == ExportMode.CURRENT_PAGE && dataGrid.getSelected().size() > 0) {
             Set<Object> selected = dataGrid.getSelected();
             List<Object> ordered = dataGridSource.getItems()
                     .filter(selected::contains)
@@ -427,6 +430,30 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
                 createDataGridRow(dataGrid, columns, 0, ++r, Id.of(item).getValue());
             }
+        } else if(exportMode == ExportMode.ALL) {
+
+            DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) dataGrid)
+                    .getContainer()).getLoader();
+            Long count = getCountRecordsFromLoader(loader);
+            for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
+                List<Object> items =
+                        dataManager.load(loader.getContainer().getEntityMetaClass()
+                                        .getJavaClass())
+                                .query(loader.getQuery())
+                                .hints(loader.getHints())
+                                .condition(loader.getCondition())
+                                .parameters(loader.getParameters())
+                                .firstResult(offset)
+                                .maxResults(exporterProperties.getLoadBatchSize())
+                                .list();
+                for (Object item : items) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+                    createDataGridRow( columns, 0, ++r, Id.of(item).getValue());
+                }
+            }
+
         } else {
             if (dataGrid instanceof TreeDataGrid) {
                 TreeDataGrid treeDataGrid = (TreeDataGrid) dataGrid;
@@ -462,6 +489,11 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
         }
         ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(out.toByteArray(),
                 uiProperties.getSaveExportedByteArrayDataThresholdBytes(), coreProperties.getTempDir());
+
+        if(wb instanceof SXSSFWorkbook){
+            ((SXSSFWorkbook) wb).dispose();
+        }
+
         switch (exportFormat) {
             case XLSX:
                 downloader.download(dataProvider, getFileName(dataGrid) + "." + XLSX.getFileExt(), XLSX);
@@ -509,6 +541,29 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
             }
 
             Object cellValue = getColumnValue(dataGrid, columns.get(c), item);
+
+            formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
+        }
+    }
+
+    protected void createDataGridRow(List<DataGrid.Column<Object>> columns,
+                                     int startColumn, int rowNumber, Object item) {
+        if (startColumn >= columns.size()) {
+            return;
+        }
+        Row row = sheet.createRow(rowNumber);
+
+        int level = 0;
+        for (int c = startColumn; c < columns.size(); c++) {
+            Cell cell = row.createCell(c);
+
+            DataGrid.Column column = columns.get(c);
+            MetaPropertyPath propertyPath = null;
+            if (column.getPropertyPath() != null) {
+                propertyPath = column.getPropertyPath();
+            }
+
+            Object cellValue = EntityValues.getValue(item, column.getPropertyPath().getMetaProperty().getName());
 
             formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
         }
@@ -748,7 +803,8 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                     propertyPath = (MetaPropertyPath) column.getId();
                 }
 
-                Object cellValue = EntityValues.getValue(instance, column.getMetaPropertyPath().getMetaProperty().getName());
+                Object cellValue =
+                        EntityValues.getValue(instance, column.getMetaPropertyPath().getMetaProperty().getName());
 
                 formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
             }

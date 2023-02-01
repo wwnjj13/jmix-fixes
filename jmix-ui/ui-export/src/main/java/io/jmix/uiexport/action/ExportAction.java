@@ -138,21 +138,23 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
         if (tableExporter == null) {
             throw new IllegalStateException("Table exporter is not defined");
         }
+        AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS", Status.PRIMARY) {
+            @Override
+            public void actionPerform(Component component) {
+                doExport(ExportMode.ALL);
+            }
+        };
+        exportAllAction.setCaption(getMessage(exportAllAction.getId()));
+        AbstractAction exportVisibleAction = new AbstractAction("actions.export.VISIBLE_ROWS") {
+            @Override
+            public void actionPerform(Component component) {
+                doExport(ExportMode.VISIBLE);
+            }
+        };
+        exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
+
+
         if (!containSelectedEntities()) {
-            AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS", Status.PRIMARY) {
-                @Override
-                public void actionPerform(Component component) {
-                    doExport(ExportMode.ALL);
-                }
-            };
-            exportAllAction.setCaption(getMessage(exportAllAction.getId()));
-            AbstractAction exportVisibleAction = new AbstractAction("actions.export.VISIBLE_ROWS") {
-                @Override
-                public void actionPerform(Component component) {
-                    doExport(ExportMode.VISIBLE);
-                }
-            };
-            exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
 
             Action[] actions = new Action[] {
                     exportAllAction,
@@ -169,34 +171,18 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
                     .show();
 
         } else {
-            AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
+            AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS") {
                 @Override
                 public void actionPerform(Component component) {
-                    doExport(ExportMode.SELECTED);
+                    doExport(ExportMode.CURRENT_PAGE);
                 }
             };
             exportSelectedAction.setCaption(getMessage(exportSelectedAction.getId()));
 
-            AbstractAction exportVisibleAction = new AbstractAction("actions.export.VISIBLE_ROWS") {
-                @Override
-                public void actionPerform(Component component) {
-                    doExport(ExportMode.VISIBLE);
-                }
-            };
-            exportVisibleAction.setCaption(getMessage(exportVisibleAction.getId()));
-
-            AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS") {
-                @Override
-                public void actionPerform(Component component) {
-                    doExport(ExportMode.ALL);
-                }
-            };
-            exportAllAction.setCaption(getMessage(exportAllAction.getId()));
-
             Action[] actions = new Action[]{
-                    exportSelectedAction,
                     exportAllAction,
                     exportVisibleAction,
+                    exportSelectedAction,
                     new DialogAction(DialogAction.Type.CANCEL)
             };
 

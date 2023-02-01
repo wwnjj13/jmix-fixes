@@ -20,6 +20,6 @@ public enum ExportMode {
 
     ALL,
     VISIBLE,
-    SELECTED
+    CURRENT_PAGE
 
 }
