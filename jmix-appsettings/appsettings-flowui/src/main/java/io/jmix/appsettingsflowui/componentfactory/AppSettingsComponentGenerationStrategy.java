@@ -92,6 +92,7 @@ public class AppSettingsComponentGenerationStrategy
             if (range.isClass()) {
                 field = createEntityPickerField();
             }
+
             if (field instanceof SupportsValueSource) {
                 ((SupportsValueSource<?>) field).setValueSource(context.getValueSource());
             }

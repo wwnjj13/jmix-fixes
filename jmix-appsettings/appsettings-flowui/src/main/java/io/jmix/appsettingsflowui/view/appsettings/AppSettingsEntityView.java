@@ -25,6 +25,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.Route;
@@ -437,6 +438,8 @@ public class AppSettingsEntityView extends StandardView {
         String caption = messages.formatMessage(this.getClass(), "entitySaved",
                 messageTools.getEntityCaption(currentMetaClass));
         notifications.create(caption)
+                .withType(Notifications.Type.SUCCESS)
+                .withPosition(Notification.Position.TOP_END)
                 .show();
     }
 
