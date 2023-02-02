@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static io.jmix.flowui.view.StandardOutcome.CLOSE;
@@ -359,7 +360,12 @@ public class AppSettingsEntityView extends StandardView {
         } else {
             entityToEdit = dataContext.merge(entityToEdit);
         }
-
+        container.addItemPropertyChangeListener(new Consumer<InstanceContainer.ItemPropertyChangeEvent>() {
+            @Override
+            public void accept(InstanceContainer.ItemPropertyChangeEvent itemPropertyChangeEvent) {
+                itemPropertyChangeEvent.getProperty();
+            }
+        });
         container.setItem(entityToEdit);
         return container;
     }
