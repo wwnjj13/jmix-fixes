@@ -44,37 +44,38 @@ import static java.util.Comparator.*;
 @ViewController("quartz_JobModel.list")
 @ViewDescriptor("job-model-list-view.xml")
 @LookupComponent("jobModelsTable")
+@DialogMode(width = "60em", height = "37.5em", resizable = true)
 public class JobModelListView extends StandardListView<JobModel> {
 
     @ViewComponent
-    private RemoveOperation removeOperation;
+    protected RemoveOperation removeOperation;
 
     @ViewComponent
-    private CollectionContainer<JobModel> jobModelsDc;
+    protected CollectionContainer<JobModel> jobModelsDc;
 
     @ViewComponent
-    private DataGrid<JobModel> jobModelsTable;
+    protected DataGrid<JobModel> jobModelsTable;
 
     @ViewComponent
-    private TextField nameField;
+    protected TextField nameField;
 
     @ViewComponent
-    private TextField classField;
+    protected TextField classField;
 
     @ViewComponent
-    private TextField groupField;
+    protected TextField groupField;
 
     @ViewComponent
-    private ComboBox<JobState> jobStateComboBox;
+    protected ComboBox<JobState> jobStateComboBox;
 
     @Autowired
-    private QuartzService quartzService;
+    protected QuartzService quartzService;
 
     @Autowired
-    private Notifications notifications;
+    protected Notifications notifications;
 
     @Autowired
-    private MessageBundle messageBundle;
+    protected MessageBundle messageBundle;
 
     @Subscribe
     protected void onInit(View.InitEvent event) {
@@ -89,12 +90,12 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe
-    public void onBeforeShow(View.BeforeShowEvent event) {
+    protected void onBeforeShow(View.BeforeShowEvent event) {
         jobStateComboBox.setItems(JobState.values());
         loadJobsData();
     }
 
-    private void loadJobsData() {
+    protected void loadJobsData() {
         List<JobModel> sortedJobs = quartzService.getAllJobs().stream()
                 .filter(jobModel -> Strings.isNullOrEmpty(nameField.getValue()) ||
                         StringUtils.containsIgnoreCase(jobModel.getJobName(), nameField.getValue()))
@@ -111,13 +112,13 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Install(to = "jobModelsTable.executeNow", subject = "enabledRule")
-    private boolean jobModelsTableExecuteNowEnabledRule() {
+    protected boolean jobModelsTableExecuteNowEnabledRule() {
         return !CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())
                 && !isJobActive(jobModelsTable.getSingleSelectedItem());
     }
 
     @Install(to = "jobModelsTable.activate", subject = "enabledRule")
-    private boolean jobModelsTableActivateEnabledRule() {
+    protected boolean jobModelsTableActivateEnabledRule() {
         if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
             return false;
         }
@@ -127,13 +128,13 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Install(to = "jobModelsTable.deactivate", subject = "enabledRule")
-    private boolean jobModelsTableDeactivateEnabledRule() {
+    protected boolean jobModelsTableDeactivateEnabledRule() {
         return !CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())
                 && isJobActive(jobModelsTable.getSingleSelectedItem());
     }
 
     @Install(to = "jobModelsTable.remove", subject = "enabledRule")
-    private boolean jobModelsTableRemoveEnabledRule() {
+    protected boolean jobModelsTableRemoveEnabledRule() {
         if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
             return false;
         }
@@ -143,7 +144,7 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobModelsTable.executeNow")
-    public void onJobModelsTableExecuteNow(ActionPerformedEvent event) {
+    protected void onJobModelsTableExecuteNow(ActionPerformedEvent event) {
         JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.executeNow(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
         notifications.create(messageBundle.formatMessage("jobExecuted", selectedJobModel.getJobName()))
@@ -153,7 +154,7 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobModelsTable.activate")
-    public void onJobModelsTableActivate(ActionPerformedEvent event) {
+    protected void onJobModelsTableActivate(ActionPerformedEvent event) {
         JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.resumeJob(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
         notifications.create(messageBundle.formatMessage("jobResumed", selectedJobModel.getJobName()))
@@ -164,7 +165,7 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobModelsTable.deactivate")
-    public void onJobModelsTableDeactivate(ActionPerformedEvent event) {
+    protected void onJobModelsTableDeactivate(ActionPerformedEvent event) {
         JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         quartzService.pauseJob(selectedJobModel.getJobName(), selectedJobModel.getJobGroup());
         notifications.create(messageBundle.formatMessage("jobPaused", selectedJobModel.getJobName()))
@@ -175,7 +176,7 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobModelsTable.remove")
-    public void onJobModelsTableRemove(ActionPerformedEvent event) {
+    protected void onJobModelsTableRemove(ActionPerformedEvent event) {
         removeOperation.builder(jobModelsTable)
                 .withConfirmation(true)
                 .beforeActionPerformed(e -> {
@@ -192,26 +193,26 @@ public class JobModelListView extends StandardListView<JobModel> {
     }
 
     @Subscribe("jobModelsTable.refresh")
-    public void onJobModelsTableRefresh(ActionPerformedEvent event) {
+    protected void onJobModelsTableRefresh(ActionPerformedEvent event) {
         loadJobsData();
     }
 
     @Install(to = "jobModelsTable.create", subject = "afterSaveHandler")
-    private void jobModelsTableCreateAfterCommitHandler(JobModel jobModel) {
+    protected void jobModelsTableCreateAfterCommitHandler(JobModel jobModel) {
         loadJobsData();
     }
 
     @Install(to = "jobModelsTable.edit", subject = "afterSaveHandler")
-    private void jobModelsTableEditAfterCommitHandler(JobModel jobModel) {
+    protected void jobModelsTableEditAfterCommitHandler(JobModel jobModel) {
         loadJobsData();
     }
 
-    private boolean isJobActive(JobModel jobModel) {
+    protected boolean isJobActive(JobModel jobModel) {
         return jobModel != null && jobModel.getJobState() == JobState.NORMAL;
     }
 
     @Subscribe("applyFilter")
-    public void onApplyFilter(ActionPerformedEvent event) {
+    protected void onApplyFilter(ActionPerformedEvent event) {
         loadJobsData();
     }
 

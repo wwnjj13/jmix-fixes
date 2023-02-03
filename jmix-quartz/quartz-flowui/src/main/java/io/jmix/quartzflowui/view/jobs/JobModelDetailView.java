@@ -31,7 +31,6 @@ import io.jmix.flowui.action.list.EditAction;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
-import io.jmix.flowui.kit.component.valuepicker.CustomValueSetEvent;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.*;
@@ -54,61 +53,61 @@ import java.util.stream.Collectors;
 @DialogMode(width = "60em", height = "37.5em", resizable = true)
 public class JobModelDetailView extends StandardDetailView<JobModel> {
 
-    private static final String VIEW_ACTION_ID = "view";
+    protected static final String VIEW_ACTION_ID = "view";
 
     @ViewComponent
-    private CollectionContainer<JobDataParameterModel> jobDataParamsDc;
+    protected CollectionContainer<JobDataParameterModel> jobDataParamsDc;
 
     @ViewComponent
-    private CollectionContainer<TriggerModel> triggerModelDc;
+    protected CollectionContainer<TriggerModel> triggerModelDc;
 
     @ViewComponent
-    private TextField jobNameField;
+    protected TextField jobNameField;
 
     @ViewComponent
-    private ComboBox<String> jobGroupField;
+    protected ComboBox<String> jobGroupField;
 
     @ViewComponent
-    private ComboBox<String> jobClassField;
+    protected ComboBox<String> jobClassField;
 
     @ViewComponent
-    private DataGrid<TriggerModel> triggerModelTable;
+    protected DataGrid<TriggerModel> triggerModelTable;
 
     @ViewComponent
-    private Tabs jobDetailsTabs;
+    protected Tabs jobDetailsTabs;
 
     @ViewComponent
-    private VerticalLayout triggersTab;
+    protected VerticalLayout triggersTab;
 
     @ViewComponent
-    private VerticalLayout jobDataParamsTab;
+    protected VerticalLayout jobDataParamsTab;
 
     @ViewComponent
-    private DataGrid<JobDataParameterModel> jobDataParamsTable;
+    protected DataGrid<JobDataParameterModel> jobDataParamsTable;
 
     @ViewComponent
-    private Button addDataParamButton;
+    protected Button addDataParamButton;
 
     @Autowired
-    private QuartzService quartzService;
+    protected QuartzService quartzService;
 
     @Autowired
-    private QuartzJobClassFinder quartzJobClassFinder;
+    protected QuartzJobClassFinder quartzJobClassFinder;
 
     @Autowired
-    private DialogWindows dialogWindows;
+    protected DialogWindows dialogWindows;
 
     @Autowired
-    private MessageBundle messageBundle;
+    protected MessageBundle messageBundle;
 
     @Autowired
-    private UnconstrainedDataManager dataManager;
+    protected UnconstrainedDataManager dataManager;
 
-    private boolean replaceJobIfExists = true;
-    private boolean deleteObsoleteJob = false;
-    private String obsoleteJobName = null;
-    private String obsoleteJobGroup = null;
-    private List<String> jobGroupNames;
+    protected boolean replaceJobIfExists = true;
+    protected boolean deleteObsoleteJob = false;
+    protected String obsoleteJobName = null;
+    protected String obsoleteJobGroup = null;
+    protected List<String> jobGroupNames;
 
     @Subscribe
     protected void onInit(View.InitEvent event) {
@@ -131,23 +130,11 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
         List<String> existedJobsClassNames = quartzJobClassFinder.getQuartzJobClassNames();
         jobClassField.setItems(existedJobsClassNames);
 
-        jobGroupField.addCustomValueSetListener(item -> {
-
-        });
-
-        jobGroupField.addValueChangeListener(e -> {
-
-        });
-
-        jobNameField.addValueChangeListener(e -> {
-
-        });
-
     }
 
     @Subscribe("jobGroupField")
-    protected void onJobGroupFieldValueSet(CustomValueSetEvent<ComboBox<String>, String> event) {
-        String newJobGroupName = event.getText();
+    protected void onJobGroupFieldValueSet(ComboBoxBase.CustomValueSetEvent<ComboBox<String>> event) {
+        String newJobGroupName = event.getDetail();
         if (!Strings.isNullOrEmpty(newJobGroupName)
                 && !jobGroupNames.contains(newJobGroupName)) {
             jobGroupNames.add(newJobGroupName);
@@ -203,7 +190,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     @SuppressWarnings("ConstantConditions")
     @Subscribe
-    public void onInitEntity(StandardDetailView.InitEntityEvent<JobModel> event) {
+    protected void onInitEntity(StandardDetailView.InitEntityEvent<JobModel> event) {
         JobModel entity = event.getEntity();
         if (entity.getJobSource() == null) {
             entity.setJobSource(JobSource.USER_DEFINED);
@@ -224,7 +211,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     }
 
     @Subscribe
-    public void onBeforeShow(BeforeShowEvent event) {
+    protected void onBeforeShow(BeforeShowEvent event) {
         //allow editing only not active and user-defined jobs
         boolean readOnly = JobState.NORMAL.equals(getEditedEntity().getJobState())
                 || JobSource.PREDEFINED.equals(getEditedEntity().getJobSource());
@@ -236,7 +223,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     }
 
     @Subscribe("triggerModelTable.view")
-    public void onTriggerModelGroupTableView(ActionPerformedEvent event) {
+    protected void onTriggerModelGroupTableView(ActionPerformedEvent event) {
         TriggerModel triggerModel = triggerModelTable.getSingleSelectedItem();
         if (triggerModel == null) {
             return;
@@ -253,7 +240,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
 
     @Subscribe
     @SuppressWarnings("ConstantConditions")
-    public void onValidation(ValidationEvent event) {
+    protected void onValidation(ValidationEvent event) {
         ValidationErrors errors = event.getErrors();
 
         JobModel jobModel = getEditedEntity();
@@ -304,7 +291,7 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     }
 
     @Subscribe
-    public void onBeforeCommitChanges(BeforeSaveEvent event) {
+    protected void onBeforeCommitChanges(BeforeSaveEvent event) {
         if (deleteObsoleteJob) {
             quartzService.deleteJob(obsoleteJobName, obsoleteJobGroup);
         }
@@ -313,12 +300,9 @@ public class JobModelDetailView extends StandardDetailView<JobModel> {
     }
 
     @Subscribe("jobDataParamsTable.addNewDataParam")
-    public void onJobDataParamsTableCreate(ActionPerformedEvent event) {
-        List<JobDataParameterModel> currentItems = new ArrayList<>(jobDataParamsDc.getItems());
-
+    protected void onJobDataParamsTableCreate(ActionPerformedEvent event) {
         JobDataParameterModel itemToAdd = dataManager.create(JobDataParameterModel.class);
-        currentItems.add(itemToAdd);
-        jobDataParamsDc.setItems(currentItems);
+        jobDataParamsDc.getMutableItems().add(itemToAdd);
         jobDataParamsTable.select(itemToAdd);
     }
 
