@@ -28,18 +28,12 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.appsettings.AppSettings;
 import io.jmix.appsettings.AppSettingsTools;
 import io.jmix.appsettings.entity.AppSettingsEntity;
-import io.jmix.core.AccessManager;
-import io.jmix.core.EntityStates;
-import io.jmix.core.FetchPlan;
-import io.jmix.core.FetchPlans;
-import io.jmix.core.MessageTools;
-import io.jmix.core.Messages;
-import io.jmix.core.MetadataTools;
-import io.jmix.core.UnconstrainedDataManager;
+import io.jmix.core.*;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetadataObject;
@@ -60,27 +54,15 @@ import io.jmix.flowui.model.DataContext;
 import io.jmix.flowui.model.InstanceContainer;
 import io.jmix.flowui.util.OperationResult;
 import io.jmix.flowui.util.UnknownOperationResult;
-import io.jmix.flowui.view.DefaultMainViewParent;
-import io.jmix.flowui.view.DialogMode;
-import io.jmix.flowui.view.StandardView;
-import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.ViewComponent;
-import io.jmix.flowui.view.ViewController;
-import io.jmix.flowui.view.ViewDescriptor;
-import io.jmix.flowui.view.ViewValidation;
+import io.jmix.flowui.view.*;
+import io.jmix.flowui.view.navigation.RouteSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Convert;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.jmix.flowui.view.StandardOutcome.CLOSE;
-import static io.jmix.flowui.view.StandardOutcome.DISCARD;
-import static io.jmix.flowui.view.StandardOutcome.SAVE;
+import static io.jmix.flowui.view.StandardOutcome.*;
 
 @Route(value = "app-settings", layout = DefaultMainViewParent.class)
 @ViewController("appSettings.view")
@@ -93,6 +75,8 @@ public class AppSettingsEntityView extends StandardView {
     private static final int AMOUNT_COLUMNS = 3;
 
     private static final String SELECT_APP_SETTINGS_ENTITY_QUERY = "select e from %s e where e.id = 1";
+
+    protected static final String QUERY_PARAM_SETTINGS_CLASS = "settings";
 
     @Autowired
     protected AppSettings appSettings;
@@ -136,6 +120,9 @@ public class AppSettingsEntityView extends StandardView {
     @Autowired
     protected FetchPlans fetchPlans;
 
+    @Autowired
+    protected RouteSupport routeSupport;
+
     @ViewComponent
     protected ComboBox<MetaClass> entitiesLookup;
 
@@ -170,7 +157,11 @@ public class AppSettingsEntityView extends StandardView {
 
             prevMetaClass = e.getOldValue();
             currentMetaClass = e.getValue();
-
+            getUI().ifPresent(ui -> routeSupport.setQueryParameter(
+                    ui,
+                    QUERY_PARAM_SETTINGS_CLASS,
+                    currentMetaClass.getName()
+            ));
             if (dataContext != null && hasUnsavedChanges()) {
                 handleEntityLookupChangeWithUnsavedChanges();
                 return;
@@ -178,6 +169,31 @@ public class AppSettingsEntityView extends StandardView {
 
             initEntityPropertiesGridLayout();
         });
+    }
+
+    @Subscribe
+    public void beforeShow(BeforeShowEvent event) {
+        if (currentMetaClass != null) {
+            entitiesLookup.setValue(currentMetaClass);
+        }
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Map<String, List<String>> parameters = event.getLocation().getQueryParameters().getParameters();
+
+        if (parameters.containsKey(QUERY_PARAM_SETTINGS_CLASS)) {
+            parameters.get(QUERY_PARAM_SETTINGS_CLASS).stream()
+                    .findAny()
+                    .ifPresent(this::setSettingsClass);
+        }
+        super.beforeEnter(event);
+    }
+
+    public void setSettingsClass(String metaClassName) {
+        this.currentMetaClass = metadataTools.getAllJpaEntityMetaClasses().stream()
+                 .filter(entityClass->entityClass.getName().equals(metaClassName))
+                .findFirst().orElse(null);
     }
 
     protected void initEntityPropertiesGridLayout() {
@@ -360,12 +376,6 @@ public class AppSettingsEntityView extends StandardView {
         } else {
             entityToEdit = dataContext.merge(entityToEdit);
         }
-        container.addItemPropertyChangeListener(new Consumer<InstanceContainer.ItemPropertyChangeEvent>() {
-            @Override
-            public void accept(InstanceContainer.ItemPropertyChangeEvent itemPropertyChangeEvent) {
-                itemPropertyChangeEvent.getProperty();
-            }
-        });
         container.setItem(entityToEdit);
         return container;
     }

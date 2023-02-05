@@ -18,7 +18,6 @@ package io.jmix.appsettingsflowui.componentfactory;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.select.Select;
 import io.jmix.appsettings.entity.AppSettingsEntity;
@@ -94,11 +93,6 @@ public class AppSettingsComponentGenerationStrategy
                 field = createEntityPickerField();
             }
 
-            if(range.isEnum()){
-                field = (AbstractField) createEnumField(range);
-                field.setValue(context.getValueSource().getValue());
-            }
-
             if (field instanceof SupportsValueSource) {
                 ((SupportsValueSource<?>) field).setValueSource(context.getValueSource());
             }
@@ -106,17 +100,6 @@ public class AppSettingsComponentGenerationStrategy
         }
         return null;
 
-    }
-
-    protected Component createEnumField(Range range) {
-        JmixSelect<?> enumField = uiComponents.create(JmixSelect.class);
-        enumField.addValueChangeListener((HasValue.ValueChangeListener) event -> {
-            int a= 1;
-            int b = a+1;
-        });
-        enumField.setEmptySelectionAllowed(true);
-        enumField.setItems(range.asEnumeration().getValues());
-        return enumField;
     }
 
     protected EntityPicker<?> createEntityPickerField() {
