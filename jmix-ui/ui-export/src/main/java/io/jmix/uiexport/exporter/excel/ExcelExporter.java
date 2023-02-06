@@ -38,8 +38,10 @@ import io.jmix.ui.component.data.GroupTableItems;
 import io.jmix.ui.component.data.TableItems;
 import io.jmix.ui.component.data.TreeDataGridItems;
 import io.jmix.ui.component.data.TreeTableItems;
+import io.jmix.ui.component.data.datagrid.ContainerDataGridItems;
 import io.jmix.ui.component.data.meta.EntityDataGridItems;
 import io.jmix.ui.component.data.table.ContainerTableItems;
+import io.jmix.ui.component.impl.DataGridImpl;
 import io.jmix.ui.download.ByteArrayDataProvider;
 import io.jmix.ui.download.Downloader;
 import io.jmix.ui.model.DataLoader;
@@ -71,6 +73,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
@@ -88,6 +91,7 @@ import java.util.stream.Collectors;
 
 import static io.jmix.ui.download.DownloadFormat.XLS;
 import static io.jmix.ui.download.DownloadFormat.XLSX;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 /**
  * Use this class to export {@link Table} into Excel format
@@ -143,7 +147,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                     wb = new HSSFWorkbook();
                 break;
             case XLSX:
-                if (exporterProperties.getUseStreamingApi()) {
+                if (exporterProperties.isUseStreamingApi()) {
                     wb = new SXSSFWorkbook(exporterProperties.getStreamWindowSize());
                 } else {
                     wb = new XSSFWorkbook();
@@ -175,6 +179,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
         return dataManager.getCount(loadContext);
     }
 
+    @Transactional( isolation = SERIALIZABLE)
     @Override
     public void exportTable(Downloader downloader, Table<Object> table, ExportMode exportMode) {
         if (downloader == null) {
@@ -364,6 +369,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
         }
     }
 
+    @Transactional( isolation = SERIALIZABLE)
     @Override
     public void exportDataGrid(Downloader downloader, DataGrid<Object> dataGrid, ExportMode exportMode) {
         if (downloader == null) {
@@ -431,8 +437,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                 createDataGridRow(dataGrid, columns, 0, ++r, Id.of(item).getValue());
             }
         } else if(exportMode == ExportMode.ALL) {
-
-            DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) dataGrid)
+            DataLoader loader = ((CollectionContainerImpl) ((ContainerDataGridItems) dataGrid.getItems())
                     .getContainer()).getLoader();
             Long count = getCountRecordsFromLoader(loader);
             for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
@@ -450,7 +455,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                     if (checkIsRowNumberExceed(r)) {
                         break;
                     }
-                    createDataGridRow( columns, 0, ++r, Id.of(item).getValue());
+                    createDataGridRow( columns, 0, ++r, item);
                 }
             }
 
