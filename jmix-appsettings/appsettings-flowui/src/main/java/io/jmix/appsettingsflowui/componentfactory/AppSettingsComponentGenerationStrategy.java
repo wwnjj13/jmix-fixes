@@ -89,6 +89,10 @@ public class AppSettingsComponentGenerationStrategy
                 field = createPasswordField();
             }
 
+            if (range.isEnum()){
+                field = createEnumField(range);
+            }
+
             if (range.isClass()) {
                 field = createEntityPickerField();
             }
@@ -100,6 +104,12 @@ public class AppSettingsComponentGenerationStrategy
         }
         return null;
 
+    }
+
+    protected Select<?> createEnumField(Range range) {
+        Select enumField = uiComponents.create(JmixSelect.class);
+        enumField.setItems(range.asEnumeration().getValues());
+        return enumField;
     }
 
     protected EntityPicker<?> createEntityPickerField() {
