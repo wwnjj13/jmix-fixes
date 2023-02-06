@@ -19,7 +19,7 @@ package io.jmix.flowui.component.jpqlfilter;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.querycondition.JpqlCondition;
-import io.jmix.flowui.component.filer.AbstractSingleFilterComponent;
+import io.jmix.flowui.component.filer.SingleFilterComponentBase;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -28,7 +28,7 @@ import java.util.Collections;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
-public class JpqlFilter<V> extends AbstractSingleFilterComponent<V> {
+public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
 
     protected static final String JPQL_FILTER_CLASS_NAME = "jmix-jpql-filter";
 

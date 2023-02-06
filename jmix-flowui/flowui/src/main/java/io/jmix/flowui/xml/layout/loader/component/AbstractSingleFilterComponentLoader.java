@@ -19,7 +19,7 @@ package io.jmix.flowui.xml.layout.loader.component;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValueAndElement;
 import io.jmix.flowui.component.SupportsLabelPosition;
-import io.jmix.flowui.component.filer.AbstractSingleFilterComponent;
+import io.jmix.flowui.component.filer.SingleFilterComponentBase;
 import io.jmix.flowui.exception.GuiDevelopmentException;
 import io.jmix.flowui.model.DataLoader;
 import io.jmix.flowui.xml.layout.ComponentLoader;
@@ -28,7 +28,7 @@ import org.dom4j.Element;
 
 import java.util.List;
 
-public abstract class AbstractSingleFilterComponentLoader<C extends AbstractSingleFilterComponent>
+public abstract class AbstractSingleFilterComponentLoader<C extends SingleFilterComponentBase>
         extends AbstractComponentLoader<C> {
 
     @Override

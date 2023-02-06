@@ -16,6 +16,9 @@
 
 package io.jmix.flowui.component.filer;
 
+import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasStyle;
 import io.jmix.core.annotation.Internal;
 import io.jmix.core.querycondition.Condition;
 import io.jmix.flowui.model.DataLoader;
@@ -25,7 +28,7 @@ import io.jmix.flowui.model.DataLoader;
  * The filter component is related to {@link Condition} which will be used together with
  * query when loading entities into the {@link DataLoader}.
  */
-public interface FilterComponent {
+public interface FilterComponent extends HasElement, HasEnabled, HasStyle {
 
     /**
      * @return a {@link DataLoader} related to the current filter component

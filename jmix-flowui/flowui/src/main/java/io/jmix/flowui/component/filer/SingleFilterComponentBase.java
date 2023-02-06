@@ -43,7 +43,7 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
-public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
+public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         implements SingleFilterComponent<V>, SupportsLabelPosition, SupportsValidation<V>, HasRequired,
         ApplicationContextAware, InitializingBean {
 
@@ -69,22 +69,6 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
     protected boolean labelVisible = true;
 
     protected LabelPosition labelPosition = LabelPosition.ASIDE;
-
-    @Override
-    protected V generateModelValue() {
-        checkValueComponentState();
-        return valueComponent.getValue();
-    }
-
-    @Override
-    protected void setPresentationValue(V newPresentationValue) {
-        checkValueComponentState();
-        valueComponent.setValue(newPresentationValue);
-    }
-
-    protected void checkValueComponentState() {
-        checkState(valueComponent != null, "Value component isn't set");
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -126,6 +110,24 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
     protected void initRootComponent(HorizontalLayout root) {
         root.setSpacing(false);
         root.getThemeList().add("spacing-s");
+    }
+
+    // TODO: gg, rename?
+    public HorizontalLayout getRoot() {
+        return root;
+    }
+
+    @Override
+    protected V generateModelValue() {
+        checkValueComponentState();
+        //noinspection DataFlowIssue
+        return UiComponentUtils.getValue(valueComponent);
+    }
+
+    @Override
+    protected void setPresentationValue(V newPresentationValue) {
+        checkValueComponentState();
+        UiComponentUtils.setValue(valueComponent, newPresentationValue);
     }
 
     protected abstract Condition createQueryCondition();
@@ -264,14 +266,15 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
     }
 
     protected Label createLabel() {
-        Label label = new Label();
+        Label label = uiComponents.create(Label.class);
         label.setId(getInnerComponentPrefix() + "label");
         label.setWidth(labelWidth);
         label.setClassName(FILTER_LABEL_CLASS_NAME);
         return label;
     }
 
-    protected abstract String getInnerComponentPrefix();
+    // TODO: gg, try to make it protected
+    public abstract String getInnerComponentPrefix();
 
     @Override
     @Nullable
@@ -332,6 +335,10 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
         root.add(((Component) valueComponent));
 
         initValueComponent(valueComponent);
+
+        if (label != null) {
+            label.setFor(((Component) valueComponent));
+        }
     }
 
     protected void initValueComponent(HasValueAndElement<?, V> valueComponent) {
@@ -453,5 +460,9 @@ public abstract class AbstractSingleFilterComponent<V> extends CustomField<V>
         } else {
             super.blur();
         }
+    }
+
+    protected void checkValueComponentState() {
+        checkState(valueComponent != null, "Value component isn't set");
     }
 }

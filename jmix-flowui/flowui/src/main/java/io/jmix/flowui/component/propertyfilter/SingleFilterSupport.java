@@ -83,6 +83,14 @@ public class SingleFilterSupport {
      */
     public String getValueComponentName(HasValueAndElement<?, ?> valueComponent) {
         // TODO: gg, something better?
-        return valueComponent.getClass().getSimpleName();
+        return valueComponent.getClass().getName();
+    }
+
+    public Class<?> getValueComponentType(String name) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(String.format("Cannot get class for '%s'", name), e);
+        }
     }
 }

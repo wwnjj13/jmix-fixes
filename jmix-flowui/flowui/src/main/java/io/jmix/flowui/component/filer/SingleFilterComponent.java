@@ -16,7 +16,11 @@
 
 package io.jmix.flowui.component.filer;
 
-import com.vaadin.flow.component.HasValueAndElement;
+import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.shared.HasTooltip;
+import io.jmix.flowui.component.HasRequired;
+import io.jmix.flowui.component.SupportsValidation;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
 import io.jmix.flowui.model.DataLoader;
 
@@ -32,7 +36,6 @@ import javax.annotation.Nullable;
  * @see LogicalFilterComponent
  */
 public interface SingleFilterComponent<V> extends FilterComponent {
-    // TODO: gg, other interfaces
 
     /**
      * @return the name of the associated query parameter name

@@ -24,7 +24,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.querycondition.PropertyCondition;
-import io.jmix.flowui.component.filer.AbstractSingleFilterComponent;
+import io.jmix.flowui.component.filer.SingleFilterComponentBase;
 import io.jmix.flowui.kit.action.BaseAction;
 import io.jmix.flowui.kit.component.dropdownbutton.DropdownButton;
 import io.jmix.flowui.kit.component.dropdownbutton.DropdownButtonVariant;
@@ -36,7 +36,7 @@ import java.util.function.BiConsumer;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
-public class PropertyFilter<V> extends AbstractSingleFilterComponent<V> {
+public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
 
     protected static final String PROPERTY_FILTER_CLASS_NAME = "jmix-property-filter";
 

@@ -93,7 +93,7 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
     @Autowired
     protected TextField<String> conditionCaptionFilterField;
 
-    protected List<FilterCondition> conditions = new ArrayList<>();
+    /*protected List<FilterCondition> conditions = new ArrayList<>();
     protected List<FilterCondition> rootConditions = new ArrayList<>();
     protected List<FilterCondition> foundConditions = new ArrayList<>();
     protected MetaClass filterMetaClass;
@@ -121,20 +121,20 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
                 .getDataLoader()
                 .getContainer()
                 .getEntityMetaClass();
-    }
+    }*/
 
-    @Install(to = "filterConditionsDl", target = Target.DATA_LOADER)
+    /*@Install(to = "filterConditionsDl", target = Target.DATA_LOADER)
     protected List<FilterCondition> filterConditionsDlLoadDelegate(LoadContext<FilterCondition> loadContext) {
         return foundConditions;
-    }
+    }*/
 
     @Subscribe
     protected void onAfterShow(AfterShowEvent event) {
-        initFilterConditionsTree();
+//        initFilterConditionsTree();
         initCreatePopupButton();
     }
 
-    protected void initFilterConditionsTree() {
+    /*protected void initFilterConditionsTree() {
         filterConditionsTree.collapseTree();
         String propertiesCaption =
                 messages.getMessage(PropertyConditionBuilder.class, "propertyConditionBuilder.headerCaption");
@@ -143,7 +143,7 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
         if (propertiesHeaderCondition != null) {
             filterConditionsTree.expand(propertiesHeaderCondition);
         }
-    }
+    }*/
 
     protected void initCreatePopupButton() {
         for (Class<? extends FilterCondition> modelClass : filterComponents.getRegisteredModelClasses()) {
@@ -211,7 +211,7 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
         return newCondition;
     }
 
-    @Nullable
+    /*@Nullable
     protected HeaderFilterCondition getHeaderFilterConditionByCaption(String caption) {
         return conditions.stream()
                 .filter(condition -> condition instanceof HeaderFilterCondition
@@ -219,21 +219,21 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
                 .map(condition -> (HeaderFilterCondition) condition)
                 .findFirst()
                 .orElse(null);
-    }
+    }*/
 
-    @Subscribe("conditionCaptionFilterField")
+    /*@Subscribe("conditionCaptionFilterField")
     protected void onConditionCaptionFilterFieldValueChange(HasValue.ValueChangeEvent<String> event) {
         search(event.getValue());
-    }
+    }*/
 
-    @Nullable
+    /*@Nullable
     protected List<FilterCondition> searchRootConditions(List<FilterCondition> conditions) {
         return conditions.stream()
                 .filter(condition -> condition.getParent() == null)
                 .collect(Collectors.toList());
-    }
+    }*/
 
-    protected void search(@Nullable String searchValue) {
+    /*protected void search(@Nullable String searchValue) {
         foundConditions.clear();
 
         boolean loadAllConditions = StringUtils.isEmpty(searchValue) || rootConditions == null;
@@ -287,5 +287,5 @@ public class AddConditionScreen extends StandardLookup<FilterCondition> {
             }
             addParentToExpand(parent);
         }
-    }
+    }*/
 }
