@@ -16,12 +16,10 @@
  */
 package io.jmix.uiexport.exporter.excel;
 
-import io.jmix.core.DataManager;
-import io.jmix.core.Entity;
-import io.jmix.core.Id;
-import io.jmix.core.LoadContext;
+import io.jmix.core.*;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.datatype.Datatype;
+import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.Range;
@@ -263,6 +261,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
 
                 DataLoader loader = ((CollectionContainerImpl) ((ContainerTableItems) tableItems)
                         .getContainer()).getLoader();
+                MetaClass metaClass = ((ContainerTableItems<Object>) tableItems).getEntityMetaClass();
                 Long count = getCountRecordsFromLoader(loader);
                 for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
                     List<Object> items =
@@ -272,6 +271,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                             .hints(loader.getHints())
                             .condition(loader.getCondition())
                             .parameters(loader.getParameters())
+                            .sort(Sort.by(metadataTools.getPrimaryKeyName(metaClass)))
                             .firstResult(offset)
                             .maxResults(exporterProperties.getLoadBatchSize())
                             .list();
@@ -439,6 +439,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
         } else if(exportMode == ExportMode.ALL) {
             DataLoader loader = ((CollectionContainerImpl) ((ContainerDataGridItems) dataGrid.getItems())
                     .getContainer()).getLoader();
+            MetaClass metaClass = ((ContainerDataGridItems) dataGrid.getItems()).getEntityMetaClass();
             Long count = getCountRecordsFromLoader(loader);
             for (int offset = 0; offset < count; offset = offset + exporterProperties.getLoadBatchSize()) {
                 List<Object> items =
@@ -448,6 +449,7 @@ public class ExcelExporter extends AbstractTableExporter<ExcelExporter> {
                                 .hints(loader.getHints())
                                 .condition(loader.getCondition())
                                 .parameters(loader.getParameters())
+                                .sort(Sort.by(metadataTools.getPrimaryKeyName(metaClass)))
                                 .firstResult(offset)
                                 .maxResults(exporterProperties.getLoadBatchSize())
                                 .list();
