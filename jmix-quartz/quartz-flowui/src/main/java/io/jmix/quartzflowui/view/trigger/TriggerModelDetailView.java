@@ -17,12 +17,14 @@
 package io.jmix.quartzflowui.view.trigger;
 
 import com.google.common.base.Strings;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.select.Select;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.view.*;
@@ -52,7 +54,7 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     private TypedTextField<Long> repeatIntervalField;
 
     @ViewComponent
-    private ComboBox<ScheduleType> scheduleTypeField;
+    private Select<ScheduleType> scheduleTypeField;
 
     @Autowired
     private QuartzService quartzService;
@@ -63,16 +65,22 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     @Autowired
     private MessageBundle messageBundle;
 
+    private List<String> triggerGroupNames;
+
     @SuppressWarnings("ConstantConditions")
     @Subscribe
     public void onBeforeShow(BeforeShowEvent event) {
         initTriggerGroupNames();
         initFieldVisibility();
-        scheduleTypeField.setItems(ScheduleType.values());
-        scheduleTypeField.addValueChangeListener(e -> initFieldVisibility());
         if (getEditedEntity().getScheduleType() == null) {
             scheduleTypeField.setValue(ScheduleType.CRON_EXPRESSION);
         }
+    }
+
+    @Subscribe("scheduleTypeField")
+    protected void onScheduleTypeFieldChange(
+            AbstractField.ComponentValueChangeEvent<Select<ScheduleType>, ScheduleType> event) {
+        initFieldVisibility();
     }
 
     @Subscribe("helperBtn")
@@ -83,17 +91,18 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     }
 
     private void initTriggerGroupNames() {
-        List<String> triggerGroupNames = quartzService.getTriggerGroupNames();
+        triggerGroupNames = quartzService.getTriggerGroupNames();
         triggerGroupField.setItems(triggerGroupNames);
-        triggerGroupField.addCustomValueSetListener(enterPressEvent -> {
-            String newTriggerGroupName = enterPressEvent.getDetail();
-            if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
-                triggerGroupNames.add(newTriggerGroupName);
-                triggerGroupField.setItems(triggerGroupNames);
-                triggerGroupField.setValue(newTriggerGroupName);
-            }
-        });
+    }
 
+    @Subscribe("triggerGroupField")
+    protected void onJobGroupFieldValueSet(ComboBoxBase.CustomValueSetEvent<ComboBox<String>> event) {
+        String newTriggerGroupName = event.getDetail();
+        if (!Strings.isNullOrEmpty(newTriggerGroupName) && !triggerGroupNames.contains(newTriggerGroupName)) {
+            triggerGroupNames.add(newTriggerGroupName);
+            triggerGroupField.setItems(triggerGroupNames);
+            triggerGroupField.setValue(newTriggerGroupName);
+        }
     }
 
     private void initFieldVisibility() {

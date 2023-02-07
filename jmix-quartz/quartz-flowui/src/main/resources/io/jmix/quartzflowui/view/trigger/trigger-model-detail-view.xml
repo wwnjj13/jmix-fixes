@@ -18,7 +18,8 @@
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
             </responsiveSteps>
-            <select id="scheduleTypeField" property="scheduleType" required="true"/>
+            <select id="scheduleTypeField" property="scheduleType" itemsEnum="io.jmix.quartz.model.ScheduleType"
+                    required="true"/>
             <hbox id="cronExpressionBox" expand="cronExpressionField" visible="false">
                 <textField id="cronExpressionField" property="cronExpression"
                            required="true"/>
