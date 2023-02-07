@@ -26,8 +26,8 @@
             <textField id="jobNameField" property="jobName"/>
             <comboBox id="jobClassField" property="jobClass"/>
             <comboBox id="jobGroupField" property="jobGroup" allowCustomValue="true"/>
-            <comboBox id="jobSourceField" property="jobSource"/>
-            <textArea id="jobDescriptionField" property="description" colspan="2"/>
+            <select id="jobSourceField" property="jobSource" readOnly="true"/>
+            <textArea id="jobDescriptionField" property="description" height="9.5em" colspan="2"/>
         </formLayout>
 
         <tabs id="jobDetailsTabs" width="100%">
@@ -54,7 +54,6 @@
                         </properties>
                     </action>
                     <action id="edit" type="edit"/>
-                    <action id="view" type="view_close"/>
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
@@ -83,7 +82,7 @@
                       dataContainer="jobDataParamsDc" width="100%">
                 <actions>
                     <action id="addNewDataParam" text="msg://addNewDataParamCaption"
-                            icon="FILE_O"/>
+                            icon="PLUS"/>
                     <action id="remove" type="remove"/>
                 </actions>
                 <columns>
