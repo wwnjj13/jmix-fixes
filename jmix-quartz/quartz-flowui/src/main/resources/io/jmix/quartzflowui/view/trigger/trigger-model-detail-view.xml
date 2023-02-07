@@ -27,12 +27,12 @@
             </hbox>
             <textField id="repeatCountField" property="repeatCount" visible="false"/>
             <textField id="repeatIntervalField" property="repeatInterval" required="true" visible="false"/>
-            <dateTimePicker property="startDate"/>
-            <dateTimePicker property="endDate"/>
+            <dateTimePicker id="startDateTimePicker" property="startDate"/>
+            <dateTimePicker id="endDateTimePicker" property="endDate"/>
             <textField id="triggerNameField" property="triggerName"/>
             <comboBox id="triggerGroupField" property="triggerGroup" allowCustomValue="true"/>
         </formLayout>
-        <hbox id="editActions" spacing="true">
+        <hbox id="detailActions" spacing="true">
             <button id="saveAndCloseBtn" action="viewSaveAndClose"/>
             <button id="closeBtn" action="viewClose"/>
         </hbox>

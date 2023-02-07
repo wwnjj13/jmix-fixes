@@ -96,7 +96,7 @@
             </dataGrid>
         </vbox>
 
-        <hbox id="editActions" spacing="true">
+        <hbox id="detailActions" spacing="true">
             <button id="commitAndCloseBtn" action="viewSaveAndClose"/>
             <button id="closeBtn" action="viewClose"/>
         </hbox>
