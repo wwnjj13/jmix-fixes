@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-      title="msg://jobModelBrowse.caption"
+      title="msg://jobModelDetailView.title"
       focusComponent="jobModelsTable">
     <data readOnly="true">
         <collection id="jobModelsDc" class="io.jmix.quartz.model.JobModel"/>
     </data>
-    <facets>
-        <dataLoadCoordinator auto="true"/>
-    </facets>
     <actions>
         <action id="lookupSelectAction"
-                type="lookup_select"
-                actionVariant="PRIMARY"
-                shortcutCombination="${SAVE_SHORTCUT}"/>
+                type="lookup_select"/>
         <action id="lookupCancelAction"
                 type="lookup_discard"/>
         <action id="applyFilter" type="refresh"/>
     </actions>
-    <layout expand="jobModelsTable" spacing="true">
+    <layout expand="jobModelsTable" minHeight="20em">
         <details id="filterDetails"
                  summaryText="msg://filter"
                  opened="true"
@@ -25,33 +20,30 @@
             <formLayout>
                 <responsiveSteps>
                     <responsiveStep minWidth="0" columns="1"/>
+                    <responsiveStep minWidth="40em" columns="2"/>
                     <responsiveStep minWidth="60em" columns="5"/>
                 </responsiveSteps>
                 <textField id="nameField" label="msg://nameContains"/>
                 <textField id="groupField" label="msg://groupContains"/>
                 <textField id="classField" label="msg://classContains"/>
-                <comboBox id="jobStateComboBox" label="msg://jobState"/>
+                <select id="jobStateComboBox" label="msg://jobState"
+                          itemsEnum="io.jmix.quartz.model.JobState"/>
                 <button id="applyFilterBtn" action="applyFilter"/>
             </formLayout>
         </details>
 
-        <formLayout id="buttonsPanel" classNames="buttons-panel" width="100%">
-            <responsiveSteps>
-                <responsiveStep minWidth="0" columns="2"/>
-                <responsiveStep minWidth="40em" columns="3"/>
-                <responsiveStep minWidth="60em" columns="6"/>
-            </responsiveSteps>
+        <hbox id="loggedEntityButtonPanel" classNames="buttons-panel">
             <button id="createBtn" action="jobModelsTable.create"/>
             <button id="editBtn" action="jobModelsTable.edit"/>
             <button id="removeBtn" action="jobModelsTable.remove"/>
             <button id="executeNowBtn" action="jobModelsTable.executeNow"/>
             <button id="activateBtn" action="jobModelsTable.activate"/>
             <button id="deactivateBtn" action="jobModelsTable.deactivate"/>
-        </formLayout>
-
+        </hbox>
         <dataGrid id="jobModelsTable"
                   dataContainer="jobModelsDc"
-                  width="100%">
+                  width="100%"
+                  minHeight="20em">
             <actions>
                 <action id="create" type="create"/>
                 <action id="edit" type="edit">
@@ -76,7 +68,7 @@
             </columns>
         </dataGrid>
 
-        <hbox id="lookupActions" spacing="true" visible="false">
+        <hbox id="lookupActions" visible="false">
             <button action="lookupSelectAction"/>
             <button action="lookupCancelAction"/>
         </hbox>

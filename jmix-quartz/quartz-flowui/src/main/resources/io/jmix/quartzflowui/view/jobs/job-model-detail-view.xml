@@ -1,5 +1,5 @@
 <view xmlns="http://jmix.io/schema/flowui/view"
-      title="msg://jobModelEdit.caption"
+      title="msg://jobModelEdit.title"
       focusComponent="form">
     <data>
         <instance id="jobModelDc" class="io.jmix.quartz.model.JobModel">
@@ -13,12 +13,11 @@
     </facets>
     <actions>
         <action id="viewSaveAndClose" type="detail_saveClose"
-                actionVariant="PRIMARY" shortcutCombination="${SAVE_SHORTCUT}"/>
+                actionVariant="PRIMARY"/>
         <action id="viewClose"
                 type="detail_close"/>
     </actions>
-    <layout spacing="true">
-
+    <layout>
         <formLayout id="form" dataContainer="jobModelDc">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>

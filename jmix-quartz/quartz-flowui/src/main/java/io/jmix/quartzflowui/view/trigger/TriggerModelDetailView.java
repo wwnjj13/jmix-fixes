@@ -19,10 +19,12 @@ package io.jmix.quartzflowui.view.trigger;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.view.*;
 import io.jmix.quartz.model.ScheduleType;
 import io.jmix.quartz.model.TriggerModel;
@@ -34,7 +36,7 @@ import java.util.List;
 @ViewController("quartz_TriggerModel.detail")
 @ViewDescriptor("trigger-model-detail-view.xml")
 @EditedEntityContainer("triggerModelDc")
-@DialogMode(width = "50em", height = "37.5em")
+@DialogMode(width = "50em")
 public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
 
     @ViewComponent
@@ -44,13 +46,14 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     private HorizontalLayout cronExpressionBox;
 
     @ViewComponent
-    private TextField repeatCountField;
+    private TypedTextField<Integer> repeatCountField;
 
     @ViewComponent
-    private TextField repeatIntervalField;
+    private TypedTextField<Long> repeatIntervalField;
 
     @ViewComponent
     private ComboBox<ScheduleType> scheduleTypeField;
+
     @Autowired
     private QuartzService quartzService;
 
@@ -73,7 +76,7 @@ public class TriggerModelDetailView extends StandardDetailView<TriggerModel> {
     }
 
     @Subscribe("helperBtn")
-    protected void onHelperButtonClick(ClickEvent event) {
+    protected void onHelperButtonClick(ClickEvent<Button> event) {
         notifications.create(new Html(messageBundle.getMessage("cronExpressionHelpText")))
                 .withDuration(0)
                 .show();

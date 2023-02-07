@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-      title="msg://triggerModelEdit.caption"
+      title="msg://triggerModelEdit.title"
       focusComponent="form">
     <data>
         <instance id="triggerModelDc"
@@ -10,17 +10,15 @@
         <dataLoadCoordinator auto="true"/>
     </facets>
     <actions>
-        <action id="viewSaveAndClose" type="detail_saveClose"
-                shortcutCombination="${SAVE_SHORTCUT}"/>
+        <action id="viewSaveAndClose" type="detail_saveClose"/>
         <action id="viewClose" type="view_close"/>
     </actions>
-    <layout spacing="true" expand="editActions">
+    <layout>
         <formLayout id="form" dataContainer="triggerModelDc">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
-                <responsiveStep minWidth="60em" columns="2"/>
             </responsiveSteps>
-            <comboBox id="scheduleTypeField" property="scheduleType" required="true"/>
+            <select id="scheduleTypeField" property="scheduleType" required="true"/>
             <hbox id="cronExpressionBox" expand="cronExpressionField" visible="false">
                 <textField id="cronExpressionField" property="cronExpression"
                            required="true"/>

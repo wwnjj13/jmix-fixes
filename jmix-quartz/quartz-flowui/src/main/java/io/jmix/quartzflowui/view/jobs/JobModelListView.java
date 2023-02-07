@@ -20,6 +20,8 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import io.jmix.core.MessageTools;
+import io.jmix.core.Messages;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
@@ -76,34 +78,36 @@ public class JobModelListView extends StandardListView<JobModel> {
 
     @Autowired
     protected MessageBundle messageBundle;
+    @Autowired
+    protected MessageTools messageTools;
 
     @Subscribe
     protected void onInit(View.InitEvent event) {
         jobModelsTable.addColumn(entity -> entity.getLastFireDate() != null ?
                         new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
                                 .format(entity.getLastFireDate()) : "").setResizable(true)
-                .setHeader(messageBundle.getMessage("column.lastFireDate.header"));
+                .setHeader(messageTools.getPropertyCaption(jobModelsDc.getEntityMetaClass(), "lastFireDate"));
         jobModelsTable.addColumn(entity -> entity.getNextFireDate() != null ?
                         new SimpleDateFormat(messageBundle.getMessage("dateTimeWithSeconds"))
                                 .format(entity.getNextFireDate()) : "").setResizable(true)
-                .setHeader(messageBundle.getMessage("column.nextFireDate.header"));
+                .setHeader(messageTools.getPropertyCaption(jobModelsDc.getEntityMetaClass(), "nextFireDate"));
     }
 
     @Subscribe
     protected void onBeforeShow(View.BeforeShowEvent event) {
-        jobStateComboBox.setItems(JobState.values());
         loadJobsData();
     }
 
     protected void loadJobsData() {
         List<JobModel> sortedJobs = quartzService.getAllJobs().stream()
                 .filter(jobModel -> Strings.isNullOrEmpty(nameField.getValue()) ||
-                        StringUtils.containsIgnoreCase(jobModel.getJobName(), nameField.getValue()))
-                .filter(jobModel -> Strings.isNullOrEmpty(classField.getValue()) ||
-                        StringUtils.containsIgnoreCase(jobModel.getJobClass(), classField.getValue()))
-                .filter(jobModel -> Strings.isNullOrEmpty(groupField.getValue()) ||
-                        StringUtils.containsIgnoreCase(jobModel.getJobGroup(), groupField.getValue()))
-                .filter(jobModel -> jobStateComboBox.getValue() == null || jobStateComboBox.getValue().equals(jobModel.getJobState()))
+                        StringUtils.containsIgnoreCase(jobModel.getJobName(), nameField.getValue())
+                                && (Strings.isNullOrEmpty(classField.getValue()) ||
+                                StringUtils.containsIgnoreCase(jobModel.getJobClass(), classField.getValue()))
+                                && (Strings.isNullOrEmpty(groupField.getValue()) ||
+                                StringUtils.containsIgnoreCase(jobModel.getJobGroup(), groupField.getValue()))
+                                && (jobStateComboBox.getValue() == null ||
+                                jobStateComboBox.getValue().equals(jobModel.getJobState())))
                 .sorted(comparing(JobModel::getJobState, nullsLast(naturalOrder()))
                         .thenComparing(JobModel::getJobName))
                 .collect(Collectors.toList());
@@ -119,27 +123,25 @@ public class JobModelListView extends StandardListView<JobModel> {
 
     @Install(to = "jobModelsTable.activate", subject = "enabledRule")
     protected boolean jobModelsTableActivateEnabledRule() {
-        if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
+        if (selectedJobModel==null) {
             return false;
         }
-
-        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         return !isJobActive(selectedJobModel) && CollectionUtils.isNotEmpty(selectedJobModel.getTriggers());
     }
 
     @Install(to = "jobModelsTable.deactivate", subject = "enabledRule")
     protected boolean jobModelsTableDeactivateEnabledRule() {
-        return !CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())
+        return (jobModelsTable.getSingleSelectedItem()!=null)
                 && isJobActive(jobModelsTable.getSingleSelectedItem());
     }
 
     @Install(to = "jobModelsTable.remove", subject = "enabledRule")
     protected boolean jobModelsTableRemoveEnabledRule() {
-        if (CollectionUtils.isEmpty(jobModelsTable.getSelectedItems())) {
+        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
+        if (selectedJobModel==null) {
             return false;
         }
-
-        JobModel selectedJobModel = jobModelsTable.getSingleSelectedItem();
         return !isJobActive(selectedJobModel) && JobSource.USER_DEFINED.equals(selectedJobModel.getJobSource());
     }
 
