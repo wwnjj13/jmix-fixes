@@ -31,8 +31,8 @@ import io.jmix.flowui.Actions;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.component.ComponentGenerationContext;
 import io.jmix.flowui.component.SupportsDatatype;
-import io.jmix.flowui.component.propertyfilter.FilteringOperation;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
+import io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation;
 import io.jmix.flowui.component.select.JmixSelect;
 import io.jmix.flowui.kit.component.FlowuiComponentUtils;
 import org.springframework.context.ApplicationContext;
@@ -85,11 +85,11 @@ public class PropertyFilterComponentGenerationStrategy extends AbstractComponent
         }
 
         PropertyFilterComponentGenerationContext pfContext = (PropertyFilterComponentGenerationContext) context;
-        if (pfContext.getOperation().getType() == FilteringOperation.Type.UNARY) {
+        if (pfContext.getOperation().getType() == Operation.Type.UNARY) {
             return createUnaryField(context);
-        } else if (pfContext.getOperation().getType() == FilteringOperation.Type.LIST) {
+        } else if (pfContext.getOperation().getType() == Operation.Type.LIST) {
             return createCollectionField(context);
-        } else if (pfContext.getOperation().getType() == FilteringOperation.Type.INTERVAL) {
+        } else if (pfContext.getOperation().getType() == Operation.Type.INTERVAL) {
             return createIntervalField(context, mpp);
         }
 

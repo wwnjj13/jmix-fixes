@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
@@ -69,6 +70,9 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
     protected boolean labelVisible = true;
 
     protected LabelPosition labelPosition = LabelPosition.ASIDE;
+
+    @Internal
+    protected Consumer<String> labelDelegate;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -209,13 +213,14 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         }
     }
 
+    @Nullable
     @Override
     public String getLabel() {
         return labelText;
     }
 
     @Override
-    public void setLabel(String label) {
+    public void setLabel(@Nullable String label) {
         if (!Objects.equals(this.labelText, label)) {
             this.labelText = label;
             setLabelInternal(label);
@@ -223,12 +228,21 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
     }
 
     protected void setLabelInternal(@Nullable String labelText) {
-        if (labelPosition == LabelPosition.TOP) {
+        if (labelDelegate != null) {
+            labelDelegate.accept(labelText);
+        } else if (labelPosition == LabelPosition.TOP) {
             super.setLabel(labelVisible ? labelText : null);
         } else {
             this.label.setText(labelVisible ? labelText : null);
             this.label.setVisible(labelVisible);
         }
+    }
+
+    @Internal
+    public void setLabelDelegate(Consumer<String> labelDelegate) {
+        this.labelDelegate = labelDelegate;
+
+        updateLabelLayout();
     }
 
     @Override
@@ -253,7 +267,13 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
     }
 
     protected void updateLabelLayout() {
-        if (labelPosition == LabelPosition.ASIDE) {
+        if (labelDelegate != null) {
+            if (label != null) {
+                root.remove(label);
+                label = null;
+            }
+            super.setLabel(null);
+        } else if (labelPosition == LabelPosition.ASIDE) {
             super.setLabel(null);
             label = createLabel();
             root.addComponentAsFirst(label);

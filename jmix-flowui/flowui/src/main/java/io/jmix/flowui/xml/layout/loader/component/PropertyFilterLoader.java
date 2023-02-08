@@ -20,8 +20,8 @@ import com.vaadin.flow.component.Component;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
-import io.jmix.flowui.component.propertyfilter.FilteringOperation;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
+import io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation;
 import io.jmix.flowui.component.propertyfilter.PropertyFilterSupport;
 import io.jmix.flowui.component.propertyfilter.SingleFilterSupport;
 import org.dom4j.Element;
@@ -48,7 +48,7 @@ public class PropertyFilterLoader extends AbstractSingleFilterComponentLoader<Pr
         super.loadAttributesBeforeValueComponent();
 
         loadString(element, "property", resultComponent::setProperty);
-        loadEnum(element, FilteringOperation.class, "operation", resultComponent::setOperation);
+        loadEnum(element, Operation.class, "operation", resultComponent::setOperation);
         loadBoolean(element, "operationEditable", resultComponent::setOperationEditable);
         loadBoolean(element, "operationTextVisible", resultComponent::setOperationTextVisible);
 

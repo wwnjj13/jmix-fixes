@@ -50,7 +50,7 @@ public class SingleFilterSupport {
     @SuppressWarnings("rawtypes")
     public HasValueAndElement generateValueComponent(MetaClass metaClass,
                                                      String property,
-                                                     FilteringOperation operation) {
+                                                     PropertyFilter.Operation operation) {
         ComponentGenerationContext context =
                 new PropertyFilterComponentGenerationContext(metaClass, property, operation);
         context.setTargetClass(PropertyFilter.class);

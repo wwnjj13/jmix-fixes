@@ -18,13 +18,16 @@ package io.jmix.flowui.component.propertyfilter;
 
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasValueAndElement;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.querycondition.PropertyCondition;
+import io.jmix.flowui.component.combobox.JmixComboBox;
 import io.jmix.flowui.component.filer.SingleFilterComponentBase;
+import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.kit.action.BaseAction;
 import io.jmix.flowui.kit.component.dropdownbutton.DropdownButton;
 import io.jmix.flowui.kit.component.dropdownbutton.DropdownButtonVariant;
@@ -45,7 +48,7 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
 
     protected DropdownButton operationSelector;
 
-    protected FilteringOperation operation;
+    protected Operation operation;
     protected boolean operationEditable = false;
     protected boolean operationTextVisible = true;
 
@@ -87,10 +90,10 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
                 && getProperty() != null) {
             MetaClass metaClass = dataLoader.getContainer().getEntityMetaClass();
 
-            for (FilteringOperation operation : propertyFilterSupport.getAvailableOperations(metaClass, getProperty())) {
+            for (Operation operation : propertyFilterSupport.getAvailableOperations(metaClass, getProperty())) {
                 OperationChangeAction action = new OperationChangeAction(operation, this::setOperationInternal);
                 action.setText(getOperationText(operation));
-                operationSelector.addItem(operation.getId(), action);
+                operationSelector.addItem(operation.name(), action);
             }
 
             if (operation != null) {
@@ -99,7 +102,7 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         }
     }
 
-    protected String getOperationText(FilteringOperation operation) {
+    protected String getOperationText(Operation operation) {
         return propertyFilterSupport.getOperationText(operation);
     }
 
@@ -130,15 +133,15 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         setLabelInternal(labelText);
     }
 
-    public FilteringOperation getOperation() {
+    public Operation getOperation() {
         return operation;
     }
 
-    public void setOperation(FilteringOperation operation) {
+    public void setOperation(Operation operation) {
         setOperationInternal(operation, false);
     }
 
-    protected void setOperationInternal(FilteringOperation operation, boolean fromClient) {
+    protected void setOperationInternal(Operation operation, boolean fromClient) {
         checkNotNullArgument(operation);
 
         if (this.operation == operation) {
@@ -171,7 +174,7 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
             }
         }
 
-        FilteringOperation prevOperation = this.operation != null ? this.operation : operation;
+        Operation prevOperation = this.operation != null ? this.operation : operation;
         this.operation = operation;
 
         setLabelInternal(labelText);
@@ -295,10 +298,10 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
 
     protected static class OperationChangeAction extends BaseAction {
 
-        protected FilteringOperation operation;
-        protected BiConsumer<FilteringOperation, Boolean> handler;
+        protected Operation operation;
+        protected BiConsumer<Operation, Boolean> handler;
 
-        public OperationChangeAction(FilteringOperation operation, BiConsumer<FilteringOperation, Boolean> handler) {
+        public OperationChangeAction(Operation operation, BiConsumer<Operation, Boolean> handler) {
             super(operation.name());
 
             this.operation = operation;
@@ -308,6 +311,92 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         @Override
         public void actionPerform(Component component) {
             handler.accept(operation, true);
+        }
+    }
+
+    public enum Operation {
+        EQUAL(Operation.Type.VALUE),
+        NOT_EQUAL(Operation.Type.VALUE),
+        GREATER(Operation.Type.VALUE),
+        GREATER_OR_EQUAL(Operation.Type.VALUE),
+        LESS(Operation.Type.VALUE),
+        LESS_OR_EQUAL(Operation.Type.VALUE),
+        CONTAINS(Operation.Type.VALUE),
+        NOT_CONTAINS(Operation.Type.VALUE),
+        STARTS_WITH(Operation.Type.VALUE),
+        ENDS_WITH(Operation.Type.VALUE),
+        IS_SET(Operation.Type.UNARY),
+        IS_NOT_SET(Operation.Type.UNARY),
+        IN_LIST(Operation.Type.LIST),
+        NOT_IN_LIST(Operation.Type.LIST),
+        DATE_INTERVAL(Operation.Type.INTERVAL);
+
+        private final Operation.Type type;
+
+        Operation(Operation.Type type) {
+            this.type = type;
+        }
+
+        public Operation.Type getType() {
+            return type;
+        }
+
+        /**
+         * Operation type representing the required field type for editing
+         * a property value with the given operation.
+         */
+        public enum Type {
+
+            /**
+             * Requires a field suitable for editing a property value, e.g.
+             * {@link TypedTextField} for String, {@link JmixComboBox} for enum.
+             */
+            VALUE,
+
+            /**
+             * Requires a field suitable for choosing unary value, e.g. true/false, YES/NO.
+             */
+            UNARY,
+
+            /**
+             * Requires a field suitable for selecting multiple values of
+             * the same type as the property value.
+             */
+            LIST,
+
+            /**
+             * Requires a field suitable for selecting a range of values of
+             * the same type as the property value.
+             */
+            INTERVAL
+        }
+    }
+
+    public static class OperationChangeEvent<V> extends ComponentEvent<PropertyFilter<V>> {
+
+        protected final Operation newOperation;
+        protected final Operation prevOperation;
+
+        public OperationChangeEvent(PropertyFilter<V> source,
+                                    Operation newOperation, Operation prevOperation,
+                                    boolean fromClient) {
+            super(source, fromClient);
+            this.prevOperation = prevOperation;
+            this.newOperation = newOperation;
+        }
+
+        /**
+         * @return new operation value
+         */
+        public Operation getNewOperation() {
+            return newOperation;
+        }
+
+        /**
+         * @return previous operation value
+         */
+        public Operation getPreviousOperation() {
+            return prevOperation;
         }
     }
 }

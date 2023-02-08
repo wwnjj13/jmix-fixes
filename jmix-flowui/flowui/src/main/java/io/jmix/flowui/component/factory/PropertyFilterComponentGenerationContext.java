@@ -18,11 +18,11 @@ package io.jmix.flowui.component.factory;
 
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.flowui.component.ComponentGenerationContext;
-import io.jmix.flowui.component.propertyfilter.FilteringOperation;
+import io.jmix.flowui.component.propertyfilter.PropertyFilter;
 
 public class PropertyFilterComponentGenerationContext extends ComponentGenerationContext {
 
-    protected final FilteringOperation operation;
+    protected final PropertyFilter.Operation operation;
 
     /**
      * Creates an instance of PropertyFilterComponentGenerationContext.
@@ -32,12 +32,12 @@ public class PropertyFilterComponentGenerationContext extends ComponentGeneratio
      * @param operation the property filter operation for which the component is created
      */
     public PropertyFilterComponentGenerationContext(MetaClass metaClass,
-                                                    String property, FilteringOperation operation) {
+                                                    String property, PropertyFilter.Operation operation) {
         super(metaClass, property);
         this.operation = operation;
     }
 
-    public FilteringOperation getOperation() {
+    public PropertyFilter.Operation getOperation() {
         return operation;
     }
 }

@@ -28,6 +28,7 @@ import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.core.metamodel.model.impl.DatatypeRange;
 import io.jmix.core.querycondition.PropertyCondition;
+import io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.jmix.flowui.component.propertyfilter.FilteringOperation.*;
+import static io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation.*;
 
 
 @Internal
@@ -76,7 +77,7 @@ public class PropertyFilterSupport {
 //        this.dateIntervalUtils = dateIntervalUtils;
     }
 
-    public String getOperationText(FilteringOperation operation) {
+    public String getOperationText(Operation operation) {
         return messages.getMessage("propertyFilter.Operation." + operation.name());
     }
 
@@ -104,7 +105,7 @@ public class PropertyFilterSupport {
      * @param operationCaptionVisible whether to show operation caption
      */
     public String getPropertyFilterCaption(MetaClass metaClass, String property,
-                                           FilteringOperation operation, boolean operationCaptionVisible) {
+                                           Operation operation, boolean operationCaptionVisible) {
         StringBuilder sb = new StringBuilder(getPropertyFilterCaption(metaClass, property));
 
         if (operationCaptionVisible) {
@@ -151,7 +152,7 @@ public class PropertyFilterSupport {
         }
     }
 
-    public EnumSet<FilteringOperation> getAvailableOperations(MetaPropertyPath mpp) {
+    public EnumSet<Operation> getAvailableOperations(MetaPropertyPath mpp) {
         Range mppRange = mpp.getRange();
 
         if (mppRange.isClass() || mppRange.isEnum()) {
@@ -185,7 +186,7 @@ public class PropertyFilterSupport {
         throw new UnsupportedOperationException("Unsupported attribute type: " + mpp.getMetaProperty().getJavaType());
     }
 
-    public EnumSet<FilteringOperation> getAvailableOperations(MetaClass metaClass, String property) {
+    public EnumSet<Operation> getAvailableOperations(MetaClass metaClass, String property) {
         MetaPropertyPath mpp = metadataTools.resolveMetaPropertyPathOrNull(metaClass, property);
 
         if (mpp == null) {
@@ -195,7 +196,7 @@ public class PropertyFilterSupport {
         return getAvailableOperations(mpp);
     }
 
-    public FilteringOperation getDefaultOperation(MetaClass metaClass, String property) {
+    public Operation getDefaultOperation(MetaClass metaClass, String property) {
         MetaPropertyPath mpp = metadataTools.resolveMetaPropertyPathOrNull(metaClass, property);
 
         if (mpp == null) {
@@ -212,7 +213,7 @@ public class PropertyFilterSupport {
         return range.isDatatype() && String.class.equals(range.asDatatype().getJavaClass());
     }
 
-    public String toPropertyConditionOperation(FilteringOperation operation) {
+    public String toPropertyConditionOperation(Operation operation) {
         switch (operation) {
             case EQUAL:
                 return PropertyCondition.Operation.EQUAL;
