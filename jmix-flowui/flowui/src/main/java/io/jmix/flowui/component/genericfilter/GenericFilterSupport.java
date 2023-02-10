@@ -19,8 +19,8 @@ package io.jmix.flowui.component.genericfilter;
 import com.google.common.collect.ImmutableSet;
 import io.jmix.core.annotation.Internal;
 import io.jmix.flowui.Actions;
-import io.jmix.flowui.action.filter.FilterAction;
-import io.jmix.flowui.action.filter.FilterClearValuesAction;
+import io.jmix.flowui.action.genericfilter.GenericFilterAction;
+import io.jmix.flowui.action.genericfilter.GenericFilterClearValuesAction;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -37,23 +37,23 @@ public class GenericFilterSupport {
         this.actions = actions;
     }
 
-    public List<FilterAction<?>> getDefaultFilterActions(GenericFilter filter) {
-        List<FilterAction<?>> filterActions = new ArrayList<>();
-        for (Class<? extends FilterAction<?>> actionClass : getDefaultFilterActionClasses()) {
+    public List<GenericFilterAction<?>> getDefaultFilterActions(GenericFilter filter) {
+        List<GenericFilterAction<?>> filterActions = new ArrayList<>();
+        for (Class<? extends GenericFilterAction<?>> actionClass : getDefaultFilterActionClasses()) {
             filterActions.add(createFilterAction(actionClass, filter));
         }
         return filterActions;
     }
 
-    protected Set<Class<? extends FilterAction<?>>> getDefaultFilterActionClasses() {
+    protected Set<Class<? extends GenericFilterAction<?>>> getDefaultFilterActionClasses() {
         return ImmutableSet.of(
-                FilterClearValuesAction.class
+                GenericFilterClearValuesAction.class
         );
     }
 
-    protected FilterAction<?> createFilterAction(Class<? extends FilterAction<?>> filterActionClass,
-                                                 GenericFilter filter) {
-        FilterAction<?> filterAction = actions.create(filterActionClass);
+    protected GenericFilterAction<?> createFilterAction(Class<? extends GenericFilterAction<?>> filterActionClass,
+                                                        GenericFilter filter) {
+        GenericFilterAction<?> filterAction = actions.create(filterActionClass);
         filterAction.setTarget(filter);
         return filterAction;
     }

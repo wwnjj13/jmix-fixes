@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.action.filter;
+package io.jmix.flowui.action.genericfilter;
 
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.jmix.core.AccessManager;
@@ -49,8 +49,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@ActionType(FilterAddConditionAction.ID)
-public class FilterAddConditionAction extends FilterAction<FilterAddConditionAction> implements AdjustWhenViewReadOnly {
+@ActionType(GenericFilterAddConditionAction.ID)
+public class GenericFilterAddConditionAction extends GenericFilterAction<GenericFilterAddConditionAction>
+        implements AdjustWhenViewReadOnly {
 
     public static final String ID = "filter_addCondition";
 
@@ -63,11 +64,11 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
     protected Predicate<ValidationContext<FilterCondition>> selectValidator;
     protected Consumer<Collection<FilterCondition>> selectHandler;
 
-    public FilterAddConditionAction() {
+    public GenericFilterAddConditionAction() {
         super(ID);
     }
 
-    public FilterAddConditionAction(String id) {
+    public GenericFilterAddConditionAction(String id) {
         super(id);
     }
 
@@ -84,7 +85,7 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
     @Autowired
     protected void setMessages(Messages messages) {
         this.messages = messages;
-        this.text = messages.getMessage("actions.Filter.AddCondition");
+        this.text = messages.getMessage("actions.genericFilter.AddCondition");
     }
 
     @Autowired
@@ -135,13 +136,13 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
         openAddConditionView(allConditions);
     }
 
-    public FilterAddConditionAction withSelectValidator(
+    public GenericFilterAddConditionAction withSelectValidator(
             @Nullable Predicate<ValidationContext<FilterCondition>> validator) {
         setSelectValidator(validator);
         return this;
     }
 
-    public FilterAddConditionAction withSelectHandler(@Nullable Consumer<Collection<FilterCondition>> handler) {
+    public GenericFilterAddConditionAction withSelectHandler(@Nullable Consumer<Collection<FilterCondition>> handler) {
         setSelectHandler(handler);
         return this;
     }
@@ -151,7 +152,7 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
             for (FilterCondition selectedCondition : context.getSelectedItems()) {
                 if (selectedCondition instanceof HeaderFilterCondition) {
                     String text = messages.formatMessage("",
-                            "actions.Filter.AddCondition.invalidCondition",
+                            "actions.genericFilter.AddCondition.invalidCondition",
                             selectedCondition.getLocalizedLabel());
 
                     notifications.create(text)

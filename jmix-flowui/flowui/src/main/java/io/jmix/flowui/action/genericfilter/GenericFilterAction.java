@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.action.filter;
+package io.jmix.flowui.action.genericfilter;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.icon.Icon;
@@ -31,14 +31,14 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class FilterAction<A extends FilterAction<A>> extends SecuredBaseAction
+public abstract class GenericFilterAction<A extends GenericFilterAction<A>> extends SecuredBaseAction
         implements TargetAction<GenericFilter>, ExecutableAction {
 
     protected GenericFilter target;
 
     protected boolean visibleBySpecificUiPermission = true;
 
-    public FilterAction(String id) {
+    public GenericFilterAction(String id) {
         super(id);
         initAction();
     }

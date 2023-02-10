@@ -36,9 +36,9 @@ import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.FlowuiComponentProperties;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.accesscontext.FlowuiFilterModifyConfigurationContext;
-import io.jmix.flowui.action.filter.FilterAction;
-import io.jmix.flowui.action.filter.FilterAddConditionAction;
-import io.jmix.flowui.action.filter.FilterResetAction;
+import io.jmix.flowui.action.genericfilter.GenericFilterAction;
+import io.jmix.flowui.action.genericfilter.GenericFilterAddConditionAction;
+import io.jmix.flowui.action.genericfilter.GenericFilterResetAction;
 import io.jmix.flowui.component.SupportsResponsiveSteps;
 import io.jmix.flowui.component.UiComponentUtils;
 import io.jmix.flowui.component.details.JmixDetails;
@@ -159,7 +159,7 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
 
         String emptyConfigurationName = StringUtils.isNotEmpty(getSummaryText())
                 ? getSummaryText()
-                : messages.getMessage("filter.emptyConfiguration.name");
+                : messages.getMessage("genericFilter.emptyConfiguration.name");
         emptyConfiguration.setName(emptyConfigurationName);
 
         setCurrentConfigurationInternal(emptyConfiguration, false);
@@ -238,9 +238,9 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
     protected void initAddConditionButton(JmixButton addConditionButton) {
         addConditionButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        FilterAddConditionAction addConditionAction = actions.create(FilterAddConditionAction.class);
+        GenericFilterAddConditionAction addConditionAction = actions.create(GenericFilterAddConditionAction.class);
         addConditionAction.setTarget(this);
-        addConditionAction.setText(messages.getMessage("filter.addConditionButton.text"));
+        addConditionAction.setText(messages.getMessage("genericFilter.addConditionButton.text"));
         addConditionAction.setIcon(null);
         addConditionButton.setAction(addConditionAction, false);
     }
@@ -264,8 +264,8 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
 
     protected void updateApplyButtonText(boolean autoApply) {
         String text = autoApply
-                ? messages.getMessage("filter.applyButton.autoApply")
-                : messages.getMessage("filter.applyButton");
+                ? messages.getMessage("genericFilter.applyButton.autoApply")
+                : messages.getMessage("genericFilter.applyButton");
         applyButton.setText(text);
     }
 
@@ -274,7 +274,7 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
     }
 
     protected Action createResetFilterAction() {
-        FilterResetAction filterResetAction = actions.create(FilterResetAction.class);
+        GenericFilterResetAction filterResetAction = actions.create(GenericFilterResetAction.class);
         filterResetAction.setTarget(this);
         return filterResetAction;
     }
@@ -289,8 +289,8 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
         settingsButton.setIcon(VaadinIcon.COG.create());
         settingsButton.getElement().getStyle().set("margin-inline-start", "auto");
 
-        List<FilterAction<?>> defaultFilterActions = genericFilterSupport.getDefaultFilterActions(this);
-        for (FilterAction<?> filterAction : defaultFilterActions) {
+        List<GenericFilterAction<?>> defaultFilterActions = genericFilterSupport.getDefaultFilterActions(this);
+        for (GenericFilterAction<?> filterAction : defaultFilterActions) {
             settingsButton.addItem(filterAction.getId(), filterAction);
         }
 

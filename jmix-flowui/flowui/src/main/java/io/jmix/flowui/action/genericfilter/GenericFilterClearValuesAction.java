@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.action.filter;
+package io.jmix.flowui.action.genericfilter;
 
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -30,19 +30,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@ActionType(FilterClearValuesAction.ID)
-public class FilterClearValuesAction extends FilterAction<FilterClearValuesAction> {
+@ActionType(GenericFilterClearValuesAction.ID)
+public class GenericFilterClearValuesAction extends GenericFilterAction<GenericFilterClearValuesAction> {
 
     public static final String ID = "filter_clearValues";
 
     protected Registration configurationChangeRegistration;
     protected Registration configurationUpdateRegistration;
 
-    public FilterClearValuesAction() {
+    public GenericFilterClearValuesAction() {
         this(ID);
     }
 
-    public FilterClearValuesAction(String id) {
+    public GenericFilterClearValuesAction(String id) {
         super(id);
     }
 
@@ -55,7 +55,7 @@ public class FilterClearValuesAction extends FilterAction<FilterClearValuesActio
 
     @Autowired
     protected void setMessages(Messages messages) {
-        this.text = messages.getMessage("actions.Filter.ClearValues");
+        this.text = messages.getMessage("actions.genericFilter.ClearValues");
     }
 
     @Override

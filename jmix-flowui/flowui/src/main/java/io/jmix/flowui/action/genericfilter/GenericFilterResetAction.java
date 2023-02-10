@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.action.filter;
+package io.jmix.flowui.action.genericfilter;
 
 import io.jmix.core.Messages;
 import io.jmix.flowui.action.ActionType;
@@ -22,22 +22,22 @@ import io.jmix.flowui.component.genericfilter.Configuration;
 import io.jmix.flowui.component.genericfilter.FilterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@ActionType(FilterResetAction.ID)
-public class FilterResetAction extends FilterAction<FilterResetAction> {
+@ActionType(GenericFilterResetAction.ID)
+public class GenericFilterResetAction extends GenericFilterAction<GenericFilterResetAction> {
 
     public static final String ID = "filter_reset";
 
-    public FilterResetAction() {
+    public GenericFilterResetAction() {
         this(ID);
     }
 
-    public FilterResetAction(String id) {
+    public GenericFilterResetAction(String id) {
         super(id);
     }
 
     @Autowired
     protected void setMessages(Messages messages) {
-        this.text = messages.getMessage("actions.Filter.Reset");
+        this.text = messages.getMessage("actions.genericFilter.Reset");
     }
 
     @Override
