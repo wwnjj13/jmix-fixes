@@ -17,6 +17,8 @@
 package io.jmix.flowui;
 
 import com.vaadin.flow.component.notification.Notification;
+import io.jmix.flowui.app.filter.condition.AddConditionView;
+import io.jmix.flowui.component.genericfilter.GenericFilter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -46,12 +48,12 @@ public class FlowuiComponentProperties {
     List<Integer> paginationItemsPerPageItems;
 
     /**
-     * Default value for the autoApply attribute of the {@link Filter} component
+     * Default value for the autoApply attribute of the {@link GenericFilter} component
      */
     boolean filterAutoApply;
 
     /**
-     * Number of nested properties in the {@link AddConditionScreen}. I.e. if the depth is 2, then you'll be able to
+     * Number of nested properties in the {@link AddConditionView}. I.e. if the depth is 2, then you'll be able to
      * select a property "contractor.city.country", if the value is 3, then "contractor.city.country.name", etc.
      */
     int filterPropertiesHierarchyDepth;

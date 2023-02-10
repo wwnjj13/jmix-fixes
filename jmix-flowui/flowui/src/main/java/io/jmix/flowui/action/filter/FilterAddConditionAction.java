@@ -132,7 +132,7 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
     public void execute() {
         checkTarget();
         List<FilterCondition> allConditions = builder.buildConditions(target);
-        openAddConditionScreen(allConditions);
+        openAddConditionView(allConditions);
     }
 
     public FilterAddConditionAction withSelectValidator(
@@ -222,7 +222,7 @@ public class FilterAddConditionAction extends FilterAction<FilterAddConditionAct
         return dataLoadNeeded;
     }
 
-    protected void openAddConditionScreen(List<FilterCondition> filterConditions) {
+    protected void openAddConditionView(List<FilterCondition> filterConditions) {
         View<?> origin = UiComponentUtils.findView(target);
         if (origin == null) {
             throw new IllegalStateException(String.format("A component '%s' is not attached to a view",
