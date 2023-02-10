@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Internal
-@Component("ui_JpqlFilterSupport")
+@Component("flowui_JpqlFilterSupport")
 public class JpqlFilterSupport {
 
     @Autowired
@@ -72,7 +72,6 @@ public class JpqlFilterSupport {
      * @return a parameter name
      */
     public String generateParameterName(@Nullable String id, @Nullable String parameterClass) {
-        // TODO: gg, refactor
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(id)) {
             sb.append(id);
