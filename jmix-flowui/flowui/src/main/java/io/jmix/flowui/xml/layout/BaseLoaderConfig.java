@@ -87,6 +87,7 @@ public abstract class BaseLoaderConfig {
         loaders.put("fileUploadField", FileUploadFieldLoader.class);
         loaders.put("fileStorageUploadField", FileStorageUploadFieldLoader.class);
         loaders.put("propertyFilter", PropertyFilterLoader.class);
+        loaders.put("genericFilter", GenericFilterLoader.class);
 
         /* HTML components */
         loaders.put("param", ParamLoader.class);

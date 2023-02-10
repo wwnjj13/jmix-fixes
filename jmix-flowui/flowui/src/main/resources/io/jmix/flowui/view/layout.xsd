@@ -2206,7 +2206,7 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="column" maxOccurs="unbounded" type="dataGridColumnComponent"/>
-                                <xs:element name="editorActionsColumn" type="dataGridEditorActionsColumn"/>
+                                <xs:element name="editorActionsColumn" type="dataGridEditorActionsColumn" minOccurs="0"/>
                             </xs:sequence>
                             <xs:attributeGroup ref="columnsLoadType"/>
                         </xs:complexType>
@@ -2829,25 +2829,25 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:complexType name="responsiveStepsType">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="responsiveStep">
+                <xs:complexType>
+                    <xs:attribute name="minWidth" type="xs:string" use="required"/>
+                    <xs:attribute name="columns" type="xs:integer" use="required"/>
+                    <xs:attribute name="labelsPosition" type="formLabelsPosition"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
     <!-- Form-->
     <xs:complexType name="formLayoutComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
 
                 <xs:sequence>
-                    <xs:element name="responsiveSteps" maxOccurs="1">
-                        <xs:complexType>
-                            <xs:sequence maxOccurs="unbounded">
-                                <xs:element name="responsiveStep">
-                                    <xs:complexType>
-                                        <xs:attribute name="minWidth" type="xs:string" use="required"/>
-                                        <xs:attribute name="columns" type="xs:integer" use="required"/>
-                                        <xs:attribute name="labelsPosition" type="formLabelsPosition"/>
-                                    </xs:complexType>
-                                </xs:element>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
+                    <xs:element name="responsiveSteps" type="responsiveStepsType" minOccurs="0"/>
                     <xs:group ref="standardComponent"/>
                 </xs:sequence>
 
@@ -3090,6 +3090,27 @@
 
     <!-- Filters -->
 
+    <!-- GenericFilter -->
+    <xs:complexType name="genericFilterComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="responsiveSteps" type="responsiveStepsType" minOccurs="0"/>
+                </xs:sequence>
+
+                <xs:attribute name="dataLoader" type="xs:string" use="required"/>
+                <xs:attribute name="autoApply" type="xs:boolean"/>
+                <xs:attribute name="summaryText" type="resourceString"/>
+                <xs:attribute name="themeNames" type="detailsThemeNames"/>
+                <xs:attribute name="opened" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasSize"/>
+                <xs:attributeGroup ref="hasEnabled"/>
+                <xs:attributeGroup ref="hasClassNames"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- PropertyFilter -->
     <xs:complexType name="propertyFilterComponent">
         <xs:complexContent>
@@ -3300,6 +3321,7 @@
                 <xs:element name="fileUploadField" type="fileUploadFieldComponent"/>
                 <xs:element name="fileStorageUploadField" type="fileStorageUploadFieldComponent"/>
                 <xs:element name="propertyFilter" type="propertyFilterComponent"/>
+                <xs:element name="genericFilter" type="genericFilterComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

@@ -74,7 +74,8 @@ import java.util.function.Predicate;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class GenericFilter extends Composite<JmixDetails> implements SupportsResponsiveSteps,
+public class GenericFilter extends Composite<JmixDetails>
+        implements SupportsResponsiveSteps, HasEnabled, HasSize, HasStyle, HasTheme,
         ApplicationContextAware, InitializingBean {
 
     protected static final String CONDITION_REMOVE_BUTTON_ID_SUFFIX = "conditionRemoveButton";
@@ -728,6 +729,9 @@ public class GenericFilter extends Composite<JmixDetails> implements SupportsRes
             }
         }
     }
+
+
+
 
     /**
      * Event sent when the {@link Configuration} is changed.
