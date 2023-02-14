@@ -36,7 +36,7 @@ public class GenericFilterClearValuesAction extends GenericFilterAction<GenericF
     public static final String ID = "filter_clearValues";
 
     protected Registration configurationChangeRegistration;
-    protected Registration configurationUpdateRegistration;
+    protected Registration filterComponentsChangeRegistration;
 
     public GenericFilterClearValuesAction() {
         this(ID);
@@ -70,10 +70,13 @@ public class GenericFilterClearValuesAction extends GenericFilterAction<GenericF
 
     protected void bindListeners(GenericFilter target) {
         configurationChangeRegistration = target.addConfigurationChangeListener(this::onConfigurationChanged);
+        bindFilterComponentsChangeListener(target);
+    }
 
+    protected void bindFilterComponentsChangeListener(GenericFilter target) {
         LogicalFilterComponent<?> rootLogicalFilterComponent = target.getCurrentConfiguration()
                 .getRootLogicalFilterComponent();
-        configurationUpdateRegistration = rootLogicalFilterComponent
+        filterComponentsChangeRegistration = rootLogicalFilterComponent
                 .addFilterComponentsChangeListener(this::onFilterComponentsChanged);
     }
 
@@ -83,13 +86,19 @@ public class GenericFilterClearValuesAction extends GenericFilterAction<GenericF
             configurationChangeRegistration = null;
         }
 
-        if (configurationUpdateRegistration != null) {
-            configurationUpdateRegistration.remove();
-            configurationUpdateRegistration = null;
+        unbindFilterComponentsChange();
+    }
+
+    protected void unbindFilterComponentsChange() {
+        if (filterComponentsChangeRegistration != null) {
+            filterComponentsChangeRegistration.remove();
+            filterComponentsChangeRegistration = null;
         }
     }
 
     protected void onConfigurationChanged(GenericFilter.ConfigurationChangeEvent event) {
+        unbindFilterComponentsChange();
+        bindFilterComponentsChangeListener(event.getSource());
         refreshState();
     }
 

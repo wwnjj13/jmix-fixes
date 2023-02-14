@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Internal
-@Component("flowui_FilterConditionsBuilder")
-public class FilterConditionsBuilder {
+@Component("flowui_GenericFilterConditionsBuilder")
+public class GenericFilterConditionsBuilder {
 
     protected List<ConditionBuilder> conditionBuilders;
 

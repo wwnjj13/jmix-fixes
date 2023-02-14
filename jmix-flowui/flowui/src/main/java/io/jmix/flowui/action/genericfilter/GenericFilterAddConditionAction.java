@@ -30,7 +30,7 @@ import io.jmix.flowui.component.filer.FilterComponent;
 import io.jmix.flowui.component.filer.SingleFilterComponentBase;
 import io.jmix.flowui.component.genericfilter.Configuration;
 import io.jmix.flowui.component.genericfilter.FilterUtils;
-import io.jmix.flowui.component.genericfilter.builder.FilterConditionsBuilder;
+import io.jmix.flowui.component.genericfilter.builder.GenericFilterConditionsBuilder;
 import io.jmix.flowui.component.genericfilter.configuration.DesignTimeConfiguration;
 import io.jmix.flowui.component.genericfilter.converter.FilterConverter;
 import io.jmix.flowui.component.genericfilter.registration.FilterComponents;
@@ -58,7 +58,7 @@ public class GenericFilterAddConditionAction extends GenericFilterAction<Generic
     protected Messages messages;
     protected DialogWindows dialogWindows;
     protected Notifications notifications;
-    protected FilterConditionsBuilder builder;
+    protected GenericFilterConditionsBuilder builder;
     protected FilterComponents filterComponents;
 
     protected Predicate<ValidationContext<FilterCondition>> selectValidator;
@@ -99,7 +99,7 @@ public class GenericFilterAddConditionAction extends GenericFilterAction<Generic
     }
 
     @Autowired
-    public void setBuilder(FilterConditionsBuilder builder) {
+    public void setBuilder(GenericFilterConditionsBuilder builder) {
         this.builder = builder;
     }
 
