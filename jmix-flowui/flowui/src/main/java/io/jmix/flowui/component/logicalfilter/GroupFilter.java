@@ -114,8 +114,9 @@ public class GroupFilter extends Composite<VerticalLayout>
     protected void initDefaultResponsiveSteps() {
         responsiveSteps = List.of(
                 new ResponsiveStep("0", 1, ResponsiveStep.LabelsPosition.TOP),
-                new ResponsiveStep("40em", 2),
-                new ResponsiveStep("75em", 3)
+                new ResponsiveStep("40em", 1),
+                new ResponsiveStep("80em", 2),
+                new ResponsiveStep("120em", 3)
         );
     }
 
@@ -144,6 +145,7 @@ public class GroupFilter extends Composite<VerticalLayout>
             Label label = new Label(singleFilterComponent.getLabel());
             singleFilterComponent.setWidthFull();
             FormLayout.FormItem formItem = conditionsLayout.addFormItem(singleFilterComponent, label);
+            formItem.getElement().getThemeList().addAll(List.of("label-align-end", "jmix-group-filter-form-item"));
 
             registerFilterComponentFormItem(filterComponent, formItem);
 

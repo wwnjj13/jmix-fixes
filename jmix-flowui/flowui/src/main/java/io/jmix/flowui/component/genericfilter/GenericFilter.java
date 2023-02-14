@@ -148,8 +148,9 @@ public class GenericFilter extends Composite<JmixDetails>
     protected void initDefaultResponsiveSteps() {
         responsiveSteps = List.of(
                 new ResponsiveStep("0", 1, ResponsiveStep.LabelsPosition.TOP),
-                new ResponsiveStep("40em", 2),
-                new ResponsiveStep("75em", 3)
+                new ResponsiveStep("40em", 1),
+                new ResponsiveStep("80em", 2),
+                new ResponsiveStep("120em", 3)
         );
     }
 
