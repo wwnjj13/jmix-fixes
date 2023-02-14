@@ -57,6 +57,7 @@ public abstract class AbstractSingleFilterComponentLoader<C extends SingleFilter
         componentLoader().loadThemeNames(resultComponent, element);
         componentLoader().loadHelperText(resultComponent, element);
         componentLoader().loadTabIndex(resultComponent, element);
+        componentLoader().loadTooltip(resultComponent, element);
     }
 
     protected void loadDataLoader(C resultComponent, Element element) {

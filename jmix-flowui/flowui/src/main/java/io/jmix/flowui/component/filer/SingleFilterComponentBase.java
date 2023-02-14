@@ -22,6 +22,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.shared.HasTooltip;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.annotation.Internal;
 import io.jmix.core.querycondition.Condition;
@@ -45,7 +46,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
 public abstract class SingleFilterComponentBase<V> extends CustomField<V>
-        implements SingleFilterComponent<V>, SupportsLabelPosition, SupportsValidation<V>, HasRequired,
+        implements SingleFilterComponent<V>, SupportsLabelPosition, SupportsValidation<V>, HasRequired, HasTooltip,
         ApplicationContextAware, InitializingBean {
 
     protected static final String FILTER_LABEL_CLASS_NAME = "filter-label";

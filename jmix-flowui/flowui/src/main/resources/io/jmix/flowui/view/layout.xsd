@@ -3256,6 +3256,7 @@
             <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:element name="responsiveSteps" type="responsiveStepsType" minOccurs="0"/>
+                    <xs:element name="tooltip" type="tooltipElement" minOccurs="0"/>
                 </xs:sequence>
 
                 <xs:attribute name="dataLoader" type="xs:string" use="required"/>
@@ -3277,6 +3278,7 @@
             <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:group ref="layoutOrComponent"/>
+                    <xs:element name="tooltip" type="tooltipElement" minOccurs="0"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasSize"/>

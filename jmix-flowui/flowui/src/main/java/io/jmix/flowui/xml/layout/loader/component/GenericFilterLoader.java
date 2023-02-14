@@ -43,6 +43,7 @@ public class GenericFilterLoader extends AbstractComponentLoader<GenericFilter> 
         componentLoader().loadClassNames(resultComponent, element);
         componentLoader().loadThemeNames(resultComponent, element);
         componentLoader().loadSizeAttributes(resultComponent, element);
+        componentLoader().loadTooltip(resultComponent, element);
 
         getLoaderSupport().loadBoolean(element, "opened", resultComponent::setOpened);
         getLoaderSupport().loadBoolean(element, "autoApply", resultComponent::setAutoApply);

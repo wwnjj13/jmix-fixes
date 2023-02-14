@@ -23,6 +23,7 @@ import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.shared.HasTooltip;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.AccessManager;
 import io.jmix.core.Messages;
@@ -75,7 +76,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public class GenericFilter extends Composite<JmixDetails>
-        implements SupportsResponsiveSteps, HasEnabled, HasSize, HasStyle, HasTheme,
+        implements SupportsResponsiveSteps, HasEnabled, HasSize, HasStyle, HasTheme, HasTooltip,
         ApplicationContextAware, InitializingBean {
 
     protected static final String CONDITION_REMOVE_BUTTON_ID_SUFFIX = "conditionRemoveButton";
