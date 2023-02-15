@@ -231,13 +231,13 @@ public class GenericFilter extends Composite<JmixDetails>
         initApplyButton(applyButton);
         controlsLayout.add(applyButton);
 
-        addConditionButton = createAddConditionButton();
-        initAddConditionButton(addConditionButton);
-        controlsLayout.add(addConditionButton);
-
         settingsButton = createSettingsButton();
         initSettingsButton(settingsButton);
         controlsLayout.add(settingsButton);
+
+        addConditionButton = createAddConditionButton();
+        initAddConditionButton(addConditionButton);
+        controlsLayout.add(addConditionButton);
     }
 
     protected JmixButton createAddConditionButton() {
@@ -296,7 +296,6 @@ public class GenericFilter extends Composite<JmixDetails>
         settingsButton.addThemeVariants(DropdownButtonVariant.LUMO_ICON);
         settingsButton.setDropdownIndicatorVisible(false);
         settingsButton.setIcon(VaadinIcon.COG.create());
-        settingsButton.getElement().getStyle().set("margin-inline-start", "auto");
 
         List<GenericFilterAction<?>> defaultFilterActions = genericFilterSupport.getDefaultFilterActions(this);
         for (GenericFilterAction<?> filterAction : defaultFilterActions) {

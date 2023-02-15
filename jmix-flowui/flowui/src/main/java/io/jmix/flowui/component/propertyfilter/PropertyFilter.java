@@ -378,11 +378,11 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         NOT_CONTAINS(Type.VALUE),
         STARTS_WITH(Type.VALUE),
         ENDS_WITH(Type.VALUE),
-        IS_SET(Type.UNARY),
+        IS_SET(Type.UNARY)/*,
         IS_NOT_SET(Type.UNARY),
         IN_LIST(Type.LIST),
         NOT_IN_LIST(Type.LIST),
-        DATE_INTERVAL(Type.INTERVAL);
+        DATE_INTERVAL(Type.INTERVAL)*/;
 
         private final Type type;
 

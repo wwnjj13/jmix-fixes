@@ -156,26 +156,26 @@ public class PropertyFilterSupport {
         Range mppRange = mpp.getRange();
 
         if (mppRange.isClass() || mppRange.isEnum()) {
-            return EnumSet.of(EQUAL, NOT_EQUAL, IS_SET, IN_LIST, NOT_IN_LIST);
+            return EnumSet.of(EQUAL, NOT_EQUAL, IS_SET/*, IN_LIST, NOT_IN_LIST*/);
         } else if (mppRange.isDatatype()) {
             Class<?> type = mppRange.asDatatype().getJavaClass();
 
             if (String.class.equals(type)) {
-                return EnumSet.of(CONTAINS, NOT_CONTAINS, EQUAL, NOT_EQUAL, IS_SET, STARTS_WITH, ENDS_WITH, IN_LIST,
-                        NOT_IN_LIST);
+                return EnumSet.of(CONTAINS, NOT_CONTAINS, EQUAL, NOT_EQUAL, IS_SET, STARTS_WITH, ENDS_WITH/*, IN_LIST,
+                        NOT_IN_LIST*/);
             } else if (dateTimeClasses.contains(type)) {
-                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET, IN_LIST,
-                        NOT_IN_LIST, DATE_INTERVAL);
+                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET/*, IN_LIST,
+                        NOT_IN_LIST, DATE_INTERVAL*/);
             } else if (timeClasses.contains(type)) {
-                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET,
-                        DATE_INTERVAL);
+                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET/*,
+                        DATE_INTERVAL*/);
             } else if (Number.class.isAssignableFrom(type)) {
-                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET, IN_LIST,
-                        NOT_IN_LIST);
+                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, IS_SET/*, IN_LIST,
+                        NOT_IN_LIST*/);
             } else if (Boolean.class.equals(type)) {
                 return EnumSet.of(EQUAL, NOT_EQUAL, IS_SET);
             } else if (UUID.class.equals(type) || URI.class.equals(type)) {
-                return EnumSet.of(EQUAL, NOT_EQUAL, IS_SET, IN_LIST, NOT_IN_LIST);
+                return EnumSet.of(EQUAL, NOT_EQUAL, IS_SET/*, IN_LIST, NOT_IN_LIST*/);
             } else {
                 log.warn("Cannot find predefined PropertyFilter operations for {} datatype. " +
                         "The default set of operations (EQUAL, NOT_EQUAL, IS_SET) will be used", type);
