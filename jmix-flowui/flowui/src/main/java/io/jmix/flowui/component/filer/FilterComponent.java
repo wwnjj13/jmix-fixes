@@ -21,6 +21,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasStyle;
 import io.jmix.core.annotation.Internal;
 import io.jmix.core.querycondition.Condition;
+import io.jmix.flowui.component.genericfilter.GenericFilter;
 import io.jmix.flowui.model.DataLoader;
 
 /**
@@ -59,21 +60,22 @@ public interface FilterComponent extends HasElement, HasEnabled, HasStyle {
     void setAutoApply(boolean autoApply);
 
     /**
-     * @return {@code true} if the filter component is located inside the {@link Filter}
+     * @return {@code true} if the filter component is located inside the {@link GenericFilter}
      * and the modification of {@link DataLoader} condition is delegated to the owner
-     * {@link FilterComponent} or {@link Filter}, {@code false} otherwise
+     * {@link FilterComponent} or {@link GenericFilter}, {@code false} otherwise
      */
     @Internal
     boolean isConditionModificationDelegated();
 
     /**
      * Sets whether the modification of {@link DataLoader} condition is delegated to the owner
-     * {@link FilterComponent} or {@link Filter}.
+     * {@link FilterComponent} or {@link GenericFilter}.
      *
      * @param conditionModificationDelegated {@code true} if the filter component is located inside
-     *                                       the {@link Filter} and the modification of {@link DataLoader}
-     *                                       condition is delegated to the owner {@link FilterComponent}
-     *                                       or {@link Filter}, {@code false} otherwise
+     *                                       the {@link GenericFilter} and the modification of
+     *                                       {@link DataLoader} condition is delegated to the
+     *                                       owner {@link FilterComponent} or {@link GenericFilter},
+     *                                       {@code false} otherwise
      */
     @Internal
     void setConditionModificationDelegated(boolean conditionModificationDelegated);

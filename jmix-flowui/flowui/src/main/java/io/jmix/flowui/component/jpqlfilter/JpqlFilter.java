@@ -16,10 +16,12 @@
 
 package io.jmix.flowui.component.jpqlfilter;
 
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.querycondition.JpqlCondition;
 import io.jmix.flowui.component.filer.SingleFilterComponentBase;
+import io.jmix.flowui.model.DataLoader;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,15 @@ import java.util.Collections;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
+/**
+ * JpqlFilter is a UI component used for filtering entities returned by the {@link DataLoader}.
+ * The component contains JPQL expressions that will be added to the 'from' and 'where' data
+ * loader query sections. The component can automatically render proper layout for setting a
+ * condition value. In general case a JpqlFilter layout contains a label and a field for
+ * editing a condition value.
+ *
+ * @param <V> value type
+ */
 public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
 
     protected static final String JPQL_FILTER_CLASS_NAME = "jmix-jpql-filter";
@@ -63,6 +74,9 @@ public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
         return jpqlFilterSupport.getJpqlFilterPrefix(getId());
     }
 
+    /**
+     * @return a {@link JpqlCondition} related to the current JpqlFilter
+     */
     @Override
     public JpqlCondition getQueryCondition() {
         return (JpqlCondition) queryCondition;
@@ -116,10 +130,18 @@ public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
         this.parameterName = parameterName;
     }
 
+    /**
+     * @return a Java class of the associated query parameter
+     */
     public Class<?> getParameterClass() {
         return parameterClass;
     }
 
+    /**
+     * Sets a Java class of the associated query parameter.
+     *
+     * @param parameterClass a Java class of the associated query parameter
+     */
     public void setParameterClass(Class<?> parameterClass) {
         checkState(this.parameterClass == null, "Parameter class has already been initialized");
         checkNotNullArgument(parameterClass);
@@ -131,16 +153,57 @@ public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
         this.parameterClass = parameterClass;
     }
 
+    /**
+     * Returns a JPQL expression which will be added to the 'where' data loader query section.
+     * <p>
+     * The <code>{E}</code> placeholder should be used in the expression instead of the alias
+     * of the entity being selected. The condition can only have one parameter denoted by
+     * <code>?</code> if used.
+     * <p>
+     * Example of selecting Car entities by an attribute of the joined Repair collection:
+     * <pre>
+     * r.description like ?
+     * </pre>
+     *
+     * @return a JPQL expression which will be added to the 'where' data loader query section
+     * @see #setCondition(String, String)
+     */
     public String getWhere() {
-//        checkState(where != null, "where clause is not set");
-        return where;
+        return Strings.nullToEmpty(where);
     }
 
+    /**
+     * Returns a JPQL expression which will be added to the 'from' data loader query section.
+     * <p>
+     * This can be required to create a complex condition based on an attribute of a related
+     * collection. The expression should be started with <code>join</code> or
+     * <code>left join</code> statements.
+     * <p>
+     * The <code>{E}</code> placeholder should be used in the expression instead of the alias
+     * of the entity being selected.
+     * <p>
+     * Example of joining the Repair collection when selecting Car entities:
+     * <pre>
+     * join {E}.repairs r
+     * </pre>
+     *
+     * @return a JPQL expression which will be added to the 'from' data loader query section
+     * @see #setCondition(String, String)
+     */
     @Nullable
     public String getJoin() {
         return join;
     }
 
+    /**
+     * Sets JPQL expressions which will be added to the data loader query 'from' and 'where'
+     * sections.
+     *
+     * @param where a JPQL expression which will be added to the 'where' data loader query section
+     * @param join  a JPQL expression which will be added to the 'from' data loader query section
+     * @see #getJoin()
+     * @see #getWhere()
+     */
     public void setCondition(String where, @Nullable String join) {
         checkNotNullArgument(where);
 
@@ -156,10 +219,18 @@ public class JpqlFilter<V> extends SingleFilterComponentBase<V> {
         this.join = join;
     }
 
+    /**
+     * @return whether the query condition has an IN expression and the value is a collection
+     */
     public boolean hasInExpression() {
         return hasInExpression;
     }
 
+    /**
+     * Sets whether the query condition has an IN expression and the value is a collection.
+     *
+     * @param hasInExpression whether the query condition has an IN expression
+     */
     public void setHasInExpression(boolean hasInExpression) {
         this.hasInExpression = hasInExpression;
     }

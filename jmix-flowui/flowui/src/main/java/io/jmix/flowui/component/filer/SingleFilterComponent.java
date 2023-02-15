@@ -16,11 +16,9 @@
 
 package io.jmix.flowui.component.filer;
 
-import com.vaadin.flow.component.*;
-import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.shared.HasTooltip;
-import io.jmix.flowui.component.HasRequired;
-import io.jmix.flowui.component.SupportsValidation;
+import com.vaadin.flow.component.HasValueAndElement;
+import io.jmix.flowui.component.jpqlfilter.JpqlFilter;
+import io.jmix.flowui.component.logicalfilter.LogicalFilterComponent;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
 import io.jmix.flowui.model.DataLoader;
 

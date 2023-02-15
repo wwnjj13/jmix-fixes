@@ -39,6 +39,15 @@ import java.util.function.BiConsumer;
 import static com.google.common.base.Preconditions.checkState;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
+/**
+ * A UI component used for filtering entities returned by the {@link DataLoader}.
+ * The component is related to entity property and can automatically render proper
+ * layout for setting a condition value. In general case a component layout
+ * contains a label with entity property name, operation label or selector
+ * (=, contains, &#62;, etc.) and a field for editing a property value.
+ *
+ * @param <V> value type
+ */
 public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
 
     protected static final String PROPERTY_FILTER_CLASS_NAME = "jmix-property-filter";
@@ -114,11 +123,19 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         setLabelInternal(labelText);
     }
 
+    /**
+     * @return related entity property name
+     */
     @Nullable
     public String getProperty() {
         return getQueryCondition().getProperty();
     }
 
+    /**
+     * Sets related entity property name.
+     *
+     * @param property entity property name
+     */
     public void setProperty(String property) {
         checkState(getProperty() == null, "Property has already been initialized");
         checkNotNullArgument(property);
@@ -133,10 +150,18 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         setLabelInternal(labelText);
     }
 
+    /**
+     * @return a filtering operation
+     */
     public Operation getOperation() {
         return operation;
     }
 
+    /**
+     * Sets a filtering operation.
+     *
+     * @param operation a filtering operation
+     */
     public void setOperation(Operation operation) {
         setOperationInternal(operation, false);
     }
@@ -207,6 +232,9 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         return new PropertyCondition();
     }
 
+    /**
+     * @return a {@link PropertyCondition} related to the current property filter
+     */
     @Override
     public PropertyCondition getQueryCondition() {
         return (PropertyCondition) queryCondition;
@@ -217,15 +245,29 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         getQueryCondition().setParameterValue(newValue);
     }
 
+    /**
+     * Adds a listener that is invoked when the {@code operation} property changes.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Registration addOperationChangeListener(ComponentEventListener<OperationChangeEvent<V>> listener) {
         return getEventBus().addListener(OperationChangeEvent.class, ((ComponentEventListener) listener));
     }
 
+    /**
+     * @return whether an operation selector is visible.
+     */
     public boolean isOperationEditable() {
         return operationEditable;
     }
 
+    /**
+     * Sets whether an operation selector is visible.
+     *
+     * @param operationEditable whether an operation selector is visible
+     */
     public void setOperationEditable(boolean operationEditable) {
         if (this.operationEditable != operationEditable) {
             this.operationEditable = operationEditable;
@@ -241,10 +283,18 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         }
     }
 
+    /**
+     * @return whether to show operation text
+     */
     public boolean isOperationTextVisible() {
         return operationTextVisible;
     }
 
+    /**
+     * Sets whether to show operation text.
+     *
+     * @param operationLabelVisible whether to show operation text
+     */
     public void setOperationTextVisible(boolean operationLabelVisible) {
         if (this.operationTextVisible != operationLabelVisible) {
             this.operationTextVisible = operationLabelVisible;
@@ -314,30 +364,33 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         }
     }
 
+    /**
+     * Operation representing corresponding filtering condition.
+     */
     public enum Operation {
-        EQUAL(Operation.Type.VALUE),
-        NOT_EQUAL(Operation.Type.VALUE),
-        GREATER(Operation.Type.VALUE),
-        GREATER_OR_EQUAL(Operation.Type.VALUE),
-        LESS(Operation.Type.VALUE),
-        LESS_OR_EQUAL(Operation.Type.VALUE),
-        CONTAINS(Operation.Type.VALUE),
-        NOT_CONTAINS(Operation.Type.VALUE),
-        STARTS_WITH(Operation.Type.VALUE),
-        ENDS_WITH(Operation.Type.VALUE),
-        IS_SET(Operation.Type.UNARY),
-        IS_NOT_SET(Operation.Type.UNARY),
-        IN_LIST(Operation.Type.LIST),
-        NOT_IN_LIST(Operation.Type.LIST),
-        DATE_INTERVAL(Operation.Type.INTERVAL);
+        EQUAL(Type.VALUE),
+        NOT_EQUAL(Type.VALUE),
+        GREATER(Type.VALUE),
+        GREATER_OR_EQUAL(Type.VALUE),
+        LESS(Type.VALUE),
+        LESS_OR_EQUAL(Type.VALUE),
+        CONTAINS(Type.VALUE),
+        NOT_CONTAINS(Type.VALUE),
+        STARTS_WITH(Type.VALUE),
+        ENDS_WITH(Type.VALUE),
+        IS_SET(Type.UNARY),
+        IS_NOT_SET(Type.UNARY),
+        IN_LIST(Type.LIST),
+        NOT_IN_LIST(Type.LIST),
+        DATE_INTERVAL(Type.INTERVAL);
 
-        private final Operation.Type type;
+        private final Type type;
 
-        Operation(Operation.Type type) {
+        Operation(Type type) {
             this.type = type;
         }
 
-        public Operation.Type getType() {
+        public Type getType() {
             return type;
         }
 
@@ -372,6 +425,9 @@ public class PropertyFilter<V> extends SingleFilterComponentBase<V> {
         }
     }
 
+    /**
+     * Event sent when the {@code operation} property is changed.
+     */
     public static class OperationChangeEvent<V> extends ComponentEvent<PropertyFilter<V>> {
 
         protected final Operation newOperation;

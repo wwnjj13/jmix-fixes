@@ -40,6 +40,7 @@ import io.jmix.flowui.accesscontext.FlowuiFilterModifyConfigurationContext;
 import io.jmix.flowui.action.genericfilter.GenericFilterAction;
 import io.jmix.flowui.action.genericfilter.GenericFilterAddConditionAction;
 import io.jmix.flowui.action.genericfilter.GenericFilterResetAction;
+import io.jmix.flowui.app.filter.condition.AddConditionView;
 import io.jmix.flowui.component.SupportsResponsiveSteps;
 import io.jmix.flowui.component.UiComponentUtils;
 import io.jmix.flowui.component.details.JmixDetails;
@@ -75,6 +76,11 @@ import java.util.function.Predicate;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+/**
+ * A versatile tool for filtering the data it is bound to. The component enables
+ * quick data filtering by arbitrary conditions, as well as creating configurations
+ * for repeated use.
+ */
 public class GenericFilter extends Composite<JmixDetails>
         implements SupportsResponsiveSteps, HasEnabled, HasSize, HasStyle, HasTheme, HasTooltip,
         ApplicationContextAware, InitializingBean {
@@ -307,14 +313,25 @@ public class GenericFilter extends Composite<JmixDetails>
         return controlsLayout;
     }
 
-    public Condition getQueryCondition() {
+    /**
+     * @return a {@link LogicalCondition} related to the configuration
+     */
+    public LogicalCondition getQueryCondition() {
         return getCurrentConfiguration().getQueryCondition();
     }
 
+    /**
+     * @return a {@link DataLoader} related to the filter
+     */
     public DataLoader getDataLoader() {
         return dataLoader;
     }
 
+    /**
+     * Sets a {@link DataLoader} related to the filter.
+     *
+     * @param dataLoader a {@link DataLoader} to set
+     */
     public void setDataLoader(DataLoader dataLoader) {
         checkState(this.dataLoader == null, "DataLoader has already been initialized");
         checkNotNull(dataLoader);
@@ -327,10 +344,22 @@ public class GenericFilter extends Composite<JmixDetails>
         rootLogicalFilterComponent.setAutoApply(autoApply);
     }
 
+    /**
+     * @return {@code true} if the filter should be automatically applied to
+     * the {@link DataLoader} when the value component value is changed
+     */
     public boolean isAutoApply() {
         return autoApply;
     }
 
+    /**
+     * Sets whether the filter should be automatically applied to the
+     * {@link DataLoader} when the value component value is changed.
+     *
+     * @param autoApply {@code true} if the filter should be automatically
+     *                  applied to the {@link DataLoader} when the value
+     *                  component value is changed
+     */
     public void setAutoApply(boolean autoApply) {
         if (this.autoApply != autoApply) {
             this.autoApply = autoApply;
@@ -347,6 +376,9 @@ public class GenericFilter extends Composite<JmixDetails>
                 .forEach(filterComponent -> filterComponent.setAutoApply(autoApply));
     }
 
+    /**
+     * Applies the current configuration.
+     */
     public void apply() {
         if (dataLoader != null) {
             setupLoaderFirstResult();
@@ -375,10 +407,18 @@ public class GenericFilter extends Composite<JmixDetails>
         }
     }
 
+    /**
+     * @return this component summary text
+     */
     public String getSummaryText() {
         return getContent().getSummaryText();
     }
 
+    /**
+     * Sets this component summary text
+     *
+     * @param summary text to set
+     */
     public void setSummaryText(String summary) {
         getContent().setSummaryText(summary);
 
@@ -387,14 +427,28 @@ public class GenericFilter extends Composite<JmixDetails>
         }
     }
 
+    /**
+     * @return whether this component is expanded or collapsed
+     */
     public boolean isOpened() {
         return getContent().isOpened();
     }
 
+    /**
+     * Sets whether this component is expanded or collapsed
+     *
+     * @param opened whether this component is expanded or collapsed
+     */
     public void setOpened(boolean opened) {
         getContent().setOpened(opened);
     }
 
+    /**
+     * Adds a listener for {@code opened-changed} events fired by the component.
+     *
+     * @param listener the listener to set
+     * @return a {@link Registration} for removing the event listener
+     */
     public Registration addOpenedChangeListener(ComponentEventListener<OpenedChangeEvent> listener) {
         if (openedChangeRegistration == null) {
             openedChangeRegistration = getContent().addOpenedChangeListener(this::onOpenedChanged);
@@ -417,15 +471,31 @@ public class GenericFilter extends Composite<JmixDetails>
         getEventBus().fireEvent(event);
     }
 
+    /**
+     * @return a properties filter predicate
+     */
     @Nullable
     public Predicate<MetaPropertyPath> getPropertyFiltersPredicate() {
         return propertyFiltersPredicate;
     }
 
+    /**
+     * Sets a predicate that tests whether a property with the given path should be
+     * available for filtering.
+     *
+     * @param propertyFiltersPredicate a predicate to set
+     */
     public void setPropertyFiltersPredicate(@Nullable Predicate<MetaPropertyPath> propertyFiltersPredicate) {
         this.propertyFiltersPredicate = propertyFiltersPredicate;
     }
 
+    /**
+     * Adds a predicate to the current properties filter predicate. The result predicate
+     * is a composed predicate that represents a short-circuiting logical AND of given
+     * predicate and current properties filter predicate.
+     *
+     * @param propertyFiltersPredicate a predicate to add
+     */
     public void addPropertyFiltersPredicate(Predicate<MetaPropertyPath> propertyFiltersPredicate) {
         if (this.propertyFiltersPredicate == null) {
             setPropertyFiltersPredicate(propertyFiltersPredicate);
@@ -434,12 +504,23 @@ public class GenericFilter extends Composite<JmixDetails>
         }
     }
 
+    /**
+     * Gets the current configuration that is currently displayed inside the filter.
+     *
+     * @return a current configuration
+     */
     public Configuration getCurrentConfiguration() {
         return currentConfiguration != null
                 ? currentConfiguration
                 : emptyConfiguration;
     }
 
+    /**
+     * Sets the given configuration as current and displays filter components from the current
+     * configuration.
+     *
+     * @param currentConfiguration a configuration
+     */
     public void setCurrentConfiguration(Configuration currentConfiguration) {
         setCurrentConfigurationInternal(currentConfiguration, false);
     }
@@ -609,10 +690,22 @@ public class GenericFilter extends Composite<JmixDetails>
         }
     }
 
+    /**
+     * Gets an empty configuration that is used when the user has not
+     * selected any of the existing configurations.
+     *
+     * @return an empty configuration
+     */
     public Configuration getEmptyConfiguration() {
         return emptyConfiguration;
     }
 
+    /**
+     * Gets a configuration by id.
+     *
+     * @param id the configuration id
+     * @return the configuration of {@code null} if not found
+     */
     @Nullable
     public Configuration getConfiguration(String id) {
         return configurations.stream()
@@ -621,14 +714,46 @@ public class GenericFilter extends Composite<JmixDetails>
                 .orElse(null);
     }
 
+    /**
+     * @return a list of all configurations related to the filter
+     */
     public List<Configuration> getConfigurations() {
         return Collections.unmodifiableList(configurations);
     }
 
+    /**
+     * Adds design-time configuration with given id and name. A configuration is a set
+     * of {@link FilterComponent}s. The configuration does not store a reference to all
+     * components, but stores a reference only to the root element {@link LogicalFilterComponent}
+     * from which the rest {@link FilterComponent}s can be obtained. The root
+     * {@link LogicalFilterComponent} is generated with a {@link LogicalFilterComponent.Operation#AND}
+     * operation.
+     * <p>
+     * The configuration defined in XML is a {@link DesignTimeConfiguration}.
+     *
+     * @param id   a configuration id. Must be unique within this filter
+     * @param name a configuration name
+     * @return {@link DesignTimeConfiguration}
+     * @see LogicalFilterComponent
+     */
     public DesignTimeConfiguration addConfiguration(String id, @Nullable String name) {
         return addConfiguration(id, name, LogicalFilterComponent.Operation.AND);
     }
 
+    /**
+     * Adds design-time configuration with given id and name. A configuration is a set
+     * of {@link FilterComponent}s. The configuration does not store a reference to all
+     * components, but stores a reference only to the root element {@link LogicalFilterComponent}
+     * from which the rest {@link FilterComponent}s can be obtained. The root
+     * {@link LogicalFilterComponent} is generated with a given operation.
+     * <p>
+     * The configuration defined in XML is a {@link DesignTimeConfiguration}.
+     *
+     * @param id            a configuration id. Must be unique within this filter
+     * @param name          a configuration name
+     * @param rootOperation an operation of root {@link LogicalFilterComponent}
+     * @return {@link DesignTimeConfiguration}
+     */
     public DesignTimeConfiguration addConfiguration(String id, @Nullable String name,
                                                     LogicalFilterComponent.Operation rootOperation) {
         LogicalFilterComponent<?> rootComponent = createConfigurationRootLogicalFilterComponent(rootOperation);
@@ -639,11 +764,23 @@ public class GenericFilter extends Composite<JmixDetails>
         return newConfiguration;
     }
 
+    /**
+     * Adds a configuration to the filter.
+     *
+     * @param configuration configuration to add
+     * @see DesignTimeConfiguration
+     * @see RunTimeConfiguration
+     */
     public void addConfiguration(Configuration configuration) {
         configurations.add(configuration);
         addSelectConfigurationAction(configuration);
     }
 
+    /**
+     * Removes a configuration from filter.
+     *
+     * @param configuration configuration to remove
+     */
     public void removeConfiguration(Configuration configuration) {
         if (configuration != getEmptyConfiguration()
                 && !(configuration instanceof DesignTimeConfiguration)) {
@@ -685,6 +822,17 @@ public class GenericFilter extends Composite<JmixDetails>
                 });
     }
 
+    /**
+     * Adds a condition to the filter. A condition is a {@link FilterComponent} that is
+     * not initially added to any of the configurations, but the user can select this
+     * component in the {@link AddConditionView} in the {@code Conditions} section and
+     * add it to the {@link RunTimeConfiguration}.
+     *
+     * @param filterComponent a filter component to add to conditions
+     * @see FilterComponent
+     * @see AddConditionView
+     * @see RunTimeConfiguration
+     */
     public void addCondition(FilterComponent filterComponent) {
         if (conditions == null) {
             conditions = new ArrayList<>();
@@ -693,12 +841,20 @@ public class GenericFilter extends Composite<JmixDetails>
         conditions.add(filterComponent);
     }
 
+    /**
+     * @return a list of all conditions related to the filter
+     */
     public List<FilterComponent> getConditions() {
         return conditions != null
                 ? Collections.unmodifiableList(conditions)
                 : Collections.emptyList();
     }
 
+    /**
+     * Removes a condition from filter.
+     *
+     * @param filterComponent a filter component to remove from conditions
+     */
     public void removeCondition(FilterComponent filterComponent) {
         if (conditions == null) {
             return;
@@ -731,9 +887,6 @@ public class GenericFilter extends Composite<JmixDetails>
             }
         }
     }
-
-
-
 
     /**
      * Event sent when the {@link Configuration} is changed.

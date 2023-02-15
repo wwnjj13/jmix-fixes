@@ -47,6 +47,10 @@ import java.util.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+/**
+ * This component can contain {@link FilterComponent}s and can be used for filtering entities
+ * returned by the {@link DataLoader}.
+ */
 public class GroupFilter extends Composite<VerticalLayout>
         implements LogicalFilterComponent<GroupFilter>, SupportsResponsiveSteps,
         ApplicationContextAware, InitializingBean {
@@ -429,7 +433,6 @@ public class GroupFilter extends Composite<VerticalLayout>
 
         return components;
     }
-
 
     @Internal
     @Override
