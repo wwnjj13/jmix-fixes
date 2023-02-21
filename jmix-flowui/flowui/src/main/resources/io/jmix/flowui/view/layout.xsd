@@ -3391,6 +3391,7 @@
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="pagination" type="paginationQueryParametersType" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="genericFilter" type="genericFilterQueryParametersType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="propertyFilter" type="propertyFilterQueryParametersType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
@@ -3408,6 +3409,12 @@
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="component" type="xs:string" use="required"/>
         <xs:attribute name="conditionsParam" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="propertyFilterQueryParametersType">
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="component" type="xs:string" use="required"/>
+        <xs:attribute name="filterParam" type="xs:string"/>
     </xs:complexType>
 
     <!--  -->

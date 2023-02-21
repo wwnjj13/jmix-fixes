@@ -42,7 +42,7 @@ import io.jmix.flowui.component.logicalfilter.LogicalFilterComponent;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation.Type;
 import io.jmix.flowui.component.propertyfilter.SingleFilterSupport;
-import io.jmix.flowui.facet.QueryParametersFacet;
+import io.jmix.flowui.facet.QueryParametersFacet.QueryParametersChangeEvent;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.model.DataLoader;
 import io.jmix.flowui.model.KeyValueCollectionLoader;
@@ -72,8 +72,8 @@ public class GenericFilterQueryParametersBinder extends AbstractQueryParametersB
 
     protected String conditionsParam;
 
-    protected UrlParamSerializer urlParamSerializer;
     protected ApplicationContext applicationContext;
+    protected UrlParamSerializer urlParamSerializer;
     protected UiComponents uiComponents;
     protected MetadataTools metadataTools;
     protected DataManager dataManager;
@@ -149,7 +149,7 @@ public class GenericFilterQueryParametersBinder extends AbstractQueryParametersB
         QueryParameters queryParameters = QueryParameters
                 .simple(ImmutableMap.of(getConditionsParam(), conditionsString));
 
-        fireQueryParametersChanged(new QueryParametersFacet.QueryParametersChangeEvent(this, queryParameters));
+        fireQueryParametersChanged(new QueryParametersChangeEvent(this, queryParameters));
     }
 
     protected String serializePropertyCondition(PropertyCondition condition) {
@@ -249,8 +249,9 @@ public class GenericFilterQueryParametersBinder extends AbstractQueryParametersB
 
         if (values.length == 3
                 && !Strings.isNullOrEmpty(values[2])) {
-            propertyFilter.setValue(parseValue(dataLoader.getContainer().getEntityMetaClass(),
-                    property, operation.getType(), values[2]));
+            Object parsedValue = parseValue(dataLoader.getContainer().getEntityMetaClass(),
+                    property, operation.getType(), values[2]);
+            propertyFilter.setValue(parsedValue);
         }
 
         return propertyFilter;
