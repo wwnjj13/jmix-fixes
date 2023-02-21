@@ -20,14 +20,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.router.QueryParameters;
-import io.jmix.core.DataManager;
-import io.jmix.core.Id;
-import io.jmix.core.MetadataTools;
-import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaClass;
-import io.jmix.core.metamodel.model.MetaProperty;
-import io.jmix.core.metamodel.model.MetaPropertyPath;
-import io.jmix.core.metamodel.model.Range;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter.Operation;
 import io.jmix.flowui.facet.QueryParametersFacet.QueryParametersChangeEvent;
@@ -51,8 +44,7 @@ public class PropertyFilterQueryParametersBinder extends AbstractQueryParameters
 
     protected ApplicationContext applicationContext;
     protected UrlParamSerializer urlParamSerializer;
-    protected MetadataTools metadataTools;
-    protected DataManager dataManager;
+    protected QueryParametersSupport queryParametersSupport;
 
     public PropertyFilterQueryParametersBinder(PropertyFilter<?> filter,
                                                UrlParamSerializer urlParamSerializer,
@@ -66,7 +58,7 @@ public class PropertyFilterQueryParametersBinder extends AbstractQueryParameters
     }
 
     protected void autowireDependencies() {
-        metadataTools = applicationContext.getBean(MetadataTools.class);
+        queryParametersSupport = applicationContext.getBean(QueryParametersSupport.class);
     }
 
     protected void initComponent(PropertyFilter<?> filter) {
@@ -85,37 +77,15 @@ public class PropertyFilterQueryParametersBinder extends AbstractQueryParameters
 
     protected void updateQueryParameters() {
         String serializedOperation = urlParamSerializer
-                .serialize(convertFromEnumName(filter.getOperation().name().toLowerCase()));
+                .serialize(queryParametersSupport.convertFromEnumName(filter.getOperation().name().toLowerCase()));
         String serializedValue = urlParamSerializer
-                .serialize(getSerializableValue(filter.getValue()));
+                .serialize(queryParametersSupport.getSerializableValue(filter.getValue()));
 
         String paramValue = serializedOperation + SETTINGS_SEPARATOR + serializedValue;
         QueryParameters queryParameters = QueryParameters
                 .simple(ImmutableMap.of(getFilterParam(), paramValue));
 
         fireQueryParametersChanged(new QueryParametersChangeEvent(this, queryParameters));
-    }
-
-    // TODO: gg, extract
-    protected String convertToEnumName(String value) {
-        return value.replace("-", "_");
-    }
-
-    protected String convertFromEnumName(String value) {
-        return value.replace("_", "-");
-    }
-
-    protected Object getSerializableValue(@Nullable Object value) {
-        if (value == null) {
-            return "";
-        } else if (EntityValues.isEntity(value)) {
-            Object id = EntityValues.getId(value);
-            return id != null ? id : "";
-        } else if (value instanceof Enum) {
-            return convertFromEnumName(((Enum<?>) value).name());
-        } else {
-            return value;
-        }
     }
 
     @Override
@@ -128,59 +98,18 @@ public class PropertyFilterQueryParametersBinder extends AbstractQueryParameters
                 throw new IllegalStateException("Can't parse property filter settings: " + serializedSettings);
             }
 
-            Operation operation = urlParamSerializer.deserialize(Operation.class, convertToEnumName(values[0]));
+            Operation operation = urlParamSerializer.deserialize(Operation.class,
+                    queryParametersSupport.convertToEnumName(values[0]));
             filter.setOperation(operation);
 
             if (values.length == 2
                     && !Strings.isNullOrEmpty(values[1])) {
-                Object parsedValue = parseValue(filter.getDataLoader().getContainer().getEntityMetaClass(),
+                MetaClass entityMetaClass = filter.getDataLoader().getContainer().getEntityMetaClass();
+                Object parsedValue = queryParametersSupport.parseValue(entityMetaClass,
                         Objects.requireNonNull(filter.getProperty()), operation.getType(), values[1]);
                 //noinspection unchecked,rawtypes
                 ((PropertyFilter) filter).setValue(parsedValue);
             }
-        }
-    }
-
-    // TODO: gg, extract
-    protected Object parseValue(MetaClass metaClass, String property, Operation.Type operationType, String valueString) {
-        MetaPropertyPath mpp = metadataTools.resolveMetaPropertyPath(metaClass, property);
-
-        switch (operationType) {
-            case UNARY:
-                return urlParamSerializer.deserialize(Boolean.class, valueString);
-            case VALUE:
-                return parseSingleValue(property, valueString, mpp);
-            case LIST:
-            case INTERVAL:
-                throw new UnsupportedOperationException("Not implemented yet");
-            default:
-                throw new IllegalArgumentException("Unknown operation type: " + operationType);
-        }
-    }
-
-    protected Object parseSingleValue(String property, String valueString, MetaPropertyPath mpp) {
-        Range mppRange = mpp.getRange();
-        if (mppRange.isDatatype()) {
-            Class<?> type = mppRange.asDatatype().getJavaClass();
-            return urlParamSerializer.deserialize(type, valueString);
-
-        } else if (mppRange.isEnum()) {
-            Class<?> type = mppRange.asEnumeration().getJavaClass();
-            String enumString = convertToEnumName(valueString);
-            return urlParamSerializer.deserialize(type, enumString);
-
-        } else if (mppRange.isClass()) {
-            MetaClass propertyMetaClass = mppRange.asClass();
-            MetaProperty idProperty = Objects.requireNonNull(metadataTools.getPrimaryKeyProperty(propertyMetaClass));
-            Object idValue = urlParamSerializer.deserialize(idProperty.getJavaType(), valueString);
-
-            return getDataManager().load(Id.of(idValue, propertyMetaClass.getJavaClass()))
-                    .optional().orElseThrow(() ->
-                            new IllegalArgumentException(String.format("Entity with type '%s' and id '%s' isn't found",
-                                    propertyMetaClass.getJavaClass(), idValue)));
-
-        } else {
-            throw new IllegalStateException("Unsupported property: " + property);
         }
     }
 
@@ -193,12 +122,5 @@ public class PropertyFilterQueryParametersBinder extends AbstractQueryParameters
 
     public void setFilterParam(@Nullable String filterParam) {
         this.filterParam = filterParam;
-    }
-
-    protected DataManager getDataManager() {
-        if (dataManager == null) {
-            dataManager = applicationContext.getBean(DataManager.class);
-        }
-        return dataManager;
     }
 }
