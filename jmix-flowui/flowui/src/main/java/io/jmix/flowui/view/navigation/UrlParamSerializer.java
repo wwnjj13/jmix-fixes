@@ -249,7 +249,10 @@ public class UrlParamSerializer {
         String decoded = URLEncodeUtils.decodeUtf8(serializedValue);
 
         try {
-            if (BigDecimal.class == type) {
+            if (String.class == type) {
+                return ((T) parseString(decoded));
+
+            } else if (BigDecimal.class == type) {
                 return ((T) parseBigDecimal(decoded));
 
             } else if (BigInteger.class == type) {
@@ -296,9 +299,6 @@ public class UrlParamSerializer {
 
             } else if (Short.class == type) {
                 return ((T) parseShort(decoded));
-
-            } else if (String.class == type) {
-                return ((T) parseString(decoded));
 
             } else if (Time.class == type) {
                 return ((T) parseTime(decoded));
@@ -358,7 +358,7 @@ public class UrlParamSerializer {
     protected <T> T parseEnum(Class<T> type, String stringValue) {
         T[] enumConstants = type.getEnumConstants();
         for (T enumConst : enumConstants) {
-            if (((Enum<?>) enumConst).name().equals(stringValue)) {
+            if (StringUtils.equalsIgnoreCase(((Enum<?>) enumConst).name(), stringValue)) {
                 return enumConst;
             }
         }

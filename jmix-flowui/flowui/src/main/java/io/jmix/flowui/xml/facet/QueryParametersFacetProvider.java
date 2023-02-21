@@ -20,9 +20,11 @@ import com.google.common.base.Preconditions;
 import com.vaadin.flow.component.Component;
 import io.jmix.flowui.component.PaginationComponent;
 import io.jmix.flowui.component.UiComponentUtils;
+import io.jmix.flowui.component.genericfilter.GenericFilter;
 import io.jmix.flowui.exception.GuiDevelopmentException;
 import io.jmix.flowui.facet.QueryParametersFacet;
 import io.jmix.flowui.facet.impl.QueryParametersFacetImpl;
+import io.jmix.flowui.facet.queryparameters.GenericFilterQueryParametersBinder;
 import io.jmix.flowui.facet.queryparameters.PaginationQueryParametersBinder;
 import io.jmix.flowui.view.View;
 import io.jmix.flowui.view.navigation.RouteSupport;
@@ -31,15 +33,19 @@ import io.jmix.flowui.xml.layout.ComponentLoader;
 import io.jmix.flowui.xml.layout.ComponentLoader.ComponentContext;
 import io.jmix.flowui.xml.layout.support.LoaderSupport;
 import org.dom4j.Element;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
 
 @org.springframework.stereotype.Component("flowui_QueryParametersFacetProvider")
-public class QueryParametersFacetProvider implements FacetProvider<QueryParametersFacet> {
+public class QueryParametersFacetProvider implements FacetProvider<QueryParametersFacet>, ApplicationContextAware {
 
     protected LoaderSupport loaderSupport;
     protected RouteSupport routeSupport;
     protected UrlParamSerializer urlParamSerializer;
+    protected ApplicationContext applicationContext;
 
     public QueryParametersFacetProvider(LoaderSupport loaderSupport,
                                         RouteSupport routeSupport,
@@ -47,6 +53,11 @@ public class QueryParametersFacetProvider implements FacetProvider<QueryParamete
         this.loaderSupport = loaderSupport;
         this.routeSupport = routeSupport;
         this.urlParamSerializer = urlParamSerializer;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -76,15 +87,29 @@ public class QueryParametersFacetProvider implements FacetProvider<QueryParamete
     }
 
     protected void loadBinder(QueryParametersFacet facet, Element element, ComponentContext context) {
+        // TODO: gg, rework, some registration is needed
         switch (element.getName()) {
             case PaginationQueryParametersBinder.NAME:
                 loadPaginationQueryParametersBinder(facet, element, context);
+                break;
+            case GenericFilterQueryParametersBinder.NAME:
+                loadGenericFilterQueryParametersBinder(facet, element, context);
                 break;
             default:
                 throw new GuiDevelopmentException(
                         String.format("Unsupported nested element in '%s': %s",
                                 getFacetTag(), element.getName()), context);
         }
+    }
+
+    protected void loadGenericFilterQueryParametersBinder(QueryParametersFacet facet,
+                                                          Element element, ComponentContext context) {
+        String componentId = loadRequiredAttribute(element, "component", context);
+        String binderId = loadAttribute(element, "id");
+
+        context.addPreInitTask(new GenericFilterQueryParametersBinderInitTask(
+                facet, componentId, binderId, urlParamSerializer, applicationContext
+        ));
     }
 
     protected void loadPaginationQueryParametersBinder(QueryParametersFacet facet,
@@ -149,6 +174,45 @@ public class QueryParametersFacetProvider implements FacetProvider<QueryParamete
             binder.setId(binderId);
             binder.setFirstResultParam(firstResultParam);
             binder.setMaxResultsParam(maxResultsParam);
+
+            facet.registerBinder(binder);
+        }
+    }
+
+    public static class GenericFilterQueryParametersBinderInitTask implements ComponentLoader.InitTask {
+
+        protected final QueryParametersFacet facet;
+        protected final String binderId;
+        protected final String componentId;
+        protected final UrlParamSerializer urlParamSerializer;
+        protected final ApplicationContext applicationContext;
+
+        public GenericFilterQueryParametersBinderInitTask(QueryParametersFacet facet,
+                                                          String componentId,
+                                                          @Nullable String binderId,
+                                                          UrlParamSerializer urlParamSerializer,
+                                                          ApplicationContext applicationContext) {
+            this.facet = facet;
+            this.binderId = binderId;
+            this.componentId = componentId;
+            this.urlParamSerializer = urlParamSerializer;
+            this.applicationContext = applicationContext;
+        }
+
+        @Override
+        public void execute(ComponentContext context, View<?> view) {
+            Preconditions.checkState(facet.getOwner() != null, "%s owner is not set", QueryParametersFacet.NAME);
+
+            Component component = UiComponentUtils.getComponent(facet.getOwner(), componentId);
+            if (!(component instanceof GenericFilter)) {
+                throw new IllegalStateException(String.format("'%s' is not a generic filter component", componentId));
+            }
+
+            GenericFilterQueryParametersBinder binder =
+                    new GenericFilterQueryParametersBinder(((GenericFilter) component),
+                            urlParamSerializer, applicationContext);
+
+            binder.setId(binderId);
 
             facet.registerBinder(binder);
         }
