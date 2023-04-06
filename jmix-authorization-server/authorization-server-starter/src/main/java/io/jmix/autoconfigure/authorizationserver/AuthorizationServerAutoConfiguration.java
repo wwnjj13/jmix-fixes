@@ -126,7 +126,7 @@ public class AuthorizationServerAutoConfiguration {
                                                                      OpaqueTokenIntrospector opaqueTokenIntrospector) throws Exception {
             http.apply(SecurityConfigurers.apiSecurity());
             http
-                    .authorizeRequests(authorize -> {
+                    .authorizeHttpRequests(authorize -> {
                         authorize.anyRequest().authenticated();
                     })
                     .oauth2ResourceServer(oauth2 -> oauth2
