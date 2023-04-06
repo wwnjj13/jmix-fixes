@@ -29,7 +29,7 @@ repositories {
 dependencies {
     implementation localGroovy()
 
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin:2.7.4'
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.0.5'
     implementation 'com.vaadin:vaadin-gradle-plugin:23.3.0'
 
     implementation('org.dom4j:dom4j:2.1.3'){
