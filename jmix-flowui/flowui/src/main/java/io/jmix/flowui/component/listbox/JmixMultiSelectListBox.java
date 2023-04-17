@@ -24,6 +24,7 @@ import io.jmix.flowui.data.SupportsDataProvider;
 import io.jmix.flowui.data.SupportsItemsContainer;
 import io.jmix.flowui.data.SupportsItemsEnum;
 import io.jmix.flowui.model.CollectionContainer;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -72,14 +73,22 @@ public class JmixMultiSelectListBox<V> extends MultiSelectListBox<V> implements 
         dataViewDelegate.setItems(itemsEnum);
     }
 
+    @Nullable
     @Override
+    public DataProvider<V, ?> getDataProvider() {
+        // TODO: v24, implement replacement
+        return null;
+    }
+
+    // TODO: v24, implement replacement
+    /*@Override
     public void setDataProvider(DataProvider<V, ?> dataProvider) {
         // Method is called from a constructor so bean can be null
         if (dataViewDelegate != null) {
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider);
-    }
+    }*/
 
     @SuppressWarnings("unchecked")
     protected DataViewDelegate<JmixMultiSelectListBox<V>, V> createDataViewDelegate() {

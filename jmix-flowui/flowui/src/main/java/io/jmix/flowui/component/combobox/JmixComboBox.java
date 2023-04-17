@@ -36,7 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixComboBox<V> extends ComboBox<V>
@@ -79,7 +79,8 @@ public class JmixComboBox<V> extends ComboBox<V>
         fieldDelegate.executeValidators();
     }
 
-    @Override
+    // TODO: gg, implement replacement
+    /*@Override
     public <C> void setDataProvider(DataProvider<V, C> dataProvider,
                                     SerializableFunction<String, C> filterConverter) {
         // Method is called from a constructor so bean can be null
@@ -87,7 +88,7 @@ public class JmixComboBox<V> extends ComboBox<V>
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider, filterConverter);
-    }
+    }*/
 
     @Override
     public void setItems(Class<V> itemsEnum) {

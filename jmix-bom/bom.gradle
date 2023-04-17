@@ -63,7 +63,7 @@ group = 'io.jmix.bom'
 //todo SB3 remove vaadin8
 def vaadinVersion = '8.14.3-2-jmix'
 //todo SB3 upgrade to Vaadin 24
-def vaadinFlowVersion = '23.3.0'
+def vaadinFlowVersion = '24.0.3'
 
 javaPlatform {
     allowDependencies()

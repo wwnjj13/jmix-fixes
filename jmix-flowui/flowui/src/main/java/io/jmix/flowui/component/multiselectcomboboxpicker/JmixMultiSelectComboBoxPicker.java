@@ -44,7 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.*;
 
 public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<V>
@@ -139,11 +139,13 @@ public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<
     public void setItems(CollectionContainer<V> container,
                          SerializableBiPredicate<V, String> itemFilter) {
         ContainerDataProvider<V> dataProvider = new ContainerDataProvider<>(container);
-        setDataProvider(dataProvider, filterText ->
-                item -> itemFilter.test(item, filterText));
+        // TODO: gg, implement replacement
+//        setDataProvider(dataProvider, filterText ->
+//                item -> itemFilter.test(item, filterText));
     }
 
-    @Override
+    // TODO: gg, implement replacement
+    /*@Override
     public <C> void setDataProvider(DataProvider<V, C> dataProvider,
                                     SerializableFunction<String, C> filterConverter) {
         // Method is called from a constructor so bean can be null
@@ -151,7 +153,7 @@ public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider, filterConverter);
-    }
+    }*/
 
     @Override
     public void setValueFromClient(@Nullable Collection<V> value) {

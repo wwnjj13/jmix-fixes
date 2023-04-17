@@ -11,7 +11,7 @@ import {ElementMixin} from '@vaadin/component-base/src/element-mixin.js';
 import {OverflowController} from '@vaadin/component-base/src/overflow-controller.js';
 import {SlotController} from '@vaadin/component-base/src/slot-controller.js';
 import {generateUniqueId} from '@vaadin/component-base/src/unique-id-utils.js';
-import {DelegateStateMixin} from '@vaadin/field-base/src/delegate-state-mixin.js';
+import {DelegateStateMixin} from '@vaadin/component-base/src/delegate-state-mixin.js';
 import {Tabs} from '@vaadin/tabs/src/vaadin-tabs.js';
 import {ThemableMixin} from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
@@ -243,7 +243,9 @@ class JmixTabSheet extends ControllerMixin(DelegateStateMixin(ElementMixin(Thema
             const panel = panels.find((panel) => panel.getAttribute('tab') === tabItem.id);
             if (panel) {
                 panel.role = 'tabpanel';
-                panel.id = panel.id || `tabsheet-panel-${generateUniqueId()}`;
+                if (!panel.id) {
+                    panel.id = `tabsheet-panel-${generateUniqueId()}`;
+                }
                 panel.setAttribute('aria-labelledby', tabItem.id);
 
                 tabItem.setAttribute('aria-controls', panel.id);

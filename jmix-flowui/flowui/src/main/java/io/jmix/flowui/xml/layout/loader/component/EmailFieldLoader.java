@@ -41,7 +41,6 @@ public class EmailFieldLoader extends AbstractComponentLoader<JmixEmailField> {
         loadBoolean(element, "autoselect", resultComponent::setAutoselect);
         loadResourceString(element, "placeholder", context.getMessageGroup(), resultComponent::setPlaceholder);
         loadBoolean(element, "clearButtonVisible", resultComponent::setClearButtonVisible);
-        loadBoolean(element, "preventInvalidInput", resultComponent::setPreventInvalidInput);
         loadResourceString(element, "title", context.getMessageGroup(), resultComponent::setTitle);
 
         componentLoader().loadLabel(resultComponent, element);

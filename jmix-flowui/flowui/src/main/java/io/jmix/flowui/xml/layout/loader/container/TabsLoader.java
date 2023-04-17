@@ -34,7 +34,8 @@ public class TabsLoader extends AbstractTabsLoader<Tabs> {
     public void initComponent() {
         super.initComponent();
 
-        createSubComponents(resultComponent, element);
+        // TODO: v24, implement?
+//        createSubComponents(resultComponent, element);
     }
 
     @Override

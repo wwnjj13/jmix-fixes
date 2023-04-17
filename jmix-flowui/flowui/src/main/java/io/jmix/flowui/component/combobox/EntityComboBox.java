@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -153,14 +153,14 @@ public class EntityComboBox<V> extends ComboBoxPicker<V>
         fieldDelegate.setValueSource(valueSource);
     }
 
-    @Override
+    /*@Override
     public <C> void setDataProvider(DataProvider<V, C> dataProvider, SerializableFunction<String, C> filterConverter) {
         // Method is called from a constructor so bean can be null
         if (dataViewDelegate != null) {
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider, filterConverter);
-    }
+    }*/
 
     @Override
     public void setItems(CollectionContainer<V> container) {
@@ -175,8 +175,13 @@ public class EntityComboBox<V> extends ComboBoxPicker<V>
     public void setItems(CollectionContainer<V> container,
                          SerializableBiPredicate<V, String> itemFilter) {
         ContainerDataProvider<V> dataProvider = new ContainerDataProvider<>(container);
-        setDataProvider(dataProvider, filterText ->
-                item -> itemFilter.test(item, filterText));
+        // TODO: v24, implement replacement
+
+//        setItems(dataProvider);
+
+
+        /*setDataProvider(dataProvider, filterText ->
+                item -> itemFilter.test(item, filterText));*/
     }
 
     protected String generateLabel(@Nullable V item) {

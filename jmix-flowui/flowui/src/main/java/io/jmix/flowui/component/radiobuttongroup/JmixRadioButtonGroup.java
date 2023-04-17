@@ -33,7 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixRadioButtonGroup<V> extends RadioButtonGroup<V> implements SupportsValueSource<V>,
@@ -92,14 +92,22 @@ public class JmixRadioButtonGroup<V> extends RadioButtonGroup<V> implements Supp
         dataViewDelegate.setItems(itemsEnum);
     }
 
+    @Nullable
     @Override
+    public DataProvider<V, ?> getDataProvider() {
+        // TODO: v24, implement replacement
+        return null;
+    }
+
+    // TODO: v24, implement replacement
+    /*@Override
     public void setDataProvider(DataProvider<V, ?> dataProvider) {
         // Method is called from a constructor so bean can be null
         if (dataViewDelegate != null) {
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider);
-    }
+    }*/
 
     @Nullable
     @Override

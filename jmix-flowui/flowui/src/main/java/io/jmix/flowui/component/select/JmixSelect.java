@@ -33,7 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, HasRequired, SupportsDataProvider<V>,
@@ -94,7 +94,12 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
 
     @Override
     public void setInvalid(boolean invalid) {
-        fieldDelegate.setInvalid(invalid);
+        // Method is called from constructor so delegate can be null
+        if (fieldDelegate != null) {
+            fieldDelegate.setInvalid(invalid);
+        } else {
+            super.setInvalid(invalid);
+        }
     }
 
     @Nullable
@@ -124,14 +129,15 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
         fieldDelegate.setValueSource(valueSource);
     }
 
-    @Override
+    // TODO: v24, implement replacement
+    /*@Override
     public void setDataProvider(DataProvider<V, ?> dataProvider) {
         // Method is called from a constructor so bean can be null
         if (dataViewDelegate != null) {
             dataViewDelegate.bind(dataProvider);
         }
         super.setDataProvider(dataProvider);
-    }
+    }*/
 
     @Override
     public void setItems(CollectionContainer<V> container) {
