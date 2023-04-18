@@ -32,7 +32,7 @@ public class JmixMenuManager<C extends Component, I extends MenuItemBase<?, I, S
         extends MenuManager<C, I, S> {
 
     private final C menu;
-    protected final SerializableBiFunction<C, SerializableRunnable, I> itemGenerator;
+    private final SerializableBiFunction<C, SerializableRunnable, I> itemGenerator;
     private final SerializableRunnable contentReset;
 
     public JmixMenuManager(C menu, SerializableRunnable contentReset,

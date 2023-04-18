@@ -18,25 +18,27 @@ package io.jmix.flowui.kit.component.menubar;
 
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.MenuManager;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.function.SerializableRunnable;
+import io.jmix.flowui.kit.component.contextmenu.JmixMenuManager;
 
 // CAUTION: copied from com.vaadin.flow.component.menubar.MenuBarRootItem [last update Vaadin 24.0.3]
-public class JmixMenuItem extends MenuItem {
+public class JmixMenuBarSubMenu extends JmixSubMenu {
 
-    protected final SerializableRunnable contentReset;
-
-    public JmixMenuItem(ContextMenu contextMenu, SerializableRunnable contentReset) {
-        super(contextMenu, contentReset);
-        this.contentReset = contentReset;
+    public JmixMenuBarSubMenu(JmixMenuItem parentMenuItem, SerializableRunnable contentReset) {
+        super(parentMenuItem, contentReset);
     }
 
     @Override
-    public JmixSubMenu getSubMenu() {
-        return (JmixSubMenu) super.getSubMenu();
+    protected MenuManager<ContextMenu, MenuItem, SubMenu> createMenuManager() {
+        return new JmixMenuManager<>(getParentMenuItem().getContextMenu(),
+                contentReset, JmixMenuBarItem::new, MenuItem.class,
+                getParentMenuItem());
     }
 
     @Override
-    protected JmixSubMenu createSubMenu() {
-        return new JmixSubMenu(this, contentReset);
+    protected JmixMenuManager<ContextMenu, MenuItem, SubMenu> getMenuManager() {
+        return super.getMenuManager();
     }
 }

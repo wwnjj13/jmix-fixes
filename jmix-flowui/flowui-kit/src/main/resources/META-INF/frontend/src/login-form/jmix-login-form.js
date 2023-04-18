@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// CAUTION: copied from @vaadin/login [since Vaadin 24.0.0]
+// CAUTION: copied from @vaadin/login [last update Vaadin 24.0.3]
 import '@vaadin/text-field/src/vaadin-text-field.js';
 import '@vaadin/password-field/src/vaadin-password-field.js';
 import '@vaadin/checkbox/src/vaadin-checkbox.js';
