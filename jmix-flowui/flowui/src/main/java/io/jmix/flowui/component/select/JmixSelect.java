@@ -17,7 +17,11 @@
 package io.jmix.flowui.component.select;
 
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.select.data.SelectDataView;
+import com.vaadin.flow.component.select.data.SelectListDataView;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.InMemoryDataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
@@ -129,16 +133,6 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
         fieldDelegate.setValueSource(valueSource);
     }
 
-    // TODO: v24, implement replacement
-    /*@Override
-    public void setDataProvider(DataProvider<V, ?> dataProvider) {
-        // Method is called from a constructor so bean can be null
-        if (dataViewDelegate != null) {
-            dataViewDelegate.bind(dataProvider);
-        }
-        super.setDataProvider(dataProvider);
-    }*/
-
     @Override
     public void setItems(CollectionContainer<V> container) {
         dataViewDelegate.setItems(container);
@@ -147,6 +141,31 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
     @Override
     public void setItems(Class<V> itemsEnum) {
         dataViewDelegate.setItems(itemsEnum);
+    }
+
+    @Override
+    public SelectDataView<V> setItems(DataProvider<V, Void> dataProvider) {
+        bindDataProvider(dataProvider);
+        return super.setItems(dataProvider);
+    }
+
+    @Override
+    public SelectListDataView<V> setItems(ListDataProvider<V> dataProvider) {
+        bindDataProvider(dataProvider);
+        return super.setItems(dataProvider);
+    }
+
+    @Override
+    public SelectDataView<V> setItems(InMemoryDataProvider<V> inMemoryDataProvider) {
+        bindDataProvider(inMemoryDataProvider);
+        return super.setItems(inMemoryDataProvider);
+    }
+
+    protected void bindDataProvider(DataProvider<V, ?> dataProvider) {
+        // One of binding methods is called from a constructor so bean can be null
+        if (dataViewDelegate != null) {
+            dataViewDelegate.bind(dataProvider);
+        }
     }
 
     @Override
