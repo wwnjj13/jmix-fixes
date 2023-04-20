@@ -177,7 +177,8 @@ public class EntityComboBox<V> extends ComboBoxPicker<V>
     }
 
     @Override
-    public ComboBoxListDataView<V> setItems(ItemFilter<V> itemFilter, ListDataProvider<V> listDataProvider) {
+    public ComboBoxListDataView<V> setItems(ItemFilter<V> itemFilter,
+                                            ListDataProvider<V> listDataProvider) {
         bindDataProvider(listDataProvider);
         return super.setItems(itemFilter, listDataProvider);
     }

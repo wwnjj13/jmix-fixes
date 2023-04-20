@@ -17,8 +17,15 @@
 package io.jmix.flowui.component.combobox;
 
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.dataview.ComboBoxDataView;
+import com.vaadin.flow.component.combobox.dataview.ComboBoxLazyDataView;
+import com.vaadin.flow.component.combobox.dataview.ComboBoxListDataView;
+import com.vaadin.flow.data.provider.BackEndDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.InMemoryDataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializableFunction;
+import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
@@ -79,20 +86,49 @@ public class JmixComboBox<V> extends ComboBox<V>
         fieldDelegate.executeValidators();
     }
 
-    // TODO: gg, implement replacement
-    /*@Override
-    public <C> void setDataProvider(DataProvider<V, C> dataProvider,
-                                    SerializableFunction<String, C> filterConverter) {
-        // Method is called from a constructor so bean can be null
-        if (dataViewDelegate != null) {
-            dataViewDelegate.bind(dataProvider);
-        }
-        super.setDataProvider(dataProvider, filterConverter);
-    }*/
 
     @Override
     public void setItems(Class<V> itemsEnum) {
         dataViewDelegate.setItems(itemsEnum);
+    }
+
+    @Override
+    public ComboBoxListDataView<V> setItems(ItemFilter<V> itemFilter,
+                                            ListDataProvider<V> listDataProvider) {
+        bindDataProvider(listDataProvider);
+        return super.setItems(itemFilter, listDataProvider);
+    }
+
+    @Override
+    public ComboBoxListDataView<V> setItems(ListDataProvider<V> dataProvider) {
+        bindDataProvider(dataProvider);
+        return super.setItems(dataProvider);
+    }
+
+    @Override
+    public ComboBoxLazyDataView<V> setItems(BackEndDataProvider<V, String> dataProvider) {
+        bindDataProvider(dataProvider);
+        return super.setItems(dataProvider);
+    }
+
+    @Override
+    public ComboBoxDataView<V> setItems(DataProvider<V, String> dataProvider) {
+        bindDataProvider(dataProvider);
+        return super.setItems(dataProvider);
+    }
+
+    @Override
+    public ComboBoxDataView<V> setItems(InMemoryDataProvider<V> inMemoryDataProvider,
+                                        SerializableFunction<String, SerializablePredicate<V>> filterConverter) {
+        bindDataProvider(inMemoryDataProvider);
+        return super.setItems(inMemoryDataProvider, filterConverter);
+    }
+
+    protected void bindDataProvider(DataProvider<V, ?> dataProvider) {
+        // One of binding methods is called from a constructor so bean can be null
+        if (dataViewDelegate != null) {
+            dataViewDelegate.bind(dataProvider);
+        }
     }
 
     @Nullable

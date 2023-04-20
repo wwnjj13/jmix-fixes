@@ -390,7 +390,7 @@ public interface StudioComponents {
             properties = {
                     @StudioProperty(xmlAttribute = "allowCustomValue", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
-                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.STRING),
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autofocus", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
@@ -459,7 +459,7 @@ public interface StudioComponents {
             properties = {
                     @StudioProperty(xmlAttribute = "allowCustomValue", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
-                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.STRING),
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autofocus", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
@@ -604,6 +604,7 @@ public interface StudioComponents {
             xmlElement = "comboBoxPicker",
             icon = "io/jmix/flowui/kit/meta/icon/unknownComponent.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "allowCustomValue", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "autofocus", type = StudioPropertyType.BOOLEAN,
@@ -655,6 +656,7 @@ public interface StudioComponents {
             xmlElement = "datePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/datePicker.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
@@ -796,6 +798,7 @@ public interface StudioComponents {
             xmlElement = "emailField",
             icon = "io/jmix/flowui/kit/meta/icon/unknownComponent.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autocapitalize", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.textfield.Autocapitalize", defaultValue = "NONE",
                             options = {"NONE", "SENTENCES", "WORDS", "CHARACTERS"}),
@@ -874,6 +877,7 @@ public interface StudioComponents {
             xmlElement = "entityComboBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/entityComboBox.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "allowCustomValue", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "autofocus", type = StudioPropertyType.BOOLEAN,
@@ -1175,6 +1179,8 @@ public interface StudioComponents {
                             type = StudioPropertyType.BOOLEAN, defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "requiredMessage", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "step", type = StudioPropertyType.DOUBLE),
+                    @StudioProperty(xmlAttribute = "stepButtonsVisible", type = StudioPropertyType.BOOLEAN,
+                            defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "tabIndex", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST,
                             options = {"small", "align-center", "align-right", "helper-above-field",
@@ -1205,6 +1211,7 @@ public interface StudioComponents {
             xmlElement = "numberField",
             icon = "io/jmix/flowui/kit/meta/icon/unknownComponent.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autocapitalize", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.textfield.Autocapitalize", defaultValue = "NONE",
                             options = {"NONE", "SENTENCES", "WORDS", "CHARACTERS"}),
@@ -1257,6 +1264,8 @@ public interface StudioComponents {
                             type = StudioPropertyType.BOOLEAN, defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "requiredMessage", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "step", type = StudioPropertyType.DOUBLE),
+                    @StudioProperty(xmlAttribute = "stepButtonsVisible", type = StudioPropertyType.BOOLEAN,
+                            defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "tabIndex", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST,
                             options = {"small", "align-center", "align-right", "helper-above-field",
@@ -1287,6 +1296,7 @@ public interface StudioComponents {
             xmlElement = "passwordField",
             icon = "io/jmix/flowui/kit/meta/icon/component/passwordField.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autocapitalize", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.textfield.Autocapitalize", defaultValue = "NONE",
                             options = {"NONE", "SENTENCES", "WORDS", "CHARACTERS"}),
@@ -1597,6 +1607,7 @@ public interface StudioComponents {
             xmlElement = "textArea",
             icon = "io/jmix/flowui/kit/meta/icon/component/textArea.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autocapitalize", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.textfield.Autocapitalize", defaultValue = "NONE",
                             options = {"NONE", "SENTENCES", "WORDS", "CHARACTERS"}),
@@ -1675,6 +1686,7 @@ public interface StudioComponents {
             xmlElement = "textField",
             icon = "io/jmix/flowui/kit/meta/icon/component/textField.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autocapitalize", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.textfield.Autocapitalize", defaultValue = "NONE",
                             options = {"NONE", "SENTENCES", "WORDS", "CHARACTERS"}),
@@ -1758,6 +1770,7 @@ public interface StudioComponents {
             xmlElement = "timePicker",
             icon = "io/jmix/flowui/kit/meta/icon/unknownComponent.svg",
             properties = {
+                    @StudioProperty(xmlAttribute = "allowedCharPattern", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),

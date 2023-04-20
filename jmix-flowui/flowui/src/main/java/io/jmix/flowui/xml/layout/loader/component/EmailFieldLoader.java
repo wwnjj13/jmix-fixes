@@ -58,6 +58,7 @@ public class EmailFieldLoader extends AbstractComponentLoader<JmixEmailField> {
         componentLoader().loadValueChangeMode(resultComponent, element);
         componentLoader().loadValueAndElementAttributes(resultComponent, element);
         componentLoader().loadValidationAttributes(resultComponent, element, context);
+        componentLoader().loadAllowedCharPattern(resultComponent, element, context);
     }
 
     protected DataLoaderSupport getDataLoaderSupport() {

@@ -40,5 +40,6 @@ public abstract class AbstractComboBoxLoader<T extends ComboBox<?>> extends Abst
         componentLoader().loadHelperText(resultComponent, element);
         componentLoader().loadSizeAttributes(resultComponent, element);
         componentLoader().loadValidationAttributes(resultComponent, element, context);
+        componentLoader().loadAllowedCharPattern(resultComponent, element, context);
     }
 }

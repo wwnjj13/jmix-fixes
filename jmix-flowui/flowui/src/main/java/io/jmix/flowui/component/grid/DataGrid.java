@@ -16,7 +16,6 @@
 
 package io.jmix.flowui.component.grid;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSelectionModel;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
@@ -38,15 +37,14 @@ import io.jmix.flowui.data.DataUnit;
 import io.jmix.flowui.data.grid.DataGridItems;
 import io.jmix.flowui.kit.component.grid.GridActionsSupport;
 import io.jmix.flowui.kit.component.grid.JmixGrid;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, MultiSelectLookupComponent<E>,
         EnhancedDataGrid<E>, ApplicationContextAware, InitializingBean {
@@ -199,47 +197,6 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     public Column<E> addColumn(Renderer<E> renderer) {
         Column<E> column = super.addColumn(renderer);
         return gridDelegate.addColumn(column);
-    }
-
-    @Override
-    public Column<E> addColumn(String propertyName) {
-        // TODO: gg, implement
-        Column<E> column = super.addColumn(propertyName);
-        return gridDelegate.addColumn(column);
-    }
-
-    @Override
-    protected <C extends Column<E>> C addColumn(ValueProvider<E, ?> valueProvider,
-                                                BiFunction<Renderer<E>, String, C> columnFactory) {
-        // TODO: gg, implement
-        return super.addColumn(valueProvider, columnFactory);
-    }
-
-    @Override
-    public <V extends Component> Column<E> addComponentColumn(ValueProvider<E, V> componentProvider) {
-        // TODO: gg, implement
-        return super.addComponentColumn(componentProvider);
-    }
-
-    @Override
-    public <V extends Comparable<? super V>> Column<E> addColumn(ValueProvider<E, V> valueProvider,
-                                                                 String... sortingProperties) {
-        // TODO: gg, implement
-        return super.addColumn(valueProvider, sortingProperties);
-    }
-
-    @Override
-    protected <C extends Column<E>> C addColumn(Renderer<E> renderer,
-                                                BiFunction<Renderer<E>, String, C> columnFactory) {
-        // TODO: gg, implement
-        return super.addColumn(renderer, columnFactory);
-    }
-
-    @Override
-    protected <C extends Column<E>> C addColumn(String propertyName,
-                                                BiFunction<Renderer<E>, String, C> columnFactory) {
-        // TODO: gg, implement
-        return super.addColumn(propertyName, columnFactory);
     }
 
     @Override
