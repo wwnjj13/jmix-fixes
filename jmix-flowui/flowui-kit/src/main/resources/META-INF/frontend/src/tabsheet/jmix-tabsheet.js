@@ -15,7 +15,7 @@ import {DelegateStateMixin} from '@vaadin/component-base/src/delegate-state-mixi
 import {Tabs} from '@vaadin/tabs/src/vaadin-tabs.js';
 import {ThemableMixin} from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
-// CAUTION: copied from @vaadin/tabsheet [since Vaadin 23.3.0]
+// CAUTION: copied from @vaadin/login [last update Vaadin 24.0.3]
 /**
  * @private
  * A controller which observes the <vaadin-tabs> slotted to the tabs slot.
@@ -196,6 +196,10 @@ class JmixTabSheet extends ControllerMixin(DelegateStateMixin(ElementMixin(Thema
         };
     }
 
+    static get observers() {
+        return ['__itemsOrPanelsChanged(items, __panels)', '__selectedTabItemChanged(selected, items, __panels)'];
+    }
+
     /** @override */
     static get delegateProps() {
         return ['selected'];
@@ -223,10 +227,6 @@ class JmixTabSheet extends ControllerMixin(DelegateStateMixin(ElementMixin(Thema
                 (node) => node.nodeType === Node.ELEMENT_NODE,
             );
         });
-    }
-
-    static get observers() {
-        return ['__itemsOrPanelsChanged(items, __panels)', '__selectedTabItemChanged(selected, items, __panels)'];
     }
 
     /**

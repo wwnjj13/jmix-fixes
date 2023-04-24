@@ -86,7 +86,6 @@ public class JmixComboBox<V> extends ComboBox<V>
         fieldDelegate.executeValidators();
     }
 
-
     @Override
     public void setItems(Class<V> itemsEnum) {
         dataViewDelegate.setItems(itemsEnum);

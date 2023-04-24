@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// CAUTION: copied from @vaadin/login [last update Vaadin 24.0.3]
 import '@vaadin/text-field/src/vaadin-text-field.js';
 import '@vaadin/password-field/src/vaadin-password-field.js';
 import '@vaadin/checkbox/src/vaadin-checkbox.js';
@@ -47,6 +46,7 @@ import {LoginForm} from '@vaadin/login/src/vaadin-login-form.js';
  * @fires {CustomEvent} remember-me-changed - Fired when "rememberMeCheckbox" is checked or unchecked.
  * @fires {CustomEvent} locale-selection-changed - Fired when selection in "localesSelect" is changed
  */
+// CAUTION: copied from @vaadin/login [last update Vaadin 24.0.3]
 class JmixLoginForm extends LoginForm {
     static get template() {
         return html`

@@ -19,7 +19,7 @@ package io.jmix.flowui.xml.layout.loader.component;
 import io.jmix.flowui.component.combobox.JmixComboBox;
 import io.jmix.flowui.xml.layout.support.DataLoaderSupport;
 
-public class ComboBoxLoader extends AbstractComboBoxLoxader<JmixComboBox<?>> {
+public class ComboBoxLoader extends AbstractComboBoxLoader<JmixComboBox<?>> {
 
     protected DataLoaderSupport dataLoaderSupport;
 

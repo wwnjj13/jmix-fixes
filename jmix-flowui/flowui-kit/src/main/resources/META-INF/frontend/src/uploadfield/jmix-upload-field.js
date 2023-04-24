@@ -79,7 +79,7 @@ export class JmixUploadField extends SlotStylesMixin(DelegateFocusMixin(InputCon
                         readonly="[[readonly]]"
                         disabled="[[disabled]]"
                         invalid="[[invalid]]"
-                        theme$="[[theme]]">
+                        theme$="[[_theme]]">
                     <slot name="input"></slot>
                 </vaadin-input-container>
 
@@ -110,9 +110,8 @@ export class JmixUploadField extends SlotStylesMixin(DelegateFocusMixin(InputCon
         super.ready();
 
         this._tooltipController = new TooltipController(this);
-        this.addController(this._tooltipController);
         this._tooltipController.setPosition('top');
-        this._tooltipController.setShouldShow((target) => !target.opened);
+        this.addController(this._tooltipController);
     }
 }
 
