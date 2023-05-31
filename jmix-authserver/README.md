@@ -147,9 +147,35 @@ To obtain access tokens for testing, you can define an authorization in the corr
 
 ## Protecting API Endpoints
 
-//TODO
+By default, the authorization server add-on validates the bearer access token for all URLs defined in implementations of `io.jmix.core.security.AuthorizedUrlsProvider`. The `AuthorizedUrlsProvider` returns two collections with strings that holds URL patterns for secured and for anonymous resources.
 
-Protecting endpoints from REST API add-on
-Protecting custom rest controllers
+If you have added the [REST API](https://docs.jmix.io/jmix/rest/index.html) add-on to your application, the add-on provides `AuthorizedUrlsProviders` that protect the following:
 
-Token introspection is performed by checking that the token from request header exists in the `OAuth2AuthorizationService`.
+- URLs starting with `/rest/**`
+- URLs defined in the `jmix.rest.authenticated-url-patterns` application property.
+
+To make REST controllers in your application protected by access token security, you can create and register a Spring bean with an implementation of `AuthorizedUrlsProvider`:
+
+```java
+import io.jmix.core.security.AuthorizedUrlsProvider;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+@Component
+public class CustomAuthorizedUrlProvider implements AuthorizedUrlsProvider {
+    @Override
+    public Collection<String> getAuthenticatedUrlPatterns() {
+        return List.of("/custom/hello");
+    }
+
+    @Override
+    public Collection<String> getAnonymousUrlPatterns() {
+        return Collections.emptyList();
+    }
+}
+```
+
+Token introspection is performed by checking whether the token from the request header exists in the `OAuth2AuthorizationService`. This ensures the security and validity of the access token.
