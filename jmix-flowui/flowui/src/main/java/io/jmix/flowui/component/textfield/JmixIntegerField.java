@@ -82,6 +82,11 @@ public class JmixIntegerField extends IntegerField implements SupportsValueSourc
         fieldDelegate.executeValidators();
     }
 
+    @Override
+    protected void validate() {
+        isInvalid();
+    }
+
     @Nullable
     @Override
     public ValueSource<Integer> getValueSource() {

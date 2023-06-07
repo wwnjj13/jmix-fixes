@@ -107,7 +107,7 @@ public class TypedTextField<V> extends TextField
     }
 
     @Override
-    public void validate() {
+    protected void validate() {
         isInvalid();
     }
 

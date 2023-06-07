@@ -72,7 +72,7 @@ public class JmixTextArea extends TextArea implements SupportsValueSource<String
     }
 
     @Override
-    public void validate() {
+    protected void validate() {
         isInvalid();
     }
 

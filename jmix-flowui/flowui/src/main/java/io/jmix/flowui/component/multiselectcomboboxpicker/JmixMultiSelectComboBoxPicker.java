@@ -129,6 +129,11 @@ public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<
     }
 
     @Override
+    protected void validate() {
+        isInvalid();
+    }
+
+    @Override
     public boolean isInvalid() {
         return fieldDelegate.isInvalid();
     }

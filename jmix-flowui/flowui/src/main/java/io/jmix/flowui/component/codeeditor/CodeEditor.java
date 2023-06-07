@@ -63,7 +63,7 @@ public class CodeEditor extends JmixCodeEditor
     }
 
     @Override
-    public void validate() {
+    protected void validate() {
         isInvalid();
     }
 

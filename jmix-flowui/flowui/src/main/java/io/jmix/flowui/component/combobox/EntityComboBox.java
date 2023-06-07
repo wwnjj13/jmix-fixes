@@ -162,6 +162,11 @@ public class EntityComboBox<V> extends ComboBoxPicker<V>
         fieldDelegate.executeValidators();
     }
 
+    @Override
+    protected void validate() {
+        isInvalid();
+    }
+
     @Nullable
     @Override
     public ValueSource<V> getValueSource() {

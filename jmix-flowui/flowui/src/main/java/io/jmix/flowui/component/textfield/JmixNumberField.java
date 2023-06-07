@@ -82,6 +82,11 @@ public class JmixNumberField extends NumberField implements SupportsValueSource<
         fieldDelegate.executeValidators();
     }
 
+    @Override
+    protected void validate() {
+        isInvalid();
+    }
+
     @Nullable
     @Override
     public String getErrorMessage() {

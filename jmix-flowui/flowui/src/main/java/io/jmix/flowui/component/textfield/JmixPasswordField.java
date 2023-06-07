@@ -98,6 +98,11 @@ public class JmixPasswordField extends PasswordField implements SupportsValueSou
         fieldDelegate.executeValidators();
     }
 
+    @Override
+    protected void validate() {
+        isInvalid();
+    }
+
     @Nullable
     @Override
     public ValueSource<String> getValueSource() {

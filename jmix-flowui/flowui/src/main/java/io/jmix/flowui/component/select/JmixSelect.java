@@ -87,7 +87,7 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
     }
 
     @Override
-    public void validate() {
+    protected void validate() {
         isInvalid();
     }
 

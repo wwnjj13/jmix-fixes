@@ -242,7 +242,7 @@ public class TypedTimePicker<V extends Comparable> extends TimePicker implements
     }
 
     @Override
-    public void validate() {
+    protected void validate() {
         isInvalid();
     }
 

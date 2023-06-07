@@ -16,7 +16,8 @@
 
 package io.jmix.flowui.component.valuepicker;
 
-import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
+import com.vaadin.flow.component.shared.HasPrefix;
+import com.vaadin.flow.component.shared.HasSuffix;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.PickerComponent;
@@ -40,7 +41,7 @@ import java.util.function.Consumer;
 
 public class JmixMultiValuePicker<V> extends MultiValuePicker<V>
         implements PickerComponent<Collection<V>>, SupportsValidation<Collection<V>>,
-        SupportsStatusChangeHandler<JmixMultiValuePicker<V>>, HasRequired, HasPrefixAndSuffix,
+        SupportsStatusChangeHandler<JmixMultiValuePicker<V>>, HasRequired, HasPrefix, HasSuffix,
         ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -105,6 +106,11 @@ public class JmixMultiValuePicker<V> extends MultiValuePicker<V>
     @Override
     public void executeValidators() throws ValidationException {
         fieldDelegate.executeValidators();
+    }
+
+    @Override
+    protected void validate() {
+        isInvalid();
     }
 
     @Nullable
