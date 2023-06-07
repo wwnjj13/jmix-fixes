@@ -73,7 +73,7 @@ public class JmixTextArea extends TextArea implements SupportsValueSource<String
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
@@ -122,14 +122,14 @@ public class JmixTextArea extends TextArea implements SupportsValueSource<String
     public void setRequired(boolean required) {
         super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable

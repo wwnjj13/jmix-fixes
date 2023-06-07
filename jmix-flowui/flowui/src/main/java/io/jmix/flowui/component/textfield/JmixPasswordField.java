@@ -67,14 +67,14 @@ public class JmixPasswordField extends PasswordField implements SupportsValueSou
     public void setRequired(boolean required) {
         super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable
@@ -100,7 +100,7 @@ public class JmixPasswordField extends PasswordField implements SupportsValueSou
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable

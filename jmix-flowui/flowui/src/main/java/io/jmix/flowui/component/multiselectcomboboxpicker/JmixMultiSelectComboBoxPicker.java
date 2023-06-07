@@ -97,14 +97,14 @@ public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<
     public void setRequired(boolean required) {
         super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable
@@ -130,7 +130,7 @@ public class JmixMultiSelectComboBoxPicker<V> extends MultiSelectComboBoxPicker<
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override

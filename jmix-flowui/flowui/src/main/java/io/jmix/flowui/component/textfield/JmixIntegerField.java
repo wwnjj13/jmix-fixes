@@ -84,7 +84,7 @@ public class JmixIntegerField extends IntegerField implements SupportsValueSourc
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable
@@ -102,14 +102,14 @@ public class JmixIntegerField extends IntegerField implements SupportsValueSourc
     public void setRequired(boolean required) {
         HasRequired.super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override

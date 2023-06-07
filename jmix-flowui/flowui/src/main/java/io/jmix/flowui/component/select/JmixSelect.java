@@ -88,7 +88,7 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
@@ -172,14 +172,14 @@ public class JmixSelect<V> extends Select<V> implements SupportsValueSource<V>, 
     public void setRequired(boolean required) {
         HasRequired.super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override

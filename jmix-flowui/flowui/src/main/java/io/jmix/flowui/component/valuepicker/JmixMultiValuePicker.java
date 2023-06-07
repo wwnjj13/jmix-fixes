@@ -77,14 +77,14 @@ public class JmixMultiValuePicker<V> extends MultiValuePicker<V>
     public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
         super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Override
     public void setRequired(boolean required) {
         HasRequired.super.setRequired(required);
 
-        fieldDelegate.updateRequiredState();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable
@@ -110,7 +110,7 @@ public class JmixMultiValuePicker<V> extends MultiValuePicker<V>
 
     @Override
     protected void validate() {
-        isInvalid();
+        fieldDelegate.updateInvalidState();
     }
 
     @Nullable
