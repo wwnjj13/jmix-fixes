@@ -3304,6 +3304,8 @@
     <xs:complexType name="loginErrorMessageType">
         <xs:attribute name="title" type="resourceString"/>
         <xs:attribute name="message" type="resourceString"/>
+        <xs:attribute name="username" type="resourceString"/>
+        <xs:attribute name="password" type="resourceString"/>
     </xs:complexType>
 
     <xs:complexType name="loginAdditionalInformationType">

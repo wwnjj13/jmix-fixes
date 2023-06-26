@@ -61,6 +61,7 @@ class JmixLoginForm extends LoginForm {
                     <vaadin-text-field
                             name="username"
                             label="[[i18n.form.username]]"
+                            error-message="[[i18n.errorMessage.username]]"
                             id="vaadinLoginUsername"
                             required
                             on-keydown="_handleInputKeydown"
@@ -76,6 +77,7 @@ class JmixLoginForm extends LoginForm {
                     <vaadin-password-field
                             name="password"
                             label="[[i18n.form.password]]"
+                            error-message="[[i18n.errorMessage.password]]"
                             id="vaadinLoginPassword"
                             required
                             on-keydown="_handleInputKeydown"
@@ -155,7 +157,9 @@ class JmixLoginForm extends LoginForm {
                         },
                         errorMessage: {
                             title: 'Incorrect username or password',
-                            message: 'Check that you have entered the correct username and password and try again.'
+                            message: 'Check that you have entered the correct username and password and try again.',
+                            username: 'Username is required',
+                            password: 'Password is required',
                         }
                     };
                 },
