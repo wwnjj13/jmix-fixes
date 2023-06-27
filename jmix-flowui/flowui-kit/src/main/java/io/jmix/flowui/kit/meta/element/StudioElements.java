@@ -129,7 +129,9 @@ public interface StudioElements {
             target = {"io.jmix.flowui.kit.component.loginform.EnhancedLoginForm"},
             properties = {
                     @StudioProperty(xmlAttribute = "title", type = StudioPropertyType.LOCALIZED_STRING),
-                    @StudioProperty(xmlAttribute = "message", type = StudioPropertyType.LOCALIZED_STRING)
+                    @StudioProperty(xmlAttribute = "message", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "username", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "password", type = StudioPropertyType.LOCALIZED_STRING)
             }
     )
     LoginI18n.ErrorMessage loginErrorMessage();

@@ -331,6 +331,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "clearButtonVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
@@ -395,6 +396,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "clearButtonVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
@@ -464,6 +466,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "clearButtonVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
@@ -526,6 +529,7 @@ public interface StudioComponents {
             icon = "io/jmix/flowui/kit/meta/icon/component/dropdownButton.svg",
             properties = {
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dropdownIndicatorVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "true"),
@@ -565,6 +569,7 @@ public interface StudioComponents {
             properties = {
                     @StudioProperty(xmlAttribute = "action", type = StudioPropertyType.ACTION_REF),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dropdownIcon", type = StudioPropertyType.ICON),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN,
@@ -606,6 +611,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "clearButtonVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
@@ -664,6 +670,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dataContainer", type = StudioPropertyType.DATA_CONTAINER_REF),
                     @StudioProperty(xmlAttribute = "datatype", type = StudioPropertyType.ENUMERATION,
@@ -828,6 +835,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dataContainer",
                             type = StudioPropertyType.DATA_CONTAINER_REF),
@@ -973,7 +981,7 @@ public interface StudioComponents {
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "selectionMode", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.grid.Grid.SelectionMode", defaultValue = "SINGLE",
-                            options = {"SINGLE", "MULTI"}),
+                            options = {"SINGLE", "MULTI", "NONE"}),
                     @StudioProperty(xmlAttribute = "tabIndex", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST,
                             options = {"no-border", "no-row-borders", "column-borders", "row-stripes",
@@ -982,7 +990,10 @@ public interface StudioComponents {
                             defaultValue = "true"),
                     @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%"),
                     @StudioProperty(xmlAttribute = "editorBuffered", type = StudioPropertyType.BOOLEAN,
-                            defaultValue = "false")
+                            defaultValue = "false"),
+                    @StudioProperty(xmlAttribute = "columnRendering", type = StudioPropertyType.ENUMERATION,
+                            classFqn = "com.vaadin.flow.component.grid.ColumnRendering", defaultValue = "EAGER",
+                            options = {"EAGER", "LAZY"})
             },
             propertiesBindings = {
                     @StudioPropertiesBinding(
@@ -1033,7 +1044,7 @@ public interface StudioComponents {
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "selectionMode", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.grid.Grid.SelectionMode", defaultValue = "SINGLE",
-                            options = {"SINGLE", "MULTI"}),
+                            options = {"SINGLE", "MULTI", "NONE"}),
                     @StudioProperty(xmlAttribute = "showOrphans", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "tabIndex", type = StudioPropertyType.INTEGER),
@@ -1044,7 +1055,10 @@ public interface StudioComponents {
                             defaultValue = "true"),
                     @StudioProperty(xmlAttribute = "width", type = StudioPropertyType.SIZE, initialValue = "100%"),
                     @StudioProperty(xmlAttribute = "editorBuffered", type = StudioPropertyType.BOOLEAN,
-                            defaultValue = "false")
+                            defaultValue = "false"),
+                    @StudioProperty(xmlAttribute = "columnRendering", type = StudioPropertyType.ENUMERATION,
+                            classFqn = "com.vaadin.flow.component.grid.ColumnRendering", defaultValue = "EAGER",
+                            options = {"EAGER", "LAZY"})
             },
             propertiesBindings = {
                     @StudioPropertiesBinding(
@@ -1394,6 +1408,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autofocus", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dataContainer", type = StudioPropertyType.DATA_CONTAINER_REF),
                     @StudioProperty(xmlAttribute = "emptySelectionAllowed", type = StudioPropertyType.BOOLEAN),
@@ -1707,6 +1722,7 @@ public interface StudioComponents {
                     @StudioProperty(xmlAttribute = "autoOpen", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
+                    @StudioProperty(xmlAttribute = "overlayClass", type = StudioPropertyType.STRING),
                     @StudioProperty(xmlAttribute = "clearButtonVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),

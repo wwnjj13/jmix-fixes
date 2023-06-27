@@ -775,6 +775,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="gridColumnRendering">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EAGER"/>
+            <xs:enumeration value="LAZY"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="gridNestedNullBehaviorEnum">
         <xs:restriction base="xs:string">
             <xs:enumeration value="THROW"/>
@@ -2017,6 +2024,10 @@
         <xs:attribute name="classNames" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasOverlayClass">
+        <xs:attribute name="overlayClass" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasSecurityConstraint">
         <xs:attribute name="constraintEntityOp" type="constraintEntityOp"/>
     </xs:attributeGroup>
@@ -2214,6 +2225,7 @@
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
                 <xs:attributeGroup ref="hasValidation"/>
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
@@ -2247,6 +2259,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasTitle"/>
                 <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
                 <xs:attributeGroup ref="hasEnabled"/>
             </xs:extension>
         </xs:complexContent>
@@ -2528,6 +2541,7 @@
                 <xs:attribute name="detailsVisibleOnClick" type="xs:boolean"/>
                 <xs:attribute name="columnReorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="nestedNullBehavior" type="gridNestedNullBehaviorEnum"/>
+                <xs:attribute name="columnRendering" type="gridColumnRendering"/>
 
                 <xs:attributeGroup ref="hasSize"/>
                 <xs:attributeGroup ref="hasEnabled"/>
@@ -2719,6 +2733,7 @@
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2749,6 +2764,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasValidation"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2806,6 +2822,7 @@
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2830,6 +2847,7 @@
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2856,6 +2874,7 @@
 
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3181,6 +3200,7 @@
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasOverlayClass"/>
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasValidation"/>
