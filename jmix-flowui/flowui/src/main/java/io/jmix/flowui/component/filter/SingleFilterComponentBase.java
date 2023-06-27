@@ -19,7 +19,7 @@ package io.jmix.flowui.component.filter;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.shared.HasTooltip;
@@ -65,7 +65,7 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
 
     protected HorizontalLayout root;
 
-    protected Label label;
+    protected NativeLabel label;
     protected String labelText;
     protected String labelWidth;
     protected boolean labelVisible = true;
@@ -117,7 +117,6 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         root.getThemeList().add("spacing-s");
     }
 
-    // TODO: gg, rename?
     public HorizontalLayout getRoot() {
         return root;
     }
@@ -286,15 +285,14 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         setLabelInternal(labelText);
     }
 
-    protected Label createLabel() {
-        Label label = uiComponents.create(Label.class);
+    protected NativeLabel createLabel() {
+        NativeLabel label = uiComponents.create(NativeLabel.class);
         label.setId(getInnerComponentPrefix() + "label");
         label.setWidth(labelWidth);
         label.setClassName(FILTER_LABEL_CLASS_NAME);
         return label;
     }
 
-    // TODO: gg, try to make it protected
     public abstract String getInnerComponentPrefix();
 
     @Override
@@ -331,7 +329,6 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         super.setWidth(width);
 
         if (valueComponent != null) {
-            // TODO: replace with helper method
             if (Strings.isNullOrEmpty(width)) {
                 // Same as remove expand
                 root.setFlexGrow(0.0, valueComponent);
@@ -376,7 +373,6 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
             ((SupportsStatusChangeHandler<?>) valueComponent).setStatusChangeHandler(this::onFieldStatusChanged);
         }
 
-        // TODO: replace with helper method
         String width = getWidth();
         if (!Strings.isNullOrEmpty(width)
                 && Unit.getSize(width) > 0) {

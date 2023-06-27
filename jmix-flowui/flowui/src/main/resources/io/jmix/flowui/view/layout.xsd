@@ -1147,6 +1147,7 @@
                     <xs:enumeration value="view_close"/>
                     <xs:enumeration value="value_clear"/>
                     <xs:enumeration value="list_itemTracking"/>
+                    <xs:enumeration value="multi_value_select"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -3870,6 +3871,7 @@
                 <xs:element name="emphasis" type="baseHtmlContainer"/>
                 <xs:element name="anchor" type="anchor"/>
                 <xs:element name="label" type="labelComponent"/>
+                <xs:element name="nativeLabel" type="labelComponent"/>
                 <xs:element name="article" type="baseHtmlContainer"/>
                 <xs:element name="input" type="inputHtmlComponent"/>
                 <xs:element name="image" type="imageComponent"/>
