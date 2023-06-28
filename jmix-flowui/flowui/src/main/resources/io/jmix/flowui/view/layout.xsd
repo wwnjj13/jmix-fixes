@@ -3573,6 +3573,15 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- NativeButton-->
+    <xs:complexType name="nativeButtonComponent">
+        <xs:complexContent>
+            <xs:extension base="htmlContainerWithAria">
+                <xs:attributeGroup ref="hasTabIndex"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
 
     <!-- Filters -->
 
@@ -3888,6 +3897,7 @@
                 <xs:element name="emphasis" type="baseHtmlContainer"/>
                 <xs:element name="anchor" type="anchor"/>
                 <xs:element name="nativeLabel" type="labelComponent"/>
+                <xs:element name="nativeButton" type="nativeButtonComponent"/>
                 <xs:element name="article" type="baseHtmlContainer"/>
                 <xs:element name="input" type="inputHtmlComponent"/>
                 <xs:element name="image" type="imageComponent"/>
