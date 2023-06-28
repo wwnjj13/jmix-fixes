@@ -3870,7 +3870,6 @@
                 <xs:element name="aside" type="baseHtmlContainer"/>
                 <xs:element name="emphasis" type="baseHtmlContainer"/>
                 <xs:element name="anchor" type="anchor"/>
-                <xs:element name="label" type="labelComponent"/>
                 <xs:element name="nativeLabel" type="labelComponent"/>
                 <xs:element name="article" type="baseHtmlContainer"/>
                 <xs:element name="input" type="inputHtmlComponent"/>
