@@ -309,6 +309,7 @@ public class ComponentLoaderSupport implements ApplicationContextAware {
 
     public void loadAriaLabel(HasAriaLabel component, Element element) {
         loaderSupport.loadResourceString(element, "ariaLabel", context.getMessageGroup(), component::setAriaLabel);
+        loaderSupport.loadResourceString(element, "ariaLabelledBy", context.getMessageGroup(), component::setAriaLabel);
     }
 
     public void loadWhiteSpace(HasText component, Element element) {

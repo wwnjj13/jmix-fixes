@@ -174,6 +174,8 @@ public interface StudioElements {
             icon = "io/jmix/flowui/kit/meta/icon/element/tab.svg",
             visible = true,
             properties = {
+                    @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN),

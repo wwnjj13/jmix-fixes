@@ -51,6 +51,7 @@ public class TimePickerLoader extends AbstractComponentLoader<TypedTimePicker<?>
         componentLoader().loadValueAndElementAttributes(resultComponent, element);
         componentLoader().loadValidationAttributes(resultComponent, element, context);
         componentLoader().loadAllowedCharPattern(resultComponent, element, context);
+        componentLoader().loadAriaLabel(resultComponent, element);
     }
 
     protected DataLoaderSupport getDataLoaderSupport() {

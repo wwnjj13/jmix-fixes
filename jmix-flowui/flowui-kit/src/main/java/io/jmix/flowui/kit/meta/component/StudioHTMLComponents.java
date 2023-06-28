@@ -28,6 +28,8 @@ public interface StudioHTMLComponents {
             category = "HTML",
             xmlElement = "anchor",
             properties = {
+                    @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN,
@@ -565,6 +567,7 @@ public interface StudioHTMLComponents {
                     @StudioProperty(xmlAttribute = "alternateText", type = StudioPropertyType.LOCALIZED_STRING,
                             setMethod = "setAlt"),
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "dataContainer", type = StudioPropertyType.DATA_CONTAINER_REF),
@@ -608,6 +611,7 @@ public interface StudioHTMLComponents {
             xmlElement = "input",
             properties = {
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN,
@@ -674,6 +678,7 @@ public interface StudioHTMLComponents {
             xmlElement = "main",
             properties = {
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN,
@@ -706,6 +711,7 @@ public interface StudioHTMLComponents {
             xmlElement = "nav",
             properties = {
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "classNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "colspan", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "enabled", type = StudioPropertyType.BOOLEAN,

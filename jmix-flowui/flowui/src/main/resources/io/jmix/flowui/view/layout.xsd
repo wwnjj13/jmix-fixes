@@ -1985,6 +1985,7 @@
 
     <xs:attributeGroup name="hasAriaLabel">
         <xs:attribute name="ariaLabel" type="resourceString"/>
+        <xs:attribute name="ariaLabelledBy" type="resourceString"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasLabel">
@@ -2189,6 +2190,7 @@
                 <xs:attributeGroup ref="hasAutocapitalize"/>
                 <xs:attributeGroup ref="hasValueChangeMode"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2231,6 +2233,7 @@
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2423,6 +2426,7 @@
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasClassNames"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2735,6 +2739,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasOverlayClass"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2766,6 +2771,7 @@
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasValidation"/>
                 <xs:attributeGroup ref="hasOverlayClass"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2824,6 +2830,7 @@
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasOverlayClass"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2849,6 +2856,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasOverlayClass"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2917,6 +2925,7 @@
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2943,6 +2952,7 @@
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2962,6 +2972,7 @@
                 <xs:attributeGroup ref="hasSize"/>
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2981,6 +2992,7 @@
                 <xs:attributeGroup ref="hasSize"/>
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasClassNames"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3016,6 +3028,7 @@
                 <xs:attributeGroup ref="hasValueChangeMode"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3054,6 +3067,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasPlaceholder"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3180,6 +3194,7 @@
         <xs:attributeGroup ref="hasLabel"/>
         <xs:attributeGroup ref="hasEnabled"/>
         <xs:attributeGroup ref="hasClassNames"/>
+        <xs:attributeGroup ref="hasAriaLabel"/>
     </xs:complexType>
 
     <!-- Select-->
@@ -3208,6 +3223,7 @@
                 <xs:attributeGroup ref="hasPlaceholder"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3647,6 +3663,7 @@
                 <xs:attributeGroup ref="hasRequired"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasAriaLabel"/>
 
                 <xs:attribute name="labelVisible" type="xs:boolean"/>
 

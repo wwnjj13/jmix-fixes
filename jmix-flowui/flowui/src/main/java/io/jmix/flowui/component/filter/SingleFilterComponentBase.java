@@ -40,6 +40,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import org.springframework.lang.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -47,7 +48,7 @@ import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
 public abstract class SingleFilterComponentBase<V> extends CustomField<V>
         implements SingleFilterComponent<V>, SupportsLabelPosition, SupportsValidation<V>, HasRequired, HasTooltip,
-        ApplicationContextAware, InitializingBean {
+        HasAriaLabel, ApplicationContextAware, InitializingBean {
 
     protected static final String FILTER_LABEL_CLASS_NAME = "filter-label";
 
@@ -458,6 +459,35 @@ public abstract class SingleFilterComponentBase<V> extends CustomField<V>
 
         if (valueComponent instanceof Focusable) {
             ((Focusable<?>) valueComponent).setTabIndex(tabIndex);
+        }
+    }
+
+    @Override
+    public Optional<String> getAriaLabel() {
+        return Optional.ofNullable(getElement().getProperty("accessibleName"));
+    }
+
+    @Override
+    public void setAriaLabel(String ariaLabel) {
+        getElement().setProperty("accessibleName", ariaLabel);
+
+        if (valueComponent instanceof HasAriaLabel) {
+            ((HasAriaLabel) valueComponent).setAriaLabel(ariaLabel);
+        }
+    }
+
+    @Override
+    public Optional<String> getAriaLabelledBy() {
+        return Optional
+                .ofNullable(getElement().getProperty("accessibleNameRef"));
+    }
+
+    @Override
+    public void setAriaLabelledBy(String labelledBy) {
+        getElement().setProperty("accessibleNameRef", labelledBy);
+
+        if (valueComponent instanceof HasAriaLabel) {
+            ((HasAriaLabel) valueComponent).setAriaLabelledBy(labelledBy);
         }
     }
 
