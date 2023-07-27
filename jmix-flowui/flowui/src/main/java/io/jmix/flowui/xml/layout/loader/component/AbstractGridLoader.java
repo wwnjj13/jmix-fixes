@@ -28,6 +28,7 @@ import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.renderer.Renderer;
 import io.jmix.core.FetchPlan;
 import io.jmix.core.FetchPlanProperty;
 import io.jmix.core.Metadata;
@@ -45,14 +46,15 @@ import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.*;
 import io.jmix.flowui.model.impl.DataLoadersHelper;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
+import io.jmix.flowui.xml.layout.loader.component.datagrid.RendererProvider;
 import io.jmix.flowui.xml.layout.support.ActionLoaderSupport;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.datatype.DatatypeElementFactory;
-
 import org.springframework.lang.Nullable;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -287,6 +289,8 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
                                 context, "Component ID", component.getId())
                 );
 
+        // TODO: gg, allow column not bound to entity attributes
+
         MetaPropertyPath metaPropertyPath = getMetaDataTools().resolveMetaPropertyPathOrNull(metaClass, property);
         if (metaPropertyPath == null) {
             throw new GuiDevelopmentException("Cannot resolve the property path: " + property,
@@ -308,6 +312,27 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
         loadEnum(element, ColumnTextAlign.class, "textAlign", column::setTextAlign);
 
         loadColumnEditable(element, column, property);
+
+        loadRenderer(element, metaPropertyPath)
+                .ifPresent(column::setRenderer);
+    }
+
+    protected Optional<Renderer> loadRenderer(Element columnElement, @Nullable MetaPropertyPath metaPropertyPath) {
+        if (columnElement.elements().isEmpty()
+                || metaPropertyPath == null) {
+            return Optional.empty();
+        }
+
+        Map<String, RendererProvider> providers = applicationContext.getBeansOfType(RendererProvider.class);
+        for (RendererProvider<?> provider : providers.values()) {
+            for (Element element : columnElement.elements()) {
+                if (provider.supports(element.getName())) {
+                    return Optional.of(provider.createRenderer(element, metaPropertyPath, context));
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     protected void loadColumnEditable(Element element, Column<?> column, String property) {
@@ -331,7 +356,8 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
         return resultComponent.addColumn(key, metaPropertyPath);
     }
 
-    protected Collection<String> getAppliedProperties(Element columnsElement, @Nullable FetchPlan fetchPlan, MetaClass metaClass) {
+    protected Collection<String> getAppliedProperties(Element columnsElement,
+                                                      @Nullable FetchPlan fetchPlan, MetaClass metaClass) {
         String exclude = loadString(columnsElement, "exclude").orElse(null);
         List<String> excludes = exclude == null ? Collections.emptyList() :
                 Splitter.on(",").omitEmptyStrings().trimResults().splitToList(exclude);
