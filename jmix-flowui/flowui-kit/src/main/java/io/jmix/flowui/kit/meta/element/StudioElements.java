@@ -118,7 +118,6 @@ public interface StudioElements {
             name = "LocalDateRenderer",
             classFqn = "com.vaadin.flow.data.renderer.LocalDateRenderer",
             xmlElement = "localDateRenderer",
-            icon = "",
             target = {"com.vaadin.flow.component.grid.Grid.Column"},
             properties = {
                     @StudioProperty(xmlAttribute = "format",
@@ -134,7 +133,6 @@ public interface StudioElements {
             name = "LocalDateTimeRenderer",
             classFqn = "com.vaadin.flow.data.renderer.LocalDateTimeRenderer",
             xmlElement = "localDateTimeRenderer",
-            icon = "",
             target = {"com.vaadin.flow.component.grid.Grid.Column"},
             properties = {
                     @StudioProperty(xmlAttribute = "format",
@@ -150,7 +148,6 @@ public interface StudioElements {
             name = "NumberRenderer",
             classFqn = "com.vaadin.flow.data.renderer.NumberRenderer",
             xmlElement = "numberRenderer",
-            icon = "",
             target = {"com.vaadin.flow.component.grid.Grid.Column"},
             properties = {
                     @StudioProperty(xmlAttribute = "format",

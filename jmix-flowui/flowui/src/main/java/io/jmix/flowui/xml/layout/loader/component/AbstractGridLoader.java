@@ -40,6 +40,7 @@ import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.MetadataObject;
 import io.jmix.flowui.component.grid.EnhancedDataGrid;
 import io.jmix.flowui.component.grid.editor.DataGridEditor;
+import io.jmix.flowui.data.provider.EmptyValueProvider;
 import io.jmix.flowui.exception.GuiDevelopmentException;
 import io.jmix.flowui.kit.component.HasActions;
 import io.jmix.flowui.kit.component.button.JmixButton;
@@ -284,22 +285,29 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
 
     protected void loadColumn(T component, Element element, MetaClass metaClass) {
         String property = loadString(element, "property")
-                .orElseThrow(() ->
-                        new GuiDevelopmentException("A column must have specified property",
-                                context, "Component ID", component.getId())
-                );
+                .orElse(null);
 
-        // TODO: gg, allow column not bound to entity attributes
+        MetaPropertyPath metaPropertyPath = property != null
+                ? getMetaDataTools().resolveMetaPropertyPathOrNull(metaClass, property)
+                : null;
 
-        MetaPropertyPath metaPropertyPath = getMetaDataTools().resolveMetaPropertyPathOrNull(metaClass, property);
-        if (metaPropertyPath == null) {
-            throw new GuiDevelopmentException("Cannot resolve the property path: " + property,
-                    context, "Component ID", component.getId());
-        }
+        String key = loadString(element, "key")
+                .orElseGet(() -> {
+                    // We check 'metaPropertyPath' but returns 'property', because we need
+                    // a string that matches the meta property, i.e. if 'metaPropertyPath'
+                    // is found for `property` then this `property` can be used as a key.
+                    if (metaPropertyPath != null) {
+                        return property;
+                    } else {
+                        throw new GuiDevelopmentException("Either key or property must be defined for a column",
+                                context, "Component ID", component.getId());
+                    }
+                });
 
-        String key = loadString(element, "key").orElse(property);
+        Column<?> column = metaPropertyPath != null
+                ? addColumn(key, metaPropertyPath)
+                : addEmptyColumn(key);
 
-        Column column = addColumn(key, metaPropertyPath);
         loadString(element, "width", column::setWidth);
         loadResourceString(element, "header", context.getMessageGroup(), column::setHeader);
         loadResourceString(element, "footer", context.getMessageGroup(), column::setFooter);
@@ -317,6 +325,13 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
                 .ifPresent(column::setRenderer);
     }
 
+    @SuppressWarnings("unchecked")
+    protected Column<?> addEmptyColumn(String key) {
+        return resultComponent.addColumn(new EmptyValueProvider<>())
+                .setKey(key);
+    }
+
+    @SuppressWarnings("rawtypes")
     protected Optional<Renderer> loadRenderer(Element columnElement, @Nullable MetaPropertyPath metaPropertyPath) {
         if (columnElement.elements().isEmpty()
                 || metaPropertyPath == null) {
@@ -351,8 +366,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    protected Column addColumn(String key, MetaPropertyPath metaPropertyPath) {
+    protected Column<?> addColumn(String key, MetaPropertyPath metaPropertyPath) {
         return resultComponent.addColumn(key, metaPropertyPath);
     }
 
