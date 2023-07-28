@@ -137,8 +137,8 @@ public class ViewControllerReflectionInspector {
     }
 
     @Nullable
-    public MethodHandle getProvideTargetMethod(Class<?> clazz, String methodName) {
-        Map<String, MethodHandle> methods = targetIntrospectionCache.getUnchecked(clazz).getProvideTargetMethods();
+    public MethodHandle getSupplyTargetMethod(Class<?> clazz, String methodName) {
+        Map<String, MethodHandle> methods = targetIntrospectionCache.getUnchecked(clazz).getSupplyTargetMethods();
         return methods.get(methodName);
     }
 
@@ -263,7 +263,7 @@ public class ViewControllerReflectionInspector {
         List<InjectElement> injectElements = getAnnotatedInjectElementsNotCached(concreteClass);
         List<AnnotatedMethod<Subscribe>> subscribeMethods = getAnnotatedSubscribeMethodsNotCached(methods);
         List<AnnotatedMethod<Install>> installMethods = getAnnotatedInstallMethodsNotCached(methods);
-        List<AnnotatedMethod<Provide>> provideMethods = getAnnotatedProvideMethodsNotCached(methods);
+        List<AnnotatedMethod<Supply>> supplyMethods = getAnnotatedSupplyMethodsNotCached(methods);
         List<Method> eventListenerMethods = getAnnotatedListenerMethodsNotCached(concreteClass, methods);
 
         return new ViewIntrospectionData(
@@ -271,7 +271,7 @@ public class ViewControllerReflectionInspector {
                 eventListenerMethods,
                 subscribeMethods,
                 installMethods,
-                provideMethods);
+                supplyMethods);
     }
 
     protected TargetIntrospectionData getTargetIntrospectionDataNotCached(Class<?> concreteClass) {
@@ -279,9 +279,9 @@ public class ViewControllerReflectionInspector {
 
         Map<Class, MethodHandle> addListenerMethods = getAddListenerMethodsNotCached(concreteClass, methods);
         Map<String, MethodHandle> installTargetMethods = getInstallTargetMethodsNotCached(concreteClass, methods);
-        Map<String, MethodHandle> provideTargetMethods = getProvideTargetMethodsNotCached(concreteClass, methods);
+        Map<String, MethodHandle> supplyTargetMethods = getSupplyTargetMethodsNotCached(concreteClass, methods);
 
-        return new TargetIntrospectionData(addListenerMethods, installTargetMethods, provideTargetMethods);
+        return new TargetIntrospectionData(addListenerMethods, installTargetMethods, supplyTargetMethods);
     }
 
     protected List<InjectElement> getAnnotatedInjectElementsNotCached(Class<?> clazz) {
@@ -359,9 +359,9 @@ public class ViewControllerReflectionInspector {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    protected List<AnnotatedMethod<Provide>> getAnnotatedProvideMethodsNotCached(Method[] uniqueDeclaredMethods) {
-        List<AnnotatedMethod<Provide>> annotatedMethods =
-                getAnnotatedMethodsNotCached(Provide.class, uniqueDeclaredMethods,
+    protected List<AnnotatedMethod<Supply>> getAnnotatedSupplyMethodsNotCached(Method[] uniqueDeclaredMethods) {
+        List<AnnotatedMethod<Supply>> annotatedMethods =
+                getAnnotatedMethodsNotCached(Supply.class, uniqueDeclaredMethods,
                         method -> method.getParameterCount() == 0);
         return ImmutableList.copyOf(annotatedMethods);
     }
@@ -627,8 +627,8 @@ public class ViewControllerReflectionInspector {
         return ImmutableMap.copyOf(handlesMap);
     }
 
-    protected Map<String, MethodHandle> getProvideTargetMethodsNotCached(Class<?> clazz,
-                                                                         Method[] uniqueDeclaredMethods) {
+    protected Map<String, MethodHandle> getSupplyTargetMethodsNotCached(Class<?> clazz,
+                                                                        Method[] uniqueDeclaredMethods) {
         Map<String, MethodHandle> handlesMap = new HashMap<>();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
@@ -720,18 +720,18 @@ public class ViewControllerReflectionInspector {
 
         private final List<AnnotatedMethod<Subscribe>> subscribeMethods;
         private final List<AnnotatedMethod<Install>> installMethods;
-        private final List<AnnotatedMethod<Provide>> provideMethods;
+        private final List<AnnotatedMethod<Supply>> supplyMethods;
 
         public ViewIntrospectionData(List<InjectElement> injectElements,
                                      List<Method> eventListenerMethods,
                                      List<AnnotatedMethod<Subscribe>> subscribeMethods,
                                      List<AnnotatedMethod<Install>> installMethods,
-                                     List<AnnotatedMethod<Provide>> provideMethods) {
+                                     List<AnnotatedMethod<Supply>> supplyMethods) {
             this.injectElements = injectElements;
             this.eventListenerMethods = eventListenerMethods;
             this.subscribeMethods = subscribeMethods;
             this.installMethods = installMethods;
-            this.provideMethods = provideMethods;
+            this.supplyMethods = supplyMethods;
         }
 
         public List<InjectElement> getInjectElements() {
@@ -746,8 +746,8 @@ public class ViewControllerReflectionInspector {
             return installMethods;
         }
 
-        public List<AnnotatedMethod<Provide>> getProvideMethods() {
-            return provideMethods;
+        public List<AnnotatedMethod<Supply>> getSupplyMethods() {
+            return supplyMethods;
         }
 
         public List<Method> getEventListenerMethods() {
@@ -759,14 +759,14 @@ public class ViewControllerReflectionInspector {
 
         private final Map<Class, MethodHandle> addListenerMethods;
         private final Map<String, MethodHandle> installTargetMethods;
-        private final Map<String, MethodHandle> provideTargetMethods;
+        private final Map<String, MethodHandle> supplyTargetMethods;
 
         public TargetIntrospectionData(Map<Class, MethodHandle> addListenerMethods,
                                        Map<String, MethodHandle> installTargetMethods,
-                                       Map<String, MethodHandle> provideTargetMethods) {
+                                       Map<String, MethodHandle> supplyTargetMethods) {
             this.addListenerMethods = addListenerMethods;
             this.installTargetMethods = installTargetMethods;
-            this.provideTargetMethods = provideTargetMethods;
+            this.supplyTargetMethods = supplyTargetMethods;
         }
 
         public Map<Class, MethodHandle> getAddListenerMethods() {
@@ -777,8 +777,8 @@ public class ViewControllerReflectionInspector {
             return installTargetMethods;
         }
 
-        public Map<String, MethodHandle> getProvideTargetMethods() {
-            return provideTargetMethods;
+        public Map<String, MethodHandle> getSupplyTargetMethods() {
+            return supplyTargetMethods;
         }
     }
 }

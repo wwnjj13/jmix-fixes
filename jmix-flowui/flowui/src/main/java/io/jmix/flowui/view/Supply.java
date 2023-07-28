@@ -16,15 +16,32 @@
 
 package io.jmix.flowui.view;
 
+import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.data.renderer.TextRenderer;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Annotation for declarative supply methods in UI controllers.
+ * The value returned by a supplier is set to the {@link #subject()} method.
+ * <p>
+ * In the example below, the returned {@link TextRenderer} instance is used as an input
+ * parameter for {@link Column#setRenderer(Renderer)}:
+ * <pre>
+ * &#64;Provide(to = "fooDataGrid.name", subject = "renderer")
+ * private Renderer<Foo> nameRenderer() {
+ *     return new TextRenderer<>(Foo::getName);
+ * }
+ * </pre>
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @java.lang.annotation.Target(ElementType.METHOD)
-public @interface Provide {
+public @interface Supply {
 
     /**
      * @return type of target
@@ -32,7 +49,7 @@ public @interface Provide {
     Target target() default Target.COMPONENT;
 
     /**
-     * @return type of object to provide, can be used instead of {@link #subject()}
+     * @return type of object to supply, can be used instead of {@link #subject()}
      */
     Class<?> type() default Object.class;
 

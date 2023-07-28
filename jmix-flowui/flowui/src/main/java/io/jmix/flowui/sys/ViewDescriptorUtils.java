@@ -124,9 +124,9 @@ public final class ViewDescriptorUtils {
         return install.to();
     }
 
-    public static String getInferredProvideId(Provide provide) {
-        checkNotNullArgument(provide);
+    public static String getInferredProvideId(Supply supply) {
+        checkNotNullArgument(supply);
 
-        return provide.to();
+        return supply.to();
     }
 }

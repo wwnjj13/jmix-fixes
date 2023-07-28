@@ -81,7 +81,7 @@ public class ViewControllerDependencyInjector {
         injectElements(controller, viewIntrospectionData);
         initSubscribeListeners(controller, viewIntrospectionData);
         initInstallMethods(controller, viewIntrospectionData);
-        initProvideMethods(controller, viewIntrospectionData);
+        initSupplyMethods(controller, viewIntrospectionData);
         initUiEventListeners(controller, viewIntrospectionData);
     }
 
@@ -570,47 +570,47 @@ public class ViewControllerDependencyInjector {
         return listener;
     }
 
-    protected void initProvideMethods(View<?> controller, ViewIntrospectionData viewIntrospectionData) {
-        List<AnnotatedMethod<Provide>> provideMethods = viewIntrospectionData.getProvideMethods();
-        for (AnnotatedMethod<Provide> annotatedMethod : provideMethods) {
-            Provide annotation = annotatedMethod.getAnnotation();
-            Object targetInstance = getProvideTargetInstance(controller, annotation);
+    protected void initSupplyMethods(View<?> controller, ViewIntrospectionData viewIntrospectionData) {
+        List<AnnotatedMethod<Supply>> supplyMethods = viewIntrospectionData.getSupplyMethods();
+        for (AnnotatedMethod<Supply> annotatedMethod : supplyMethods) {
+            Supply annotation = annotatedMethod.getAnnotation();
+            Object targetInstance = getSupplyTargetInstance(controller, annotation);
 
             if (targetInstance == null) {
                 if (annotation.required()) {
                     throw new DevelopmentException(
                             String.format("Unable to find @%s target for method '%s' in '%s'",
-                                    Provide.class.getSimpleName(), annotatedMethod.getMethod(), controller.getClass()));
+                                    Supply.class.getSimpleName(), annotatedMethod.getMethod(), controller.getClass()));
                 }
 
                 log.trace("Skip @{} method {} of {} : it is not required and target not found",
-                        Provide.class.getSimpleName(), annotatedMethod.getMethod().getName(), controller.getClass());
+                        Supply.class.getSimpleName(), annotatedMethod.getMethod().getName(), controller.getClass());
 
                 continue;
             }
 
             Class<?> instanceClass = targetInstance.getClass();
-            Method provideMethod = annotatedMethod.getMethod();
+            Method supplyMethod = annotatedMethod.getMethod();
 
-            MethodHandle targetSetterMethod = getProvideTargetSetterMethod(annotation, instanceClass);
-            Supplier<?> provider = createProviderInstance(controller, provideMethod);
+            MethodHandle targetSetterMethod = getSupplyTargetSetterMethod(annotation, instanceClass);
+            Supplier<?> supplier = createSupplierInstance(controller, supplyMethod);
 
             try {
-                targetSetterMethod.invoke(targetInstance, provider.get());
+                targetSetterMethod.invoke(targetInstance, supplier.get());
             } catch (Error e) {
                 throw e;
             } catch (Throwable e) {
-                throw new RuntimeException(String.format("Unable to set declarative @%s provider for %s",
-                        Provide.class.getSimpleName(), provideMethod), e);
+                throw new RuntimeException(String.format("Unable to set declarative @%s supplier for %s",
+                        Supply.class.getSimpleName(), supplyMethod), e);
             }
         }
     }
 
-    protected Supplier<?> createProviderInstance(View<?> controller, Method method) {
+    protected Supplier<?> createSupplierInstance(View<?> controller, Method method) {
         return new InstalledSupplier(controller, method);
     }
 
-    protected MethodHandle getProvideTargetSetterMethod(Provide annotation, Class<?> instanceClass) {
+    protected MethodHandle getSupplyTargetSetterMethod(Supply annotation, Class<?> instanceClass) {
         String subjectProperty = annotation.type() != Object.class
                 ? StringUtils.uncapitalize(annotation.type().getSimpleName())
                 : annotation.subject();
@@ -618,12 +618,12 @@ public class ViewControllerDependencyInjector {
         String subjectSetterName = "set" + StringUtils.capitalize(subjectProperty);
 
         MethodHandle targetSetterMethod =
-                reflectionInspector.getProvideTargetMethod(instanceClass, subjectSetterName);
+                reflectionInspector.getSupplyTargetMethod(instanceClass, subjectSetterName);
 
         if (targetSetterMethod == null) {
             throw new DevelopmentException(
                     String.format("Unable to find @%s target method '%s' in '%s'",
-                            Provide.class.getSimpleName(), subjectProperty, instanceClass)
+                            Supply.class.getSimpleName(), subjectProperty, instanceClass)
             );
         }
 
@@ -631,7 +631,7 @@ public class ViewControllerDependencyInjector {
     }
 
     @Nullable
-    protected Object getProvideTargetInstance(View<?> controller, Provide annotation) {
+    protected Object getSupplyTargetInstance(View<?> controller, Supply annotation) {
         return getTargetInstance(annotation, controller,
                 ViewDescriptorUtils.getInferredProvideId(annotation), annotation.target());
     }
