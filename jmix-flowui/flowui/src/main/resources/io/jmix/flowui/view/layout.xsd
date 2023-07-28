@@ -2404,8 +2404,8 @@
     </xs:complexType>
 
     <xs:complexType name="formattableRendererType">
-        <xs:attribute name="format" type="xs:string" use="required"/>
-        <xs:attribute name="nullRepresentation" type="xs:string"/>
+        <xs:attribute name="format" type="resourceString" use="required"/>
+        <xs:attribute name="nullRepresentation" type="resourceString"/>
     </xs:complexType>
 
     <xs:group name="renderers">

@@ -37,11 +37,12 @@ public abstract class AbstractFormattableRendererProvider<R extends Renderer<?>>
 
     @Override
     public R createRenderer(Element element, MetaPropertyPath metaPropertyPath, Context context) {
-        String format = loaderSupport.loadString(element, "format")
+        String format = loaderSupport.loadResourceString(element, "format", context.getMessageGroup())
                 .orElseThrow(() -> new GuiDevelopmentException("'format' is required", context,
                         "Element", element.getName()));
 
-        String nullRepresentation = loaderSupport.loadString(element, "nullRepresentation")
+        String nullRepresentation = loaderSupport
+                .loadResourceString(element, "nullRepresentation", context.getMessageGroup())
                 .orElse("");
 
         return createRendererInternal(metaPropertyPath, format, nullRepresentation);
