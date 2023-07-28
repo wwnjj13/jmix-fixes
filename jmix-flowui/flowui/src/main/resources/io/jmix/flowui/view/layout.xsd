@@ -2537,9 +2537,9 @@
 
     <!-- Grid.Column-->
     <xs:complexType name="dataGridColumnComponent">
-        <xs:sequence>
+        <xs:choice minOccurs="0">
             <xs:group ref="renderers" maxOccurs="0"/>
-        </xs:sequence>
+        </xs:choice>
 
         <xs:attribute name="key" type="xs:string"/>
         <xs:attribute name="visible" type="xs:boolean"/>
