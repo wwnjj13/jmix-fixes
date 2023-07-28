@@ -123,4 +123,10 @@ public final class ViewDescriptorUtils {
 
         return install.to();
     }
+
+    public static String getInferredProvideId(Provide provide) {
+        checkNotNullArgument(provide);
+
+        return provide.to();
+    }
 }
