@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.kit.meta.component;
+package io.jmix.searchflowui.kit.meta;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -23,7 +23,7 @@ import io.jmix.flowui.kit.meta.StudioProperty;
 import io.jmix.flowui.kit.meta.StudioPropertyType;
 import io.jmix.flowui.kit.meta.StudioUiKit;
 
-@StudioUiKit(studioClassloaderDependencies = "io.jmix.search:jmix-search-flowui-starter")
+@StudioUiKit(studioClassloaderDependencies = "io.jmix.search:jmix-search-flowui-kit")
 public interface StudioSearchComponents {
 
     @StudioComponent(
@@ -33,7 +33,7 @@ public interface StudioSearchComponents {
             xmlElement = "searchField",
             xmlns = "http://jmix.io/schema/search/ui",
             xmlnsAlias = "search",
-            icon = "io/jmix/flowui/kit/meta/icon/component/searchField.svg",
+            icon = "io/jmix/searchflowui/kit/meta/icon/searchField.svg",
             properties = {
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
@@ -84,9 +84,6 @@ public interface StudioSearchComponents {
             xmlnsAlias = "search",
             icon = "io/jmix/flowui/kit/meta/icon/component/searchField.svg",
             properties = {
-                    @StudioProperty(xmlAttribute = "searchStrategy", type = StudioPropertyType.ENUMERATION,
-                            classFqn = "io.jmix.search.searching.SearchStrategy",
-                            options = {"anyTermAnyField", "allTermsAnyField", "allTermsSingleField", "phrase"}),
                     @StudioProperty(xmlAttribute = "autoApply", type = StudioPropertyType.BOOLEAN),
                     @StudioProperty(xmlAttribute = "ariaLabel", type = StudioPropertyType.LOCALIZED_STRING),
                     @StudioProperty(xmlAttribute = "ariaLabelledBy", type = StudioPropertyType.LOCALIZED_STRING),
@@ -126,6 +123,9 @@ public interface StudioSearchComponents {
                     @StudioProperty(xmlAttribute = "requiredIndicatorVisible", type = StudioPropertyType.BOOLEAN,
                             defaultValue = "false"),
                     @StudioProperty(xmlAttribute = "requiredMessage", type = StudioPropertyType.LOCALIZED_STRING),
+                    @StudioProperty(xmlAttribute = "searchStrategy", type = StudioPropertyType.ENUMERATION,
+                            classFqn = "io.jmix.search.searching.SearchStrategy",
+                            options = {"anyTermAnyField", "allTermsAnyField", "allTermsSingleField", "phrase"}),
                     @StudioProperty(xmlAttribute = "tabIndex", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "themeNames", type = StudioPropertyType.VALUES_LIST),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
