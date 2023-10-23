@@ -55,6 +55,7 @@ public interface StudioSearchComponents {
                     @StudioProperty(xmlAttribute = "openMode", type = StudioPropertyType.ENUMERATION,
                             classFqn = "io.jmix.flowui.view.OpenMode",
                             options = {"NAVIGATION", "DIALOG"}),
+                    @StudioProperty(xmlAttribute = "searchSize", type = StudioPropertyType.INTEGER),
                     @StudioProperty(xmlAttribute = "searchStrategy", type = StudioPropertyType.ENUMERATION,
                             classFqn = "io.jmix.search.searching.SearchStrategy",
                             options = {"anyTermAnyField", "allTermsAnyField", "allTermsSingleField", "phrase"}),
