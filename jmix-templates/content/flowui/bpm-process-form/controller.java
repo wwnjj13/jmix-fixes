@@ -1,4 +1,14 @@
-package ${packageName};
+<%
+def processAnnotation = api.processSnippet('bpm_processFormAnnotation.xml',
+    ['outputes': processFormOutcomes,
+     'api': api])
+def processComponents = api.processSnippet('bpm_components.xml',
+     ['injects': bpmInjects,
+     'api': api])
+def processHandlers = api.processSnippet('bpm_handlers.xml',
+    ['outputes': processFormOutcomes,
+     'api': api])
+%>package ${packageName};
 
 <%if (!api.jmixProjectModule.isApplication()) {%>
 import io.jmix.flowui.view.DefaultMainViewParent;
@@ -17,7 +27,7 @@ import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@ProcessForm
+${processAnnotation}
 @Route(value = "${route}", layout = <%if (!api.jmixProjectModule.isApplication()) {%> DefaultMainViewParent.class <%} else {%>MainView.class<%}%>)
 @ViewController("${id}")
 @ViewDescriptor("${descriptorName}.xml")
@@ -25,5 +35,5 @@ public class ${controllerName} extends ${superClass} {
 
     @Autowired
     private ProcessFormContext processFormContext;
-
-}
+${processComponents}
+${processHandlers}}

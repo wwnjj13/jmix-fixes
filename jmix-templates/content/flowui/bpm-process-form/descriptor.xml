@@ -1,19 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<%
+def containerXml = api.processSnippet('bpm_container.xml',
+        ['variables': processFormVariables, 'api': api])
+def formXml = api.processSnippet('bpm_processform.xml',
+        ['variables': processFormVariables,
+        'api': api])
+def buttonsXml = api.processSnippet('bpm_buttons.xml',
+        ['outputes': processFormOutcomes,
+        'api': api])
+%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <view xmlns="http://jmix.io/schema/flowui/view"
       title="${messageKeys['title']}">
-    <facets>
-        <dataLoadCoordinator auto="true"/>
-    </facets>
+    ${containerXml}
     <layout><%if (bpmTaskName != null && bpmTaskName.trim() != '') {%>
-        <h1 text="$bpmTaskName"/><%}%><%if (bpmTaskDueDate != null && bpmTaskDueDate.trim() != '') {%>
-        <h4 text="Due date: $bpmTaskDueDate"/><%}%><%if (bpmTaskDetails != null && bpmTaskDetails.trim() != '') {%>
+        <h1 text="$bpmTaskName"/><%}%><%if (bpmTaskDetails != null && bpmTaskDetails.trim() != '') {%>
         <details summaryText="Task details">
             <p text="$bpmTaskDetails"/>
         </details><%}%>
-        <formLayout>
-        </formLayout>
+        ${formXml}
         <hbox id="actionsPanel">
+            ${buttonsXml}
         </hbox>
     </layout>
 </view>

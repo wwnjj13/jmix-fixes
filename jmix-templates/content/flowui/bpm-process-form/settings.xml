@@ -74,12 +74,6 @@
               advanced="true"
               required="false"/>
 
-    <property caption="Task due date"
-              code="bpmTaskDueDate"
-              propertyType="PROCESS_FORM_TASK_DUE_DATE"
-              advanced="true"
-              required="false"/>
-
     <property caption="Task details"
               code="bpmTaskDetails"
               propertyType="PROCESS_FORM_TASK_DETAILS"
