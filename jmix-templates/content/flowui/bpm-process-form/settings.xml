@@ -16,11 +16,17 @@
 
     <steps>
         <step name="BPM process form" order="0"/>
-        <step name="BPM process form variables" order="1"/>
-        <step name="BPM process form outcomes" order="2"/>
+        <step name="Entity detail view fetch plan" order="1"
+              description="Detail view fetch plan determines entity attributes and associations to be loaded from the database and edited in the view components"
+              condition="${processFormType.name() == 'ENTITY'}"/>
+        <step name="BPM process form variables" order="2"
+              condition="${processFormType.name() in ['VARIABLE','ENTITY']}"/>
+        <step name="BPM process form outcomes" order="3"
+              condition="${processFormType.name() in ['VARIABLE','ENTITY']}"/>
+        <dependency code="processFormType"/>
     </steps>
 
-    <property caption="Process form id"
+    <property caption="Process id"
               code="processFormId"
               propertyType="PROCESS_FORM_ID"
               required="false"/>
@@ -29,6 +35,15 @@
               code="processFormType"
               propertyType="PROCESS_FORM_TYPE"
               required="true"/>
+
+    <property caption="Entity"
+              code="entity"
+              propertyType="PROCESS_FORM_ENTITY_DATA_OBJECT"
+              dynamic="true">
+        <dependency code = "processFormType"/>
+        <dynamicAttribute name="enabled" source="${processFormType.name() == 'ENTITY'}"/>
+        <dynamicAttribute name="required" source="${processFormType.name() == 'ENTITY'}"/>
+    </property>
 
     <property caption="Descriptor name"
               code="descriptorName"
@@ -80,15 +95,22 @@
               advanced="true"
               required="false"/>
 
+    <property caption="Entity fetch plan"
+              code="detailFetchPlan"
+              step="1"
+              propertyType="VIEW_COMPONENT"
+              relatedProperty="entity"
+              required="false"/>
+
     <property caption="Process form variables"
               code="processFormVariables"
-              step="1"
+              step="2"
               propertyType="PROCESS_FORM_VARIABLES"
               required="false"/>
 
     <property caption="Process form outcomes"
               code="processFormOutcomes"
-              step="2"
+              step="3"
               propertyType="PROCESS_FORM_OUTCOMES"
               required="false"/>
 
