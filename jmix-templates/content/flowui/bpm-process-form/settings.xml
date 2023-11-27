@@ -18,12 +18,17 @@
         <step name="BPM process form" order="0"/>
         <step name="Entity detail view fetch plan" order="1"
               description="Detail view fetch plan determines entity attributes and associations to be loaded from the database and edited in the view components"
-              condition="${processFormType.name() == 'ENTITY'}"/>
+              condition="${processFormType.name() == 'ENTITY'}">
+            <dependency code="processFormType"/>
+        </step>
         <step name="BPM process form variables" order="2"
-              condition="${processFormType.name() in ['VARIABLE','ENTITY']}"/>
+              condition="${processFormType.name() in ['VARIABLE','ENTITY']}">
+            <dependency code="processFormType"/>
+        </step>
         <step name="BPM process form outcomes" order="3"
-              condition="${processFormType.name() in ['VARIABLE','ENTITY']}"/>
-        <dependency code="processFormType"/>
+              condition="${processFormType.name() in ['VARIABLE','ENTITY']}">
+            <dependency code="processFormType"/>
+        </step>
     </steps>
 
     <property caption="Process id"
@@ -40,9 +45,12 @@
               code="entity"
               propertyType="PROCESS_FORM_ENTITY_DATA_OBJECT"
               dynamic="true">
-        <dependency code = "processFormType"/>
-        <dynamicAttribute name="enabled" source="${processFormType.name() == 'ENTITY'}"/>
-        <dynamicAttribute name="required" source="${processFormType.name() == 'ENTITY'}"/>
+        <dynamicAttribute name="enabled" source="${processFormType.name() == 'ENTITY'}">
+            <dependency code = "processFormType"/>
+        </dynamicAttribute>
+        <dynamicAttribute name="required" source="${processFormType.name() == 'ENTITY'}">
+            <dependency code = "processFormType"/>
+        </dynamicAttribute>
     </property>
 
     <property caption="Descriptor name"
