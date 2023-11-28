@@ -43,8 +43,7 @@
 
     <property caption="Entity"
               code="entity"
-              propertyType="PROCESS_FORM_ENTITY_DATA_OBJECT"
-              dynamic="true">
+              propertyType="PROCESS_FORM_ENTITY_DATA_OBJECT">
         <dynamicAttribute name="enabled" source="${processFormType.name() == 'ENTITY'}">
             <dependency code = "processFormType"/>
         </dynamicAttribute>
