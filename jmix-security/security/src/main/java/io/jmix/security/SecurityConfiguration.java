@@ -70,9 +70,6 @@ public class SecurityConfiguration {
     private PersistentTokenRepository rememberMeTokenRepository;
 
     @Autowired
-    private SessionRegistry sessionRegistry;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Bean(name = "sec_SecurityConstraintsRegistration")
@@ -96,11 +93,11 @@ public class SecurityConfiguration {
 
     @Primary
     @Bean
-    public SessionAuthenticationStrategy sessionControlAuthenticationStrategy() {
-        return new CompositeSessionAuthenticationStrategy(strategies());
+    public SessionAuthenticationStrategy sessionControlAuthenticationStrategy(SessionRegistry sessionRegistry) {
+        return new CompositeSessionAuthenticationStrategy(strategies(sessionRegistry));
     }
 
-    protected List<SessionAuthenticationStrategy> strategies() {
+    protected List<SessionAuthenticationStrategy> strategies(SessionRegistry sessionRegistry) {
         RegisterSessionAuthenticationStrategy registerSessionAuthenticationStrategy
                 = new RegisterSessionAuthenticationStrategy(sessionRegistry);
         ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlStrategy

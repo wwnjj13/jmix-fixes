@@ -32,7 +32,7 @@ public class CircularBeanReferencesEnabler implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-            ((AbstractAutowireCapableBeanFactory) beanFactory).setAllowCircularReferences(true);
+            ((AbstractAutowireCapableBeanFactory) beanFactory).setAllowCircularReferences(false); //TODO revert
         }
     }
 }
