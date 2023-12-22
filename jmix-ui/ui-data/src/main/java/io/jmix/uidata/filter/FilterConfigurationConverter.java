@@ -40,6 +40,9 @@ public class FilterConfigurationConverter {
     @Autowired
     protected FilterComponents filterComponents;
 
+    @Autowired
+    private EntityFieldCreationSupport entityFieldCreationSupport;
+
     public FilterConfiguration toConfigurationModel(Filter.Configuration configuration,
                                                     FilterConfiguration configurationModel) {
         Filter filter = configuration.getOwner();
@@ -67,6 +70,11 @@ public class FilterConfigurationConverter {
             if (filterComponent instanceof SingleFilterComponent) {
                 configuration.setFilterComponentDefaultValue(((SingleFilterComponent<?>) filterComponent).getParameterName(),
                         ((SingleFilterComponent<?>) filterComponent).getValue());
+
+                if (((SingleFilterComponent) filterComponent).getValueComponent() instanceof EntityComboBox) {
+                    EntityComboBox entityComboBox = (EntityComboBox) (((SingleFilterComponent) filterComponent).getValueComponent());
+                    entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
+                }
             }
         }
 

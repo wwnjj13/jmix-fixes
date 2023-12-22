@@ -49,6 +49,14 @@ public class FilterPropertiesInspector implements Predicate<MetaPropertyPath> {
         this.excludedPropertiesRegexp = excludedPropertiesRegexp;
     }
 
+    public List<String> getIncludedProperties() {
+        return includedProperties;
+    }
+
+    public void setIncludedProperties(List<String> includedProperties) {
+        this.includedProperties = includedProperties;
+    }
+
     public List<String> getExcludedProperties() {
         return excludedProperties;
     }

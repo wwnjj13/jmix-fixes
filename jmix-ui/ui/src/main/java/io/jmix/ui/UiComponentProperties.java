@@ -121,6 +121,12 @@ public class UiComponentProperties {
      */
     boolean filterShowConfigurationIdField;
 
+
+    /**
+     * The list of properties that should be considered "system properties" when using the includeProperties attribute with a filter
+     */
+    List<String> filterIncludedSystemProperties;
+
     public UiComponentProperties(
             @DefaultValue("true") boolean htmlSanitizerEnabled,
             @DefaultValue("20") int uploadFieldMaxUploadSizeMb,
@@ -146,7 +152,8 @@ public class UiComponentProperties {
             @DefaultValue("true") boolean filterAutoApply,
             @DefaultValue("2") int filterPropertiesHierarchyDepth,
             @DefaultValue("3") int filterColumnsCount,
-            @DefaultValue("false") boolean filterShowConfigurationIdField
+            @DefaultValue("true") boolean filterConfigurationUniqueNamesEnabled,
+            @DefaultValue("id,version,createTs,createdBy,createdBy,createdDate,updateTs,updatedBy,lastModifiedBy,lastModifiedDate,deleteTs,deletedBy,deletedBy,deletedDate") String filterIncludedSystemProperties
     ) {
         this.htmlSanitizerEnabled = htmlSanitizerEnabled;
         this.uploadFieldMaxUploadSizeMb = uploadFieldMaxUploadSizeMb;
@@ -173,6 +180,7 @@ public class UiComponentProperties {
         this.filterPropertiesHierarchyDepth = filterPropertiesHierarchyDepth;
         this.filterColumnsCount = filterColumnsCount;
         this.filterShowConfigurationIdField = filterShowConfigurationIdField;
+        this.filterIncludedSystemProperties = Arrays.asList(filterIncludedSystemProperties.replace(" ", "").split(","));
     }
 
     public int getUploadFieldMaxUploadSizeMb() {
@@ -306,5 +314,12 @@ public class UiComponentProperties {
      */
     public boolean isFilterShowConfigurationIdField() {
         return filterShowConfigurationIdField;
+    }
+
+    /**
+     * @see #filterIncludedSystemProperties
+     */
+    public List<String> getFilterIncludedSystemProperties() {
+        return filterIncludedSystemProperties;
     }
 }

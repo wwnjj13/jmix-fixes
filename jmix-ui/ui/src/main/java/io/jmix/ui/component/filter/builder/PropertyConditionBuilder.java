@@ -74,9 +74,14 @@ public class PropertyConditionBuilder extends AbstractConditionBuilder {
         MetaClass filterMetaClass = filter.getDataLoader().getContainer().getEntityMetaClass();
         String query = filter.getDataLoader().getQuery();
         Predicate<MetaPropertyPath> propertiesFilterPredicate = filter.getPropertiesFilterPredicate();
-
-        List<MetaPropertyPath> paths = filterMetadataTools.getPropertyPaths(filterMetaClass, query,
-                propertiesFilterPredicate);
+        List<MetaPropertyPath> paths;
+        if(filter.getPropertiesFilterPredicate() instanceof FilterPropertiesInspector && ((FilterPropertiesInspector) filter.getPropertiesFilterPredicate()).getIncludedProperties().size() > 0){
+            paths = filterMetadataTools.getPropertyPathsFromIncludedProperties(filterMetaClass, query,
+                    propertiesFilterPredicate, ((FilterPropertiesInspector) filter.getPropertiesFilterPredicate()).getIncludedProperties());
+        } else {
+            paths = filterMetadataTools.getPropertyPaths(filterMetaClass, query,
+                    propertiesFilterPredicate);
+        }
 
         return !paths.isEmpty()
                 ? createFilterConditionsByPaths(paths)
@@ -95,13 +100,23 @@ public class PropertyConditionBuilder extends AbstractConditionBuilder {
                 messages.getMessage(PropertyConditionBuilder.class, "propertyConditionBuilder.headerCaption"));
         conditions.add(propertiesHeaderCondition);
 
+        Map<FilterCondition,MetaPropertyPath> propertyMap = new HashMap<>();
+
         for (MetaPropertyPath path : paths) {
             FilterCondition condition = createFilterConditionByPath(path);
+            conditions.add(condition);
+            propertyMap.put(condition,path);
+        }
+
+        for(FilterCondition condition: conditions){
+            MetaPropertyPath path = propertyMap.get(condition);
+            if(path == null) {
+                continue;
+            }
             FilterCondition parent = path.isDirectProperty()
                     ? propertiesHeaderCondition
                     : getParentCondition(path, conditions);
             condition.setParent(parent);
-            conditions.add(condition);
         }
 
         conditions.sort((condition1, condition2) ->
