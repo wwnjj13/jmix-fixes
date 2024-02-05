@@ -141,7 +141,7 @@ public class JmixTagPicker<V> extends JmixComboBoxPickerField<Collection<V>> {
         super.setReadOnly(readOnly);
 
         tagContainer.setEditable(!readOnly);
-        field.setVisible(!readOnly);
+//        field.setRea (readOnly);
     }
 
     @Override

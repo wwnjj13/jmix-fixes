@@ -145,18 +145,9 @@ public class JpqlFilterComponentGenerationStrategy extends AbstractComponentGene
     }
 
     protected Component createEntityField(ComponentGenerationContext context) {
-        EntityPicker<?> field = uiComponents.create(EntityPicker.class);
-
         JpqlFilterComponentGenerationContext cfContext = (JpqlFilterComponentGenerationContext) context;
         MetaClass metaClass = metadata.getClass(cfContext.getParameterClass());
-        field.setMetaClass(metaClass);
-
-        EntityLookupAction<?> lookupAction = (EntityLookupAction<?>) actions.create(EntityLookupAction.ID);
-        lookupAction.setOpenMode(OpenMode.DIALOG);
-        field.addAction(lookupAction);
-        field.addAction(actions.create(EntityClearAction.ID));
-
-        return field;
+        return (EntityPicker<?>) entityFieldCreationSupport.createEntityField(metaClass, context.getOptions());
     }
 
     @Override
