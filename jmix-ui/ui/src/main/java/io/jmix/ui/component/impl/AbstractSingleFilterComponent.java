@@ -312,7 +312,7 @@ public abstract class AbstractSingleFilterComponent<V> extends CompositeComponen
         this.valueComponent = valueComponent;
         if (this.valueComponent instanceof EntityComboBox) {
             EntityComboBox entityComboBox = (EntityComboBox) (this.valueComponent);
-            entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
+            //entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
         }
         root.add(valueComponent);
 

@@ -21,10 +21,13 @@ import io.jmix.core.Metadata;
 import io.jmix.core.annotation.Internal;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.ui.UiComponents;
+import io.jmix.ui.component.EntityComboBox;
 import io.jmix.ui.component.Filter;
 import io.jmix.ui.component.HasValue;
 import io.jmix.ui.component.JpqlFilter;
+import io.jmix.ui.component.data.options.ContainerOptions;
 import io.jmix.ui.component.filter.converter.AbstractFilterComponentConverter;
+import io.jmix.ui.component.impl.EntityFieldCreationSupport;
 import io.jmix.ui.component.propertyfilter.SingleFilterSupport;
 import io.jmix.ui.entity.FilterValueComponent;
 import io.jmix.ui.entity.JpqlFilterCondition;
@@ -53,6 +56,12 @@ public class JpqlFilterConverter extends AbstractFilterComponentConverter<JpqlFi
     @Autowired
     protected SingleFilterSupport singleFilterSupport;
 
+    protected EntityFieldCreationSupport entityFieldCreationSupport;
+    @Autowired
+    public void setEntityFieldCreationSupport(EntityFieldCreationSupport entityFieldCreationSupport) {
+        this.entityFieldCreationSupport = entityFieldCreationSupport;
+    }
+
     protected JpqlFilterConverter(Filter filter) {
         super(filter);
     }
@@ -74,6 +83,10 @@ public class JpqlFilterConverter extends AbstractFilterComponentConverter<JpqlFi
         HasValue valueComponent = convertValueComponentToComponent(jpqlFilter, model);
         Object defaultValue = convertDefaultValueToComponent(jpqlFilter, model);
         jpqlFilter.setValueComponent(valueComponent);
+        if (valueComponent instanceof EntityComboBox) {
+            EntityComboBox entityComboBox = (EntityComboBox) (valueComponent);
+            entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
+        }
         jpqlFilter.setValue(defaultValue);
 
         return jpqlFilter;
