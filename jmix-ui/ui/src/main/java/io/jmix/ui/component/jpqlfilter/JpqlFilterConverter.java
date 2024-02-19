@@ -83,10 +83,6 @@ public class JpqlFilterConverter extends AbstractFilterComponentConverter<JpqlFi
         HasValue valueComponent = convertValueComponentToComponent(jpqlFilter, model);
         Object defaultValue = convertDefaultValueToComponent(jpqlFilter, model);
         jpqlFilter.setValueComponent(valueComponent);
-        if (valueComponent instanceof EntityComboBox) {
-            EntityComboBox entityComboBox = (EntityComboBox) (valueComponent);
-            entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
-        }
         jpqlFilter.setValue(defaultValue);
 
         return jpqlFilter;

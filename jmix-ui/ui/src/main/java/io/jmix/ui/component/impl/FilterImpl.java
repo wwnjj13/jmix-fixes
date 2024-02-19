@@ -34,6 +34,7 @@ import io.jmix.ui.action.BaseAction;
 import io.jmix.ui.action.filter.FilterAction;
 import io.jmix.ui.action.filter.FilterAddConditionAction;
 import io.jmix.ui.component.*;
+import io.jmix.ui.component.data.options.ContainerOptions;
 import io.jmix.ui.component.filter.FilterSupport;
 import io.jmix.ui.component.filter.configuration.DesignTimeConfiguration;
 import io.jmix.ui.component.filter.configuration.RunTimeConfiguration;
@@ -146,6 +147,12 @@ public class FilterImpl extends CompositeComponent<GroupBoxLayout> implements Fi
         UiFilterModifyConfigurationContext context = new UiFilterModifyConfigurationContext();
         accessManager.applyRegisteredConstraints(context);
         configurationModifyPermitted = context.isPermitted();
+    }
+
+    protected EntityFieldCreationSupport entityFieldCreationSupport;
+    @Autowired
+    public void setEntityFieldCreationSupport(EntityFieldCreationSupport entityFieldCreationSupport) {
+        this.entityFieldCreationSupport = entityFieldCreationSupport;
     }
 
     @Override
@@ -325,7 +332,23 @@ public class FilterImpl extends CompositeComponent<GroupBoxLayout> implements Fi
                         new ConfigurationChangeEvent(this, currentConfiguration, previousConfiguration);
                 publish(ConfigurationChangeEvent.class, configurationChangeEvent);
             }
+
+            loadDataContainers(currentConfiguration);
         }
+    }
+
+    private void loadDataContainers(Configuration currentConfiguration) {
+
+        for (FilterComponent filterComponent : currentConfiguration.getRootLogicalFilterComponent().getOwnFilterComponents()) {
+            if (((AbstractSingleFilterComponent) filterComponent).getValueComponent() instanceof EntityComboBox
+            ) {
+                EntityComboBox entityComboBox = (EntityComboBox) (((AbstractSingleFilterComponent) filterComponent).getValueComponent());
+                if (entityComboBox.getOptions() == null || entityComboBox.getOptions().getOptions().count() == 0) {
+                    entityComboBox.setOptions(new ContainerOptions(entityFieldCreationSupport.createCollectionContainer(entityComboBox.getMetaClass())));
+                }
+            }
+        }
+
     }
 
     @Override
