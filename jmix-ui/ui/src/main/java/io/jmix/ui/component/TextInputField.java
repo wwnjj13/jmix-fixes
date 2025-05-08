@@ -60,6 +60,7 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
          * @param position new cursor position
          */
         void setCursorPosition(int position);
+        int getCursorPosition();
     }
 
     interface CaseConversionSupported {

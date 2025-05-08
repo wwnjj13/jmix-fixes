@@ -24,6 +24,7 @@ import io.jmix.ui.meta.PropertyType;
 import io.jmix.ui.meta.StudioComponent;
 import io.jmix.ui.meta.StudioProperties;
 import io.jmix.ui.meta.StudioProperty;
+import org.springframework.core.ParameterizedTypeReference;
 
 /**
  * A group of RadioButtons. Individual radio buttons are made from items supplied by a {@link Options}.
@@ -58,4 +59,9 @@ public interface RadioButtonGroup<I> extends OptionsField<I, I>, Component.Focus
         HasOptionIconProvider<I>, HasOptionDescriptionProvider<I> {
 
     String NAME = "radioButtonGroup";
+
+    static <T> ParameterizedTypeReference<RadioButtonGroup<T>> of(Class<T> valueClass) {
+        return new ParameterizedTypeReference<RadioButtonGroup<T>>() {
+        };
+    }
 }

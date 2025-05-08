@@ -295,6 +295,11 @@ public abstract class AbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     }
 
     @Override
+    public int getCursorPosition() {
+        return component.getCursorPosition();
+    }
+
+    @Override
     public void selectAll() {
         component.selectAll();
     }

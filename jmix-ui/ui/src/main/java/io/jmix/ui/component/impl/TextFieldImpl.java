@@ -313,6 +313,11 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
     }
 
     @Override
+    public int getCursorPosition(){
+        return component.getCursorPosition();
+    }
+
+    @Override
     public String getRawValue() {
         return component.getValue();
     }

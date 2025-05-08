@@ -228,6 +228,11 @@ public class MaskedFieldImpl<V> extends AbstractField<JmixMaskedTextField, Strin
     }
 
     @Override
+    public int getCursorPosition(){
+        return component.getCursorPosition();
+    }
+
+    @Override
     public void selectAll() {
         component.selectAll();
     }

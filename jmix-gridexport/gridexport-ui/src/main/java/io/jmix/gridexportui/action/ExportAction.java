@@ -17,6 +17,7 @@
 package io.jmix.gridexportui.action;
 
 import io.jmix.core.Messages;
+import io.jmix.gridexportui.exporter.AbstractTableExporter;
 import io.jmix.gridexportui.exporter.ExportMode;
 import io.jmix.gridexportui.exporter.TableExporter;
 import io.jmix.ui.Dialogs;
@@ -85,11 +86,25 @@ public class ExportAction extends ListAction implements ApplicationContextAware 
     }
 
     /**
+     * Sets the table exporter instance
+     */
+    public TableExporter getTableExporter() {
+        return this.tableExporter;
+    }
+
+    /**
      * Autowire table exporter instance by exporter class
      */
     public <T> T withExporter(Class<T> exporterClass) {
         setTableExporter((TableExporter) applicationContext.getBean(exporterClass));
         return (T) tableExporter;
+    }
+
+    public void setFilename(String filename) {
+        TableExporter tableExporter = getTableExporter();
+        if (tableExporter instanceof AbstractTableExporter) {
+            ((AbstractTableExporter) tableExporter).setFileName(filename);
+        }
     }
 
     /**
